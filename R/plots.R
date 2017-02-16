@@ -23,6 +23,8 @@ box_plot <- function(data, xvar, yvar, xlab="", ylab="", facet = FALSE) {
                             return(c(y = median(x), ymin = median(x), ymax = median(x)))
                           }) +
     ggplot2::theme_minimal() +
+    ggplot2::scale_fill_brewer(palette = "Dark2") +
+    ggplot2::scale_color_brewer(palette = "Dark2") +
     ggplot2::scale_fill_brewer() +
     ggplot2::theme(legend.position = "none",
                    panel.grid.major.x = ggplot2::element_blank(),
@@ -69,6 +71,7 @@ scatter_plot = function(data, xvar, yvar, xlab='', ylab='', line = TRUE, facet =
                    axis.ticks.y = ggplot2::element_line(colour = "grey"),
                    axis.text.x = ggplot2::element_text(colour = "grey50"), #angle = 45
                    axis.title = ggplot2::element_text(size = 10)) +
+    ggplot2::scale_color_brewer(palette = "Dark2") +
     ggplot2::xlab(xlab) +
     ggplot2::ylab(ylab)
   if(line == TRUE & facet == FALSE) {
@@ -108,6 +111,8 @@ histo_plot = function(data, variable, bin, xlab='', facet = FALSE) {
                             colour='#0db7c4', fill='#0db7c4') +
     ggplot2::xlab(xlab) +
     ggplot2::theme_minimal() +
+    ggplot2::scale_fill_brewer(palette = "Dark2") +
+    ggplot2::scale_color_brewer(palette = "Dark2") +
     ggplot2::theme(panel.grid.major.x = ggplot2::element_blank(),
                    axis.line.y = ggplot2::element_blank(),
                    axis.text.y = ggplot2::element_text(colour = "grey"),
@@ -146,6 +151,8 @@ line_plot = function(data, xvar, yvar, byvar, xlab='', ylab='') {
     ggplot2::geom_line() +
     ggplot2::geom_point() +
     ggplot2::theme_minimal() +
+    ggplot2::scale_fill_brewer(palette = "Dark2") +
+    ggplot2::scale_color_brewer(palette = "Dark2") +
     ggplot2::theme(legend.position = "none",
                    panel.grid.major.x = ggplot2::element_blank(),
                    axis.line.y = ggplot2::element_blank(),
