@@ -13,6 +13,14 @@
 #' @return Plot
 #'
 #' @examples
+#' ds %>%
+#'   filter(fVN == "Baseline") %>%
+#'   select(acrStatus, udbpCrRatio) %>%
+#'   na.omit() %>%
+#'   box_plot("acrStatus", "log(udbpCrRatio)",
+#'            "Albuminuria",
+#'            "log uVDBP:Creatinine")
+
 box_plot <- function(data, xvar, yvar, xlab="", ylab="", facet = FALSE) {
   myboxplot <- ggplot2::ggplot(data, ggplot2::aes_string(x = xvar, y = yvar)) +
     ggplot2::geom_boxplot(ggplot2::aes_string(colour = xvar, fill = xvar),
