@@ -83,8 +83,6 @@ scatter_plot = function(data, xvar, yvar, xlab='', ylab='', line = TRUE, facet =
                    axis.ticks.y = ggplot2::element_line(colour = "grey"),
                    axis.text.x = ggplot2::element_text(colour = "grey50"), #angle = 45
                    axis.title = ggplot2::element_text(size = 10)) +
-    ggplot2::scale_fill_brewer(palette = "Dark2") +
-    ggplot2::scale_color_brewer(palette = "Dark2") +
     ggplot2::xlab(xlab) +
     ggplot2::ylab(ylab)
   if(line == TRUE & facet == FALSE) {
