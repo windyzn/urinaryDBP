@@ -1,103 +1,79 @@
 ---
-title: "ADA Abstract"
-author: "Windy Wang"
-output: html_document
+title: "**Urinary Vitamin D Binding Protein as a Potential Biomarker for Nephropathy in Patients at risk for Type 2 Diabetes**: The Prospective Metabolism and Islet Cell Evaluation (PROMISE) cohort study."
+author: "Wang WZN, Cole DEC, Johnston LW, Wong BYL, Fu L, Retnakaran R, Harris SB, Zinman B, Hanley AJ"
+output: word_document:
+          fig_caption: yes
+          reference_docx: wordStyle.docx
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
-
+knitr::opts_chunk$set(collapse = TRUE, echo = FALSE, message = FALSE, warning = FALSE)
 library(dplyr)
+devtools::load_all()
+load_data(update = TRUE)
+set_options()
+```
 
-ds <- readRDS(file='../data/ds.Rds') %>% 
-  dplyr::mutate(logUdbpRatio = log(udbpCrRatio)) %>% 
-  dplyr::select(SID, VN, fVN, Age, ACR, eGFR, UDBP,
-                acr_status, eGFR_status, UDBP_status, 
-                udbpCrRatio, logUdbpRatio, 
-                DM, dm_status)
-  # dplyr::group_by(SID) %>% 
-  # dplyr::filter(n() == 3) %>% 
-  # dplyr::ungroup()
+```{r dsSetup}
+ds <- project_data
 
-ds1 <- ds %>% 
+dsBase <- ds %>% 
   dplyr::filter(fVN == "Baseline")
 
-source('../R/functions.r')
-source("../R/gee.R")
-source("../R/graphs.R")
-
+dsComplete <- ds %>% 
+  dplyr::group_by(SID) %>%
+  dplyr::filter(n() == 3) %>%
+  dplyr::ungroup()
 ```
+
+```{r captionSetup}
+## Include captions below using `captioner` package
+figNums <- captioner::captioner(prefix = 'Figure')
+supFigNums <- captioner::captioner(prefix = 'Supplementary Figure')
+tabNums <- captioner::captioner(prefix = 'Table')
+supTabNums <- captioner::captioner(prefix = 'Supplementary Table')
+```
+
 
 Subject Characterization
 ========================
 
 Subject characteristics across visit numbers
 ```{r subject characteristics}
-table_subChar(ds1)
 
-# check n
-table(ds1$acr_status)
-
-# 
-# # check n of multiple variables
-ds %>%
-  dplyr::tbl_df() %>%
-  dplyr::filter(VN == 3) %>%
-  dplyr::select(VN, fVN, SID, Age, ACR, eGFR, UDBP) %>%
-  tidyr::gather(Measure, Value, -SID) %>%
-  na.omit() %>%
-  dplyr::group_by(Measure) %>%
-  dplyr::summarise(n = n())
-
-```
-
-Statististical tests
-```{r stats}
-
-## make sure that it is okay to do chi-square with longitudinal
-## make sure the error term for anova is correct
-
-summary(aov(Age ~ fVN + Error(SID/fVN), data=ds))
-
-chisq.test(table(ds$Ethnicity, ds$fVN), correct = TRUE)
-
-chisq.test(table(ds$Sex, ds$fVN), correct = TRUE)
-
-summary(aov(BMI ~ fVN + Error(SID/fVN), data=ds))
-
-summary(aov(Waist ~ fVN + Error(SID/fVN), data=ds))
-
-summary(aov(eGFR ~ fVN + Error(SID/fVN), data=ds))
-
-summary(aov(ACR ~ fVN + Error(SID/fVN), data=ds))
-
-summary(aov(UrineCreatinine ~ fVN + Error(SID/fVN), data=ds))
-
-summary(aov(UrineMicroalbumin ~ fVN + Error(SID/fVN), data=ds))
-
-summary(aov(UDBP ~ fVN + Error(SID/fVN), data=ds))
-
-summary(aov(Creatinine ~ fVN + Error(SID/fVN), data=ds))
-
-summary(aov(VitaminD ~ fVN + Error(SID/fVN), data=ds))
-
-summary(aov(PTH ~ fVN + Error(SID/fVN), data=ds))
-
-summary(aov(ALT ~ fVN + Error(SID/fVN), data=ds))
-
-summary(aov(Systolic ~ fVN + Error(SID/fVN), data=ds))
-
-summary(aov(Diastolic ~ fVN + Error(SID/fVN), data=ds))
-
-summary(aov(MeanArtPressure ~ fVN + Error(SID/fVN), data=ds))
-
-summary(aov(Glucose0 ~ fVN + Error(SID/fVN), data=ds))
-
-summary(aov(Glucose120 ~ fVN + Error(SID/fVN), data=ds))
-
-chisq.test(table(ds$dm_status, ds$fVN), correct = TRUE)
-
-# TukeyHSD(anova, which="fVN")
+subCharTable <- tableone::CreateTableOne(
+  vars = c("Age",
+           "Sex",
+           "Ethnicity",
+           "BMI",
+           "Waist",
+           "eGFR",
+           "ACR",
+           "UrineCreatinine",
+           "UrineMicroalbumin",
+           "UrinaryCalcium",
+           "UDBP",
+           "Creatinine",
+           "VitaminD",
+           "PTH",
+           "ALT",
+           "Systolic",
+           "Diastolic",
+           "MeanArtPressure",
+           "Glucose0",
+           "Glucose120",
+           "dmStatus",
+           "SmokeCigs"),
+  strata = c("fVN"),
+  data = ds,
+  factorVars = c("Sex", "SmokeCigs")
+) %>% 
+  print(nonnormal = c("Glucose0",
+                      "Glucose120",
+                      "ALT",
+                      "UDBP",
+                      "ACR")) %>% 
+  pander::pander()
 ```
 
 
