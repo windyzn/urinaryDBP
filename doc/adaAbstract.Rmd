@@ -1,0 +1,316 @@
+---
+title: "ADA Abstract"
+author: "Windy Wang"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
+
+library(dplyr)
+
+ds <- readRDS(file='../data/ds.Rds') %>% 
+  dplyr::mutate(logUdbpRatio = log(udbpCrRatio)) %>% 
+  dplyr::select(SID, VN, fVN, Age, ACR, eGFR, UDBP,
+                acr_status, eGFR_status, UDBP_status, 
+                udbpCrRatio, logUdbpRatio, 
+                DM, dm_status)
+  # dplyr::group_by(SID) %>% 
+  # dplyr::filter(n() == 3) %>% 
+  # dplyr::ungroup()
+
+ds1 <- ds %>% 
+  dplyr::filter(fVN == "Baseline")
+
+source('../R/functions.r')
+source("../R/gee.R")
+source("../R/graphs.R")
+
+```
+
+Subject Characterization
+========================
+
+Subject characteristics across visit numbers
+```{r subject characteristics}
+table_subChar(ds1)
+
+# check n
+table(ds1$acr_status)
+
+# 
+# # check n of multiple variables
+ds %>%
+  dplyr::tbl_df() %>%
+  dplyr::filter(VN == 3) %>%
+  dplyr::select(VN, fVN, SID, Age, ACR, eGFR, UDBP) %>%
+  tidyr::gather(Measure, Value, -SID) %>%
+  na.omit() %>%
+  dplyr::group_by(Measure) %>%
+  dplyr::summarise(n = n())
+
+```
+
+Statististical tests
+```{r stats}
+
+## make sure that it is okay to do chi-square with longitudinal
+## make sure the error term for anova is correct
+
+summary(aov(Age ~ fVN + Error(SID/fVN), data=ds))
+
+chisq.test(table(ds$Ethnicity, ds$fVN), correct = TRUE)
+
+chisq.test(table(ds$Sex, ds$fVN), correct = TRUE)
+
+summary(aov(BMI ~ fVN + Error(SID/fVN), data=ds))
+
+summary(aov(Waist ~ fVN + Error(SID/fVN), data=ds))
+
+summary(aov(eGFR ~ fVN + Error(SID/fVN), data=ds))
+
+summary(aov(ACR ~ fVN + Error(SID/fVN), data=ds))
+
+summary(aov(UrineCreatinine ~ fVN + Error(SID/fVN), data=ds))
+
+summary(aov(UrineMicroalbumin ~ fVN + Error(SID/fVN), data=ds))
+
+summary(aov(UDBP ~ fVN + Error(SID/fVN), data=ds))
+
+summary(aov(Creatinine ~ fVN + Error(SID/fVN), data=ds))
+
+summary(aov(VitaminD ~ fVN + Error(SID/fVN), data=ds))
+
+summary(aov(PTH ~ fVN + Error(SID/fVN), data=ds))
+
+summary(aov(ALT ~ fVN + Error(SID/fVN), data=ds))
+
+summary(aov(Systolic ~ fVN + Error(SID/fVN), data=ds))
+
+summary(aov(Diastolic ~ fVN + Error(SID/fVN), data=ds))
+
+summary(aov(MeanArtPressure ~ fVN + Error(SID/fVN), data=ds))
+
+summary(aov(Glucose0 ~ fVN + Error(SID/fVN), data=ds))
+
+summary(aov(Glucose120 ~ fVN + Error(SID/fVN), data=ds))
+
+chisq.test(table(ds$dm_status, ds$fVN), correct = TRUE)
+
+# TukeyHSD(anova, which="fVN")
+```
+
+
+Part 1 - Cross-Sectional
+========================
+
+ACR
+---
+```{r acr boxplot}
+
+# Box plot of uVDBP in different albuminuria categories
+
+ds %>% 
+  filter(fVN == "Baseline") %>% 
+  select(acr_status, udbpCrRatio) %>%
+  na.omit() %>%
+  box_plot("acr_status", "log(udbpCrRatio)", 
+            "Albuminuria",
+            "log uVDBP:Creatinine")
+
+# Boxplot of ACR in uVDBP categories
+ds1 %>% 
+  select(UDBP_status, ACR) %>% 
+  na.omit() %>% 
+  box_plot("UDBP_status", "log(ACR)",
+           "Urinary VDBP status",
+           "log urine albumin-to-creatinine ratio (mg/mmol)")
+
+# Values
+table_value(ds1, by = "acr_status")
+
+# ANOVA
+
+anova <- aov(formula = log(udbpCrRatio)~acr_status, data = ds1)
+summary(anova)
+TukeyHSD(anova)
+rm(anova)
+```
+
+```{r acr scatterplot}
+
+# Scatterplot of ACR and uVDBP ----------------------------------
+
+ds %>% 
+  filter(fVN == "Baseline") %>% 
+  select(ACR, udbpCrRatio) %>% 
+  na.omit() %>% 
+  scatter_plot("log(ACR)", "log(udbpCrRatio)",
+               "log Albumin:Creatinine Ratio",
+               "log UDBP:Creatinine") +
+  geom_smooth(method = lm, colour = "grey50")
+
+# Spearman Correlation ------------------------------------------
+
+ds %>% 
+  filter(fVN == "Baseline") %>% 
+  cor.test(formula = ~ ACR + udbpCrRatio, data = ., method = "spearman")
+```
+
+
+eGFR
+----
+```{r eGFR boxplot}
+
+# Boxplot of uVDBP concentrations across eGFR categories --------------
+
+ds %>% 
+  filter(fVN == "Baseline") %>% 
+  select(eGFR_status, udbpCrRatio) %>% 
+  na.omit() %>% 
+  box_plot2("eGFR_status", "log(udbpCrRatio)", 
+            "Estimated GFR (ml/min/1.73m^2)",
+            "log uVDBP:Creatinine")
+
+# Values
+table_value(ds1, by = "eGFR_status")
+
+# ANOVA
+
+anova <- aov(formula = log(udbpCrRatio)~eGFR_status, data = ds1)
+summary(anova)
+TukeyHSD(anova)
+rm(anova)
+```
+
+```{r eGFR scatterplot}
+
+# Scatterplot of eGFR and uVDBP ----------------------------------
+
+ds %>% 
+  dplyr::filter(!(eGFR_status == "Moderate")) %>% 
+  dplyr::filter(eGFR < 150) %>% 
+  dplyr::select(eGFR, udbpCrRatio) %>% 
+  na.omit() %>% 
+  scatter_plot("eGFR", "log(udbpCrRatio)",
+               "Estimated Glomerular Filtration Rate (ml/min/1.73m^2)",
+               "log UDBP:Creatinine") +
+  ggplot2::geom_smooth(method = lm, colour = "grey50")
+
+# Spearman Correlation ------------------------------------------
+
+ds %>% 
+  filter(!(acr_status == "Macroalbuminuria")) %>% 
+  cor.test(formula = ~ eGFR + udbpCrRatio, data = ., method = "spearman")
+```
+
+```{r hyperfiltration}
+ds %>% 
+  dplyr::filter(eGFR < 45) %>% 
+  dplyr::select(SID, VN, Age, eGFR, dm_status, acr_status)
+
+ds %>% 
+  scatter_plot("Age", "eGFR",
+               "Age", "eGFR")
+```
+
+
+Part 2 - GEE
+============
+
+```{r correlation}
+dsGEE <- ds %>% 
+  dplyr::mutate(udbpBase = ifelse(fVN == "Baseline", UDBP, NA),
+                ageBase = ifelse(fVN == "Baseline", Age, NA),
+                bmiBase = ifelse(fVN == "Baseline", BMI, NA),
+                waistBase = ifelse(fVN == "Baseline", Waist, NA), 
+                Sex = ifelse(Sex == "Male", 1, 0),
+                Ethnicity = ifelse(Ethnicity == "European", Ethnicity, "Other"),
+                Ethnicity = ifelse(Ethnicity == "European", 0, 1),
+                fMedsBP = ifelse(fMedsBP == "Yes", 1, 0)
+                # vitdBase = ifelse(fVN == "6Year", NA, VitaminD)
+                ) %>% 
+  dplyr::arrange(SID, fVN) %>% 
+  dplyr::group_by(SID) %>% 
+  tidyr::fill(udbpBase, ageBase, bmiBase, waistBase) %>% 
+  dplyr::ungroup() %>%
+  dplyr::arrange(SID, VN) %>% 
+  dplyr::select(udbpBase, ACR, eGFR, VN, ageBase, Sex, Ethnicity, BMI, 
+                Waist, DM, fMedsBP)
+
+round(cor(dsGEE[sapply(dsGEE, is.numeric)], use = "complete.obs"), 2)
+
+# Heatmap
+
+corrplot::corrplot(cor(dsGEE[sapply(dsGEE, is.numeric)], use = "complete.obs"),
+                   method = "color")
+
+```
+
+
+```{r mason}
+
+gee <- ds %>%
+  dplyr::mutate(
+  udbpBase = ifelse(fVN == "Baseline", UDBP, NA),
+  ageBase = ifelse(fVN == "Baseline", Age, NA),
+  fDM = relevel(as.factor(DM), "1")
+  # Ethnicity = ifelse(Ethnicity == "European", Ethnicity, "Other"),
+  ) %>%
+  dplyr::filter(!(fVN == "Baseline" &
+                    acr_status == "Macroalbuminuria")) %>%
+  dplyr::filter(!(fVN == "Baseline" & eGFR_status == "Moderate")) %>%
+  dplyr::arrange(SID, fVN) %>%
+  dplyr::group_by(SID) %>%
+  tidyr::fill(udbpBase, ageBase) %>%
+  dplyr::ungroup() %>%
+  dplyr::mutate(UDBP = UDBP/1000) %>%
+  dplyr::arrange(SID, VN) %>%
+  mason_gee(
+  yvars = c("ACR", "eGFR"),
+  xvars = "UDBP",
+  covars = c("VN", "ageBase", "fDM")
+  )
+```
+
+```{r}
+gee3 <- readRDS(file = "../data/ds.Rds") %>%
+  dplyr::mutate(
+  udbpBase = ifelse(fVN == "Baseline", UDBP, NA),
+  ageBase = ifelse(fVN == "Baseline", Age, NA),
+  VitaminD3 = ifelse(fVN == "6Year", NA, VitaminD)
+  # Ethnicity = ifelse(Ethnicity == "European", Ethnicity, "Other"),
+  ) %>%
+  dplyr::arrange(SID, fVN) %>%
+  dplyr::group_by(SID) %>%
+  tidyr::fill(udbpBase, ageBase) %>%
+  dplyr::ungroup() %>%
+  # dplyr::group_by(VN) %>%
+  # dplyr::mutate(udbpBase = as.numeric(scale(udbpBase))) %>%
+  dplyr::mutate(UDBP = UDBP/1000) %>%
+  # dplyr::ungroup() %>% 
+  dplyr::arrange(SID, VN) %>%
+  mason_gee(
+  yvars = c("VitaminD3"),
+  xvars = "UDBP",
+  covars = c("VN", "ageBase", "DM")
+  )
+```
+
+
+Graph
+```{r gee plot}
+
+gee %>%
+  dplyr::mutate(p.value = ifelse(p.value > 0.05, 1, 0.04)) %>%
+  seer::view_main_effect(
+  graph.options = 'dot.size',
+  groups = '~Yterms',
+  legend.title = 'p-values',
+  xlab = 'Percent difference with 95% CI in the outcomes\nfor each unit increase in baseline uVDBP',
+  ylab = 'Kidney Measures'
+  ) +
+  graph_theme(ticks = FALSE, legend.pos = 'right') +
+  ggplot2::theme(legend.margin = grid::unit(0, 'cm'))
+
+```
