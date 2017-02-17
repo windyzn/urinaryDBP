@@ -52,7 +52,7 @@ fetch_data <- function() {
                "Microalbuminuria")
       ),
       acrStatus = factor(
-        acr_status,
+        acrStatus,
         levels = c("Normoalbuminuria", "Microalbuminuria", "Macroalbuminuria"),
         ordered = TRUE
       ),
