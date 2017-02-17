@@ -80,33 +80,28 @@ subCharTable <- tableone::CreateTableOne(
 Part 1 - Cross-Sectional
 ========================
 
-ACR
----
-```{r acr boxplot}
+## ACR
+
+```{r acr}
 
 # Box plot of uVDBP in different albuminuria categories
-
 ds %>% 
   filter(fVN == "Baseline") %>% 
-  select(acr_status, udbpCrRatio) %>%
+  select(acrStatus, udbpCrRatio) %>%
   na.omit() %>%
-  box_plot("acr_status", "log(udbpCrRatio)", 
+  box_plot("acrStatus", "log(udbpCrRatio)", 
             "Albuminuria",
             "log uVDBP:Creatinine")
 
 # Boxplot of ACR in uVDBP categories
-ds1 %>% 
-  select(UDBP_status, ACR) %>% 
+dsBase %>% 
+  select(UDBPStatus, ACR) %>% 
   na.omit() %>% 
-  box_plot("UDBP_status", "log(ACR)",
+  box_plot("UDBPStatus", "log(ACR)",
            "Urinary VDBP status",
-           "log urine albumin-to-creatinine ratio (mg/mmol)")
-
-# Values
-table_value(ds1, by = "acr_status")
+           "log Urine ACR (mg/mmol)")
 
 # ANOVA
-
 anova <- aov(formula = log(udbpCrRatio)~acr_status, data = ds1)
 summary(anova)
 TukeyHSD(anova)
@@ -123,8 +118,8 @@ ds %>%
   na.omit() %>% 
   scatter_plot("log(ACR)", "log(udbpCrRatio)",
                "log Albumin:Creatinine Ratio",
-               "log UDBP:Creatinine") +
-  geom_smooth(method = lm, colour = "grey50")
+               "log UDBP:Creatinine",
+               line = TRUE)
 
 # Spearman Correlation ------------------------------------------
 
@@ -134,8 +129,8 @@ ds %>%
 ```
 
 
-eGFR
-----
+## eGFR
+
 ```{r eGFR boxplot}
 
 # Boxplot of uVDBP concentrations across eGFR categories --------------
@@ -147,9 +142,6 @@ ds %>%
   box_plot2("eGFR_status", "log(udbpCrRatio)", 
             "Estimated GFR (ml/min/1.73m^2)",
             "log uVDBP:Creatinine")
-
-# Values
-table_value(ds1, by = "eGFR_status")
 
 # ANOVA
 
