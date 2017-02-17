@@ -67,7 +67,8 @@ fetch_data <- function() {
                        breaks = c(0, 1.23, 60, Inf),
                        labels = c("Trace", "Normal", "High"),
                        ordered_result = TRUE),
-      udbpCrRatio = UDBP / UrineCreatinine
+      udbpCrRatio = UDBP / UrineCreatinine,
+      logUDBPRatio = log(udbpCrRatio)
     ) %>%
     dplyr::filter(UDBP < 10000) %>%
     dplyr::filter(eGFR < 200) %>%
