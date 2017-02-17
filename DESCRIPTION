@@ -12,4 +12,6 @@ Suggests: knitr,
     dplyr,
     captioner
 VignetteBuilder: knitr
-Imports: devtools
+Imports: devtools,
+    tableone,
+    dplyr
