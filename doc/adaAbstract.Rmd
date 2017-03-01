@@ -64,7 +64,7 @@ subCharTable <- tableone::CreateTableOne(
            "Glucose120",
            "dmStatus",
            "SmokeCigs"),
-  strata = c("fVN"),
+  strata = c("UDBPStatus"),
   data = ds,
   factorVars = c("Sex", "SmokeCigs")
 ) %>% 
@@ -73,7 +73,7 @@ subCharTable <- tableone::CreateTableOne(
                       "ALT",
                       "UDBP",
                       "ACR")) %>% 
-  pander::pander()
+  knitr::kable()
 ```
 
 
