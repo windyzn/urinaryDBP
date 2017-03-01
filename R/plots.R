@@ -87,10 +87,10 @@ box_plot_slides <- function(data, xvar, yvar, xlab="", ylab="", facet = FALSE) {
     ggplot2::theme(legend.position = "none",
                    panel.grid.major.x = ggplot2::element_blank(),
                    axis.line.y = ggplot2::element_blank(),
-                   axis.text.y = ggplot2::element_text(colour = "grey"),
+                   axis.text.y = ggplot2::element_text(colour = "grey", size = 12),
                    axis.ticks.y = ggplot2::element_line(colour = "grey"),
-                   axis.text.x = ggplot2::element_text(colour = "grey30"), #angle = 45
-                   axis.title = ggplot2::element_text(size = 10)) +
+                   axis.text.x = ggplot2::element_text(colour = "grey30", size = 12), #angle = 45
+                   axis.title = ggplot2::element_text(size = 14)) +
     ggplot2::xlab(xlab) +
     ggplot2::ylab(ylab)
 
