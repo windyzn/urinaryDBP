@@ -80,17 +80,9 @@ ds %>%
   filter(fVN == "Baseline") %>% 
   select(acrStatus, udbpCrRatio) %>%
   na.omit() %>%
-  box_plot("acrStatus", "log(udbpCrRatio)", 
+  box_plot_slides("acrStatus", "log(udbpCrRatio)", 
             "Albuminuria",
             "log uVDBP:Creatinine")
-
-# Boxplot of ACR in uVDBP categories
-dsBase %>% 
-  select(UDBPStatus, ACR) %>% 
-  na.omit() %>% 
-  box_plot("UDBPStatus", "log(ACR)",
-           "Urinary VDBP status",
-           "log Urine ACR (mg/mmol)")
 
 # ANOVA
 anova <- aov(formula = log(udbpCrRatio)~acr_status, data = ds1)
@@ -128,9 +120,9 @@ ds %>%
 
 ds %>% 
   filter(fVN == "Baseline") %>% 
-  select(eGFR_status, udbpCrRatio) %>% 
+  select(eGFRStatus, udbpCrRatio) %>% 
   na.omit() %>% 
-  box_plot2("eGFR_status", "log(udbpCrRatio)", 
+  box_plot_slides("eGFRStatus", "log(udbpCrRatio)", 
             "Estimated GFR (ml/min/1.73m^2)",
             "log uVDBP:Creatinine")
 
@@ -171,6 +163,28 @@ ds %>%
 ds %>% 
   scatter_plot("Age", "eGFR",
                "Age", "eGFR")
+```
+
+## Glycemic Status
+
+```{r DM boxplot}
+
+# Boxplot of uVDBP concentrations across DM categories
+
+ds %>% 
+  filter(fVN == "Baseline") %>% 
+  select(dmStatus, udbpCrRatio) %>% 
+  na.omit() %>% 
+  box_plot_slides("dmStatus", "log(udbpCrRatio)", 
+            "Glycemic Status",
+            "log uVDBP:Creatinine")
+
+# ANOVA
+
+anova <- aov(formula = log(udbpCrRatio)~eGFR_status, data = ds1)
+summary(anova)
+TukeyHSD(anova)
+rm(anova)
 ```
 
 
