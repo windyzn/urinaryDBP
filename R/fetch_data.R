@@ -110,6 +110,7 @@ fetch_data <- function() {
       fMedsBP,
       SmokeCigs,
       Canoe,
+      BirthControl,
       dplyr::matches("meds")
     )
 
