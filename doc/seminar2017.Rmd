@@ -54,10 +54,11 @@ subCharTable <- tableone::CreateTableOne(
            "Glucose0",
            "Glucose120",
            "dmStatus",
-           "SmokeCigs"),
-  strata = c("UDBPStatus"),
+           "SmokeCigs",
+           "BirthControl"),
+  strata = c("fVN"),
   data = ds,
-  factorVars = c("Sex", "SmokeCigs")
+  factorVars = c("Sex", "SmokeCigs", "BirthControl")
 ) %>% 
   print(nonnormal = c("Glucose0",
                       "Glucose120",
