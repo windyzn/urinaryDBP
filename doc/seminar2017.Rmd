@@ -152,7 +152,7 @@ ds %>%
 # Spearman Correlation ------------------------------------------
 
 ds %>% 
-  filter(!(acr_status == "Macroalbuminuria")) %>% 
+  filter(!(acrStatus == "Macroalbuminuria")) %>% 
   cor.test(formula = ~ eGFR + udbpCrRatio, data = ., method = "spearman")
 ```
 
