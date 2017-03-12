@@ -42,7 +42,6 @@ subCharTable <- tableone::CreateTableOne(
            "ACR",
            "UrineCreatinine",
            "UrineMicroalbumin",
-           "UrinaryCalcium",
            "UDBP",
            "Creatinine",
            "VitaminD",
@@ -54,18 +53,17 @@ subCharTable <- tableone::CreateTableOne(
            "Glucose0",
            "Glucose120",
            "dmStatus",
-           "SmokeCigs",
-           "BirthControl"),
+           "SmokeCigs"),
   strata = c("fVN"),
   data = ds,
-  factorVars = c("Sex", "SmokeCigs", "BirthControl")
+  factorVars = c("Sex", "SmokeCigs")
 ) %>% 
   print(nonnormal = c("Glucose0",
                       "Glucose120",
                       "ALT",
                       "UDBP",
-                      "ACR")) %>% 
-  knitr::kable()
+                      "ACR"))
+  # knitr::kable()
 ```
 
 
@@ -217,6 +215,12 @@ ds %>%
 Part 2 - GEE
 ============
 
+```{r UDBP vs ACR time}
+
+ds %>% 
+  line_plot("")
+```
+
 ```{r correlation}
 dsGEE <- ds %>% 
   dplyr::mutate(udbpBase = ifelse(fVN == "Baseline", UDBP, NA),
@@ -253,23 +257,30 @@ gee <- ds %>%
   dplyr::mutate(
   udbpBase = ifelse(fVN == "Baseline", UDBP, NA),
   ageBase = ifelse(fVN == "Baseline", Age, NA),
-  fDM = relevel(as.factor(DM), "1")
+  fDM = relevel(as.factor(DM), "0")
   # Ethnicity = ifelse(Ethnicity == "European", Ethnicity, "Other"),
   ) %>%
   dplyr::filter(!(fVN == "Baseline" &
-                    acr_status == "Macroalbuminuria")) %>%
-  dplyr::filter(!(fVN == "Baseline" & eGFR_status == "Moderate")) %>%
+                    acrStatus == "Macroalbuminuria")) %>%
+  dplyr::filter(!(fVN == "Baseline" & eGFRStatus == "Moderate")) %>%
   dplyr::arrange(SID, fVN) %>%
   dplyr::group_by(SID) %>%
   tidyr::fill(udbpBase, ageBase) %>%
   dplyr::ungroup() %>%
   dplyr::mutate(UDBP = UDBP/1000) %>%
   dplyr::arrange(SID, VN) %>%
-  mason_gee(
-  yvars = c("ACR", "eGFR"),
-  xvars = "UDBP",
-  covars = c("VN", "ageBase", "fDM")
-  )
+  
+  mason::design("gee") %>% 
+  mason::add_settings(
+    family = stats::gaussian(),
+    corstr = "ar1",
+    cluster.id = "SID"
+  ) %>% 
+  mason::add_variables("yvars", c("ACR", "eGFR")) %>% 
+  mason::add_variables("xvars", "UDBP") %>% 
+  mason::add_variables("covariates", c("VN", "ageBase", "fDM")) %>% 
+  mason::construct() %>% 
+  mason::scrub()
 ```
 
 ```{r}
