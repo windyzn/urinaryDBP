@@ -226,8 +226,8 @@ gee <- ds %>%
   # Ethnicity = ifelse(Ethnicity == "European", Ethnicity, "Other"),
   ) %>%
   dplyr::filter(!(fVN == "Baseline" &
-                    acr_status == "Macroalbuminuria")) %>%
-  dplyr::filter(!(fVN == "Baseline" & eGFR_status == "Moderate")) %>%
+                    acrStatus == "Macroalbuminuria")) %>%
+  dplyr::filter(!(fVN == "Baseline" & eGFRStatus == "Moderate")) %>%
   dplyr::arrange(SID, fVN) %>%
   dplyr::group_by(SID) %>%
   tidyr::fill(udbpBase, ageBase) %>%
