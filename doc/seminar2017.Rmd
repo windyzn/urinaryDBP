@@ -188,6 +188,24 @@ TukeyHSD(anova)
 rm(anova)
 ```
 
+## Vitamin D
+
+```{r VitD scatterplot}
+
+ds %>% 
+  dplyr::filter(fVN == "Baseline") %>% 
+  dplyr::select(VitaminD, udbpCrRatio) %>% 
+  scatter_plot("log(udbpCrRatio)", "VitaminD",
+               "log UDBP:Creatinine",
+               "Serum 25(OH)D",
+               line = TRUE)
+
+# Spearman Correlation ------------------------------------------
+
+ds %>% 
+  dplyr::filter(fVN == "Baseline") %>% 
+  cor.test(formula = ~ udbpCrRatio + VitaminD, data = ., method = "spearman")
+```
 
 Part 2 - GEE
 ============
