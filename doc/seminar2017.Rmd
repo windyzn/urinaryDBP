@@ -159,11 +159,18 @@ ds %>%
 ```{r hyperfiltration}
 ds %>% 
   dplyr::filter(eGFR < 45) %>% 
-  dplyr::select(SID, VN, Age, eGFR, dm_status, acr_status)
+  dplyr::select(SID, VN, Age, eGFR, dmStatus, acrStatus)
 
 ds %>% 
   scatter_plot("Age", "eGFR",
                "Age", "eGFR")
+
+ds %>% 
+  dplyr::select(dmStatus, eGFR, fVN) %>% 
+  na.omit() %>% 
+  box_plot("dmStatus", "eGFR",
+               "Diabetic Status", "eGFR",
+           facet = TRUE)
 ```
 
 ## Glycemic Status
