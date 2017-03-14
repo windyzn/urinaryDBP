@@ -111,6 +111,8 @@ fetch_data <- function() {
       SmokeCigs,
       Canoe,
       BirthControl,
+      PeriodsStopped,
+      PeriodsStoppedAge,
       dplyr::matches("meds")
     )
 
