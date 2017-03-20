@@ -32,40 +32,28 @@ Subject Characterization
 Subject characteristics across visit numbers
 ```{r subject characteristics}
 
+dsTableOne <- ds %>% 
+  dplyr::filter(Sex == "Female")
+
 subCharTable <- tableone::CreateTableOne(
   vars = c("Age",
            "Sex",
-           "Ethnicity",
-           "BMI",
-           "Waist",
            "eGFR",
            "ACR",
-           "UrineCreatinine",
-           "UrineMicroalbumin",
            "UDBP",
-           "Creatinine",
            "VitaminD",
-           "PTH",
-           "ALT",
-           "Systolic",
-           "Diastolic",
-           "MeanArtPressure",
-           "Glucose0",
-           "Glucose120",
            "dmStatus",
-           "SmokeCigs"),
+           "BirthControl",
+           "PeriodsStopped"),
   strata = c("fVN"),
-  data = dsComplete,
-  factorVars = c("Sex", "SmokeCigs")
+  data = dsTableOne,
+  factorVars = c("SmokeCigs",
+                 "BirthControl",
+                 "PeriodsStopped")
 ) %>% 
-  print(nonnormal = c("Glucose0",
-                      "Glucose120",
-                      "ALT",
-                      "UDBP",
-                      "UrineMicroalbumin", 
-                      "UrineCreatinine", 
-                      "ACR"))
-  # knitr::kable()
+  print(nonnormal = c("UDBP",
+                      "ACR")) %>% 
+  knitr::kable()
 ```
 
 
