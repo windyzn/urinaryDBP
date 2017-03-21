@@ -71,7 +71,7 @@ ds %>%
   na.omit() %>%
   box_plot_slides("acrStatus", "log(udbpCrRatio)", 
             "Albuminuria",
-            "log uVDBP:Creatinine")
+            "log uVDBP:Creatinine (ug/mmol)")
 
 # ANOVA
 anova <- aov(formula = log(udbpCrRatio)~acr_status, data = ds1)
@@ -89,8 +89,8 @@ ds %>%
   select(ACR, udbpCrRatio) %>% 
   na.omit() %>% 
   scatter_plot("log(ACR)", "log(udbpCrRatio)",
-               "log Albumin:Creatinine Ratio",
-               "log UDBP:Creatinine",
+               "log Albumin:Creatinine (mg/mmol)",
+               "log uVDBP:Creatinine (ug/mmol)",
                line = TRUE)
 
 # Spearman Correlation ------------------------------------------
@@ -113,7 +113,7 @@ ds %>%
   na.omit() %>% 
   box_plot_slides("eGFRStatus", "log(udbpCrRatio)", 
             "Estimated GFR (ml/min/1.73m^2)",
-            "log uVDBP:Creatinine")
+            "log uVDBP:Creatinine (ug/mmol)")
 
 # ANOVA
 
@@ -128,21 +128,46 @@ rm(anova)
 # Scatterplot of eGFR and uVDBP ----------------------------------
 
 ds %>% 
-  dplyr::filter(!(eGFR_status == "Moderate")) %>% 
-  dplyr::filter(eGFR < 150) %>% 
+  # dplyr::filter(eGFR < 150) %>% 
+  dplyr::filter(fVN == "Baseline") %>% 
   dplyr::select(eGFR, udbpCrRatio) %>% 
   na.omit() %>% 
   scatter_plot("eGFR", "log(udbpCrRatio)",
                "Estimated Glomerular Filtration Rate (ml/min/1.73m^2)",
-               "log UDBP:Creatinine") +
-  ggplot2::geom_smooth(method = lm, colour = "grey50")
+               "log UDBP:Creatinine (ug/mmol)")
 
 # Spearman Correlation ------------------------------------------
 
 ds %>% 
-  filter(!(acrStatus == "Macroalbuminuria")) %>% 
-  cor.test(formula = ~ eGFR + udbpCrRatio, data = ., method = "spearman")
+  # filter(!(acrStatus == "Macroalbuminuria")) %>% 
+  dplyr::filter(fVN == "Baseline") %>% 
+  cor.test(formula = ~ eGFR + log(udbpCrRatio), data = ., method = "spearman")
+
 ```
+
+```{r glm}
+
+# Multiple Regression -------------------------------------------
+
+ds %>%
+  dplyr::filter(fVN == "Baseline") %>% 
+  # dplyr::mutate(UDBP = UDBP/1000) %>%
+  dplyr::arrange(SID, VN) %>%
+  
+  mason::design("glm") %>% 
+  mason::add_settings(family = stats::gaussian()) %>% 
+  mason::add_variables("yvars", "UDBP") %>% 
+  mason::add_variables("xvars", c("ACR", "eGFR")) %>% 
+  mason::construct() %>% 
+  # mason::add_variables("covariates", c("DM", "MedsBloodPressure")) %>% 
+  # mason::construct() %>% 
+  mason::add_variables("yvars", "VitaminD") %>% 
+  mason::add_variables("xvars", "UDBP") %>% 
+  mason::construct() %>% 
+  mason::scrub()
+
+```
+
 
 ```{r hyperfiltration}
 ds %>% 
@@ -161,46 +186,7 @@ ds %>%
            facet = TRUE)
 ```
 
-## Glycemic Status
 
-```{r DM boxplot}
-
-# Boxplot of uVDBP concentrations across DM categories
-
-ds %>% 
-  filter(fVN == "Baseline") %>% 
-  select(dmStatus, udbpCrRatio) %>% 
-  na.omit() %>% 
-  box_plot_slides("dmStatus", "log(udbpCrRatio)", 
-            "Glycemic Status",
-            "log uVDBP:Creatinine")
-
-# ANOVA
-
-anova <- aov(formula = log(udbpCrRatio)~eGFR_status, data = ds1)
-summary(anova)
-TukeyHSD(anova)
-rm(anova)
-```
-
-## Vitamin D
-
-```{r VitD scatterplot}
-
-ds %>% 
-  dplyr::filter(fVN == "Baseline") %>% 
-  dplyr::select(VitaminD, udbpCrRatio) %>% 
-  scatter_plot("log(udbpCrRatio)", "VitaminD",
-               "log UDBP:Creatinine",
-               "Serum 25(OH)D",
-               line = TRUE)
-
-# Spearman Correlation ------------------------------------------
-
-ds %>% 
-  dplyr::filter(fVN == "Baseline") %>% 
-  cor.test(formula = ~ udbpCrRatio + VitaminD, data = ., method = "spearman")
-```
 
 Part 2 - GEE
 ============
