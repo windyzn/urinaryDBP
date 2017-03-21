@@ -14,4 +14,5 @@ Suggests: knitr,
 VignetteBuilder: knitr
 Imports: devtools,
     tableone,
-    dplyr
+    dplyr,
+    extrafont
