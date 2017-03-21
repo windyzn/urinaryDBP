@@ -87,10 +87,11 @@ box_plot_slides <- function(data, xvar, yvar, xlab="", ylab="", facet = FALSE) {
     ggplot2::theme(legend.position = "none",
                    panel.grid.major.x = ggplot2::element_blank(),
                    axis.line.y = ggplot2::element_blank(),
-                   axis.text.y = ggplot2::element_text(colour = "grey", size = 12),
+                   text = ggplot2::element_text(size = 12, family = "Open Sans"),
+                   axis.text.y = ggplot2::element_text(colour = "grey"),
                    axis.ticks.y = ggplot2::element_line(colour = "grey"),
-                   axis.text.x = ggplot2::element_text(colour = "grey30", size = 12), #angle = 45
-                   axis.title = ggplot2::element_text(size = 14)) +
+                   axis.text.x = ggplot2::element_text(colour = "grey30"),
+                   axis.title = ggplot2::element_text(family = "Dosis")) + #angle = 45
     ggplot2::xlab(xlab) +
     ggplot2::ylab(ylab)
 
@@ -125,10 +126,11 @@ scatter_plot = function(data, xvar, yvar, xlab='', ylab='', line = TRUE, facet =
     ggplot2::theme_minimal() +
     ggplot2::theme(panel.grid.major.x = ggplot2::element_blank(),
                    axis.line.y = ggplot2::element_blank(),
+                   text = ggplot2::element_text(size = 12, family = "Open Sans"),
                    axis.text.y = ggplot2::element_text(colour = "grey"),
                    axis.ticks.y = ggplot2::element_line(colour = "grey"),
                    axis.text.x = ggplot2::element_text(colour = "grey50"), #angle = 45
-                   axis.title = ggplot2::element_text(size = 10)) +
+                   axis.title = ggplot2::element_text(family = "Dosis")) + #size = 10 normally
     ggplot2::xlab(xlab) +
     ggplot2::ylab(ylab)
   if(line == TRUE & facet == FALSE) {
