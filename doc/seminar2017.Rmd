@@ -11,6 +11,7 @@ library(dplyr)
 devtools::load_all()
 load_data(update = TRUE)
 set_options()
+extrafont::loadfonts(device="win")
 ```
 
 ```{r dsSetup}
@@ -134,7 +135,7 @@ ds %>%
   na.omit() %>% 
   scatter_plot("eGFR", "log(udbpCrRatio)",
                "Estimated Glomerular Filtration Rate (ml/min/1.73m^2)",
-               "log UDBP:Creatinine (ug/mmol)")
+               "log uVDBP:Creatinine (ug/mmol)")
 
 # Spearman Correlation ------------------------------------------
 
