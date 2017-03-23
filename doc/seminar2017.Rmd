@@ -160,8 +160,8 @@ ds %>%
   mason::add_variables("yvars", "UDBP") %>% 
   mason::add_variables("xvars", c("ACR", "eGFR")) %>% 
   mason::construct() %>% 
-  # mason::add_variables("covariates", c("DM", "MedsBloodPressure")) %>% 
-  # mason::construct() %>% 
+  # mason::add_variables("covariates", c("DM", "MedsBloodPressure")) %>%
+  # mason::construct() %>%
   mason::add_variables("yvars", "VitaminD") %>% 
   mason::add_variables("xvars", "UDBP") %>% 
   mason::construct() %>% 
@@ -169,6 +169,30 @@ ds %>%
 
 ```
 
+## Inflammation
+
+```{r CRP}
+
+ds %>% 
+  dplyr::filter(fVN == "Baseline") %>% 
+  scatter_plot("log(CRP)", "VitaminD",
+               "CRP", "25(OH)D")
+
+
+ds %>%
+  dplyr::filter(fVN == "Baseline") %>% 
+  # dplyr::mutate(UDBP = UDBP/1000) %>%
+  dplyr::arrange(SID, VN) %>%
+  
+  mason::design("glm") %>% 
+  mason::add_settings(family = stats::gaussian()) %>% 
+  mason::add_variables("yvars", "VitaminD") %>% 
+  mason::add_variables("xvars", "CRP") %>% 
+  mason::construct() %>% 
+  mason::scrub()
+```
+
+## Hyperfiltration
 
 ```{r hyperfiltration}
 ds %>% 
