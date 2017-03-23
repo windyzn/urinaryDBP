@@ -109,6 +109,7 @@ fetch_data <- function() {
       UrinaryCalcium,
       fMedsBP,
       SmokeCigs,
+      CRP,
       Canoe,
       BirthControl,
       PeriodsStopped,

@@ -16,3 +16,4 @@ Imports: devtools,
     tableone,
     dplyr,
     extrafont
+RoxygenNote: 6.0.1
