@@ -6,9 +6,9 @@ output: word_document
 
 # Title page #
 
-Title:
+Title: Urinary Vitamin D Binding Protein Loss as a Potential Biomarker for Diabetic Nephropathy in Patients at Risk for Type 2 Diabetes
 
-Author:
+Author: Windy ZN Wang
 
 Affiliations:
 
@@ -28,16 +28,22 @@ Funding support:
 ## Load data ##
 -->
 
-```{r setup, collapse=TRUE}
+```{r setup, collapse=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
 # Only set if the Rmd file is not in the parent directory (ie. 'projectname/')
 knitr::opts_knit$set(root.dir = '../')
+library(dplyr)
+devtools::load_all()
+load_data(update = TRUE)
+set_options()
+extrafont::loadfonts(device="win")
 ```
 
 ```{r loadData, message=FALSE}
-source('.Rprofile')
-run_setup()
-load_data('path/to/master/dataset')
-dim(ds)
+# source('.Rprofile')
+# run_setup()
+# load_data('data/project_data.rda')
+# dim(ds)
+ds <- project_data
 ```
 
 ```{r caption_setup}
