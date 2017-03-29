@@ -107,6 +107,7 @@ fetch_data <- function() {
       PTH,
       ALT,
       UrinaryCalcium,
+      ScrKidDis,
       fMedsBP,
       SmokeCigs,
       CRP,
@@ -114,6 +115,7 @@ fetch_data <- function() {
       BirthControl,
       PeriodsStopped,
       PeriodsStoppedAge,
+      MedName,
       dplyr::matches("meds")
     )
 
