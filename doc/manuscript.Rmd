@@ -35,7 +35,7 @@ library(dplyr)
 devtools::load_all()
 load_data(update = TRUE)
 set_options()
-extrafont::loadfonts(device="win")
+# extrafont::loadfonts(device="win")
 ```
 
 ```{r loadData, message=FALSE}
