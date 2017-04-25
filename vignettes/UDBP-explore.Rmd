@@ -9,6 +9,19 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE, echo = FALSE, message = FALSE, warning = FALSE)
+library(dplyr)
+devtools::load_all()
+load_data(update = TRUE)
+set_options()
+extrafont::loadfonts(device="win")
+
+ds <- project_data
+```
+
+
 some notes:
 fig.cap = "Your figure caption." 
 
@@ -18,7 +31,44 @@ plot(1:10)
 plot(10:1)
 ```
 
+## Distribution
+```{r histogram}
+ds %>% 
+  histo_plot(variable = "UDBP", 
+             bin = 30, 
+             xlab = "Urinary VDBP (ng/mL)",
+             facet = TRUE)
+```
+
+Summary statistics
+```{r}
+ds %>% 
+  filter(fVN == "Baseline") %>% 
+  select(UDBP) %>% 
+  summary()
+
+ds %>% 
+  filter(fVN == "3Year") %>% 
+  select(UDBP) %>% 
+  summary()
+
+ds %>% 
+  filter(fVN == "6Year") %>% 
+  select(UDBP) %>% 
+  summary()
+```
+
 ## UDBP Variation/Noise
+```{r line}
+ds %>% 
+  dplyr::mutate(SID = as.factor(SID)) %>% 
+  # dplyr::filter(UDBP < 500) %>% 
+  line_plot(xvar="fVN",
+            yvar="UDBP",
+            byvar="SID",
+            xlab="Visit Number",
+            ylab="Urinary VDBP (ng/mL)")
+```
 
 
 ## UDBP Progression
