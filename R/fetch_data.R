@@ -115,7 +115,7 @@ fetch_data <- function() {
       BirthControl,
       PeriodsStopped,
       PeriodsStoppedAge,
-      MedName,
+      # MedName,
       dplyr::matches("meds")
     )
 
