@@ -61,7 +61,7 @@ ds %>%
 ## UDBP Variation/Noise
 ```{r line}
 ds %>% 
-  dplyr::mutate(SID = as.factor(SID)) %>% 
+  dplyr::mutate(SID = factor(SID)) %>%
   # dplyr::filter(UDBP < 500) %>% 
   line_plot(xvar="fVN",
             yvar="UDBP",
