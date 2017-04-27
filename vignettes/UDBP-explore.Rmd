@@ -16,7 +16,7 @@ library(dplyr)
 devtools::load_all()
 load_data(update = TRUE)
 set_options()
-extrafont::loadfonts(device="win")
+# extrafont::loadfonts(device="win")
 
 ds <- project_data
 ```
@@ -58,18 +58,70 @@ ds %>%
   summary()
 ```
 
-## UDBP Variation/Noise
-```{r line}
+
+## UDBP Progression
+
+Convert UDBP long-data to wide
+
+```{r long to wide}
+
+ds_wide_udbp <- ds %>% 
+  dplyr::select(SID, VN, UDBP) %>% 
+  tidyr::spread(key = VN, value = UDBP, drop = TRUE, sep = ".") %>% 
+  dplyr::rename(udbp1 = VN.1,
+                udbp3 = VN.3,
+                udbp6 = VN.6)
+
+```
+
+```{r boxplot}
+
 ds %>% 
-  dplyr::mutate(SID = factor(SID)) %>%
-  # dplyr::filter(UDBP < 500) %>% 
+  box_plot(xvar="fVN",
+           yvar="log(udbpCrRatio)",
+           xlab="Visit Number",
+           ylab="log Urinary VDBP (ng/mL)")
+```
+
+Growth curve of entire data
+```{r growth curve}
+ds %>% 
+  dplyr::mutate(fSID = factor(SID)) %>%
   line_plot(xvar="fVN",
             yvar="UDBP",
-            byvar="SID",
+            byvar="fSID",
             xlab="Visit Number",
             ylab="Urinary VDBP (ng/mL)")
 ```
 
+Growth curve of progressors
+```{r growth curve progress}
 
-## UDBP Progression
+ds_UDBP_wide %>% 
+  dplyr::filter(VN.3 > VN.1 | VN.6 > VN.1) %>% 
+  dplyr::mutate(fSID = factor(SID)) %>% 
+  line_plot(xvar = "VN",
+            yvar = "UDBP",
+            byvar = "fSID",
+            xlab = "Visit Number",
+            ylab = "Urinary VDBP")
+  
+```
+
+
+Growth curve of regressors
+```{r}
+
+```
+
+
+Growth curve of others (irregular)
+```{r}
+
+```
+
+
+```{r latent curve mixed models}
+
+```
 
