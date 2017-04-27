@@ -58,18 +58,40 @@ ds %>%
   summary()
 ```
 
-## UDBP Variation/Noise
-```{r line}
+
+## UDBP Progression
+
+Convert long-data to wide
+
+```{r long to wide}
+
+ds_UDBP_wide <- ds %>% 
+  dplyr::select(SID, VN, UDBP) %>% 
+  tidyr::spread(key = VN, value = UDBP)
+
+```
+
+```{r boxplot}
+
 ds %>% 
-  dplyr::mutate(SID = factor(SID)) %>%
-  # dplyr::filter(UDBP < 500) %>% 
+  box_plot(xvar="fVN",
+           yvar="log(udbpCrRatio)",
+           xlab="Visit Number",
+           ylab="log Urinary VDBP (ng/mL)")
+```
+
+```{r growth curve}
+ds %>% 
+  dplyr::mutate(fSID = factor(SID)) %>%
+  dplyr::filter(UDBP < 200) %>%
   line_plot(xvar="fVN",
             yvar="UDBP",
-            byvar="SID",
+            byvar="fSID",
             xlab="Visit Number",
             ylab="Urinary VDBP (ng/mL)")
 ```
 
+```{r latent curve mixed models}
 
-## UDBP Progression
+```
 
