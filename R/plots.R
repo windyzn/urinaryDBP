@@ -207,8 +207,8 @@ histo_plot = function(data, variable, bin, xlab='', facet = FALSE) {
 line_plot = function(data, xvar, yvar, byvar, xlab='', ylab='') {
   ggplot2::ggplot(data, ggplot2::aes_string(x=xvar, y=yvar,
                                             group=byvar, colour=byvar)) +
-    ggplot2::geom_line() +
-    ggplot2::geom_point() +
+    ggplot2::geom_line(alpha = 0.5) +
+    # ggplot2::geom_point(alpha = 0.5) +
     ggplot2::theme_minimal() +
     ggplot2::theme(legend.position = "none",
                    panel.grid.major.x = ggplot2::element_blank(),
