@@ -78,16 +78,15 @@ ds_wide_udbp <- ds %>%
 
 ```{r boxplot}
 
-ds_wide_udbp %>% 
-  box_plot(xvar="acrStatus",
+ds %>% 
+  box_plot(xvar="fVN",
            yvar="log(udbpCrRatio)",
            xlab="Visit Number",
            ylab="log Urinary VDBP (ng/mL)")
 ```
 
-Growth curve of entire data
-```{r growth curve}
 
+```{r growth curve}
 ds %>% 
   dplyr::mutate(fSID = factor(SID)) %>%
   line_plot(xvar="fVN",
@@ -96,6 +95,7 @@ ds %>%
             xlab="Visit Number",
             ylab="Urinary VDBP (ng/mL)")
 ```
+
 Progressors
 ```{r progressors}
 
