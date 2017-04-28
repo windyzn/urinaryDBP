@@ -85,6 +85,7 @@ ds %>%
 
 Growth curve of entire data
 ```{r growth curve}
+
 ds %>% 
   dplyr::mutate(fSID = factor(SID)) %>%
   line_plot(xvar="fVN",
@@ -94,34 +95,37 @@ ds %>%
             ylab="Urinary VDBP (ng/mL)")
 ```
 
-Growth curve of progressors
-```{r growth curve progress}
-
-ds_UDBP_wide %>% 
-  dplyr::filter(VN.3 > VN.1 | VN.6 > VN.1) %>% 
-  dplyr::mutate(fSID = factor(SID)) %>% 
-  line_plot(xvar = "VN",
-            yvar = "UDBP",
-            byvar = "fSID",
-            xlab = "Visit Number",
-            ylab = "Urinary VDBP")
-  
-```
-
-
-Growth curve of regressors
-```{r}
-
-```
-
-
-Growth curve of others (irregular)
-```{r}
-
-```
-
+Mixed models uses long-format data
 
 ```{r latent curve mixed models}
 
+# Random slope model - assumes trajectory is different from person-to-person
+m <- lme4::lmer(UDBP ~ (VN | SID), data=ds)
+summary(m)
+
+# Confidence intervals
+dat.new <- data.frame(time=1:3)
+dat.new$measure <- predict(m, dat.new, re.form=NA)
+m.mat <- model.matrix(terms(m), dat.new)
+dat.new$var <- diag(m.mat %*% vcov(m) %*% t(m.mat)) + VarCorr(m)$subject.id[1]
+dat.new$pvar <- dat.new$var + sigma(m)^2
+dat.new$ci.lb <- with(dat.new, measure - 1.96*sqrt(var))
+dat.new$ci.ub <- with(dat.new, measure + 1.96*sqrt(var))
+dat.new$pi.lb <- with(dat.new, measure - 1.96*sqrt(pvar))
+dat.new$pi.ub <- with(dat.new, measure + 1.96*sqrt(pvar))
+
+# Plot
+ds %>% 
+  ggplot2::ggplot(ggplot2::aes(x=time, y=measure)) + 
+  geom_line(data=dat, alpha=.02, aes(group=subject.id)) + 
+  geom_errorbar(width=.02, colour='red', 
+                aes(x=time-.02, ymax=ci.ub, ymin=ci.lb)) +
+  geom_line(colour='red', linetype='dashed', aes(x=time-.02)) + 
+  geom_point(size=3.5, colour='red', fill='white', aes(x=time-.02)) +   
+  geom_errorbar(width=.02, colour='blue', 
+                aes(x=time+.02, ymax=pi.ub, ymin=pi.lb)) +
+  geom_line(colour='blue', linetype='dashed', aes(x=time+.02)) + 
+  geom_point(size=3.5, colour='blue', fill='white', aes(x=time+.02)) + 
+  theme_bw()
 ```
 
