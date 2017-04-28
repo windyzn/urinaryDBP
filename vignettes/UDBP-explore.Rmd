@@ -70,14 +70,16 @@ ds_wide_udbp <- ds %>%
   tidyr::spread(key = VN, value = UDBP, drop = TRUE, sep = ".") %>% 
   dplyr::rename(udbp1 = VN.1,
                 udbp3 = VN.3,
-                udbp6 = VN.6)
+                udbp6 = VN.6) %>% 
+  dplyr::mutate(
+    udbp_change = ifelse(udbp3 > udbp1 & udbp6 > udbp1, "progress", "regress"))
 
 ```
 
 ```{r boxplot}
 
-ds %>% 
-  box_plot(xvar="fVN",
+ds_wide_udbp %>% 
+  box_plot(xvar="acrStatus",
            yvar="log(udbpCrRatio)",
            xlab="Visit Number",
            ylab="log Urinary VDBP (ng/mL)")
@@ -94,6 +96,14 @@ ds %>%
             xlab="Visit Number",
             ylab="Urinary VDBP (ng/mL)")
 ```
+Progressors
+```{r progressors}
+
+ds_wide_udbp %>% 
+  dplyr::group_by(udbp_change) %>% 
+  dplyr::summarise(n = n())
+```
+
 
 Mixed models uses long-format data
 
