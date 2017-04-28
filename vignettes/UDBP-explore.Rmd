@@ -13,7 +13,7 @@ library(dplyr)
 devtools::load_all()
 load_data(update = TRUE)
 set_options()
-# extrafont::loadfonts(device="win")
+extrafont::loadfonts(device="win")
 
 ds <- project_data
 ```
@@ -60,7 +60,7 @@ Boxplot of log(UDBP:cr) change over time
 ```{r boxplot}
 
 ds %>% 
-  box_plot(xvar="fVN",
+  box_plot_poster(xvar="fVN",
            yvar="log(udbpCrRatio)",
            xlab="Visit Number",
            ylab="log Urinary VDBP (ng/mL)")
@@ -80,7 +80,13 @@ ds_wide_udbp <- ds %>%
                 udbp3 = VN.3,
                 udbp6 = VN.6) %>% 
   dplyr::mutate(
-    udbp_change = ifelse(udbp3 > udbp1 & udbp6 > udbp1, "progress", "regress"))
+    udbp_change = ifelse(udbp3 > udbp1 && udbp6 > udbp3, "decline",
+                         ifelse(udbp3 < udbp1 & udbp3 < udbp6, "half_decline",
+                                ifelse(udbp3 < udbp1 & udbp6 > udbp1, "initial_decline",
+                                       ifelse(udbp3 > udbp1 & udbp6 > udbp3, "incline",
+                                              ifelse(udbp3 > udbp1 & udbp6 < udbp3, "half_incline",
+                                                     ifelse(udbp3 > udbp1 & udbp6 < udbp1, "initial_incline",
+                                                            "no_change")))))))
 
 ```
 
