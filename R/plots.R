@@ -104,6 +104,53 @@ box_plot_slides <- function(data, xvar, yvar, xlab="", ylab="", facet = FALSE) {
 }
 
 
+#' Boxplots where the colour theme matches ada poster
+#'
+#' @param data
+#' @param xvar
+#' @param yvar
+#' @param xlab
+#' @param ylab
+#' @param facet
+#'
+#' @return Plot
+#'
+#' @examples
+box_plot_poster <- function(data, xvar, yvar, xlab="", ylab="", facet = FALSE) {
+  myboxplot <- ggplot2::ggplot(data, ggplot2::aes_string(x = xvar, y = yvar)) +
+    ggplot2::geom_boxplot(ggplot2::aes_string(colour = xvar, fill = xvar),
+                          outlier.shape = NA) +
+    ggplot2::stat_summary(geom = "crossbar", width = 0.65, fatten = 0, color = "white",
+                          fun.data = function(x){
+                            return(c(y = median(x), ymin = median(x), ymax = median(x)))
+                          }) +
+    ggplot2::geom_jitter(ggplot2::aes_string(),
+                         position = ggplot2::position_jitter(width = 0.15, height = 0),
+                         alpha = 0.3,
+                         size = 1,
+                         colour = "grey30") +
+    ggplot2::theme_minimal() +
+    ggplot2::scale_color_manual(values = c("#2b3443", "#adc9b7", "#ffd91e")) +
+    ggplot2::scale_fill_manual(values = c("#2b3443", "#adc9b7", "#ffd91e")) +
+    ggplot2::theme(legend.position = "none",
+                   panel.grid.major.x = ggplot2::element_blank(),
+                   axis.line.y = ggplot2::element_blank(),
+                   text = ggplot2::element_text(size = 14, family = "Montserrat Light"),
+                   axis.text.y = ggplot2::element_text(colour = "grey30"),
+                   axis.ticks.y = ggplot2::element_line(colour = "grey"),
+                   axis.text.x = ggplot2::element_text(colour = "grey30"),
+                   axis.title = ggplot2::element_text(family = "Montserrat Medium")) + #angle = 45
+    ggplot2::xlab(xlab) +
+    ggplot2::ylab(ylab)
+
+  if(facet == TRUE) {
+    myboxplot +
+      ggplot2::facet_grid(~fVN, switch = "x")
+  } else {
+    myboxplot
+  }
+}
+
 # Scatterplot -------------------------------------------------------------
 
 
