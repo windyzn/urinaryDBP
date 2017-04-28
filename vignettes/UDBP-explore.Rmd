@@ -1,13 +1,10 @@
 ---
 title: "Exploring the UDBP Variable"
 author: "Windy Wang"
-date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette:
-  fig_caption: yes
-vignette: >
-  %\VignetteIndexEntry{Exploring the UDBP Variable}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+date: '`r Sys.Date()`'
+output:
+  html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -21,18 +18,11 @@ set_options()
 ds <- project_data
 ```
 
+## Descriptive Statistics
 
-some notes:
-fig.cap = "Your figure caption." 
-
-The figure sizes have been customised so that you can easily put two images side-by-side. 
-```{r, fig.show='hold'}
-plot(1:10)
-plot(10:1)
-```
-
-## Distribution
+Below shows the distribution of urinary vitamin D binding protein
 ```{r histogram}
+
 ds %>% 
   histo_plot(variable = "UDBP", 
              bin = 30, 
@@ -40,30 +30,48 @@ ds %>%
              facet = TRUE)
 ```
 
-Summary statistics
-```{r}
+Summary statistics at baseline
+```{r summary baseline}
+
 ds %>% 
   filter(fVN == "Baseline") %>% 
   select(UDBP) %>% 
   summary()
+```
+
+Summary statistics at 3 year
+```{r summary 3year}
 
 ds %>% 
   filter(fVN == "3Year") %>% 
   select(UDBP) %>% 
   summary()
+```
 
+Summary statistics at 6 year
+```{r summary 6year}
 ds %>% 
   filter(fVN == "6Year") %>% 
   select(UDBP) %>% 
   summary()
 ```
 
+Boxplot of log(UDBP:cr) change over time
+```{r boxplot}
+
+ds %>% 
+  box_plot(xvar="fVN",
+           yvar="log(udbpCrRatio)",
+           xlab="Visit Number",
+           ylab="log Urinary VDBP (ng/mL)")
+```
+
 
 ## UDBP Progression
 
-Convert UDBP long-data to wide
-
 ```{r long to wide}
+
+# Convert UDBP long-data to wide
 
 ds_wide_udbp <- ds %>% 
   dplyr::select(SID, VN, UDBP) %>% 
@@ -76,16 +84,7 @@ ds_wide_udbp <- ds %>%
 
 ```
 
-```{r boxplot}
-
-ds %>% 
-  box_plot(xvar="fVN",
-           yvar="log(udbpCrRatio)",
-           xlab="Visit Number",
-           ylab="log Urinary VDBP (ng/mL)")
-```
-
-
+Growth curve for everyone
 ```{r growth curve}
 ds %>% 
   dplyr::mutate(fSID = factor(SID)) %>%
@@ -96,7 +95,42 @@ ds %>%
             ylab="Urinary VDBP (ng/mL)")
 ```
 
-Progressors
+Zoomed in for UDBP < 25 ng/mL
+```{r growth curve zoom}
+ds %>% 
+  dplyr::filter(UDBP < 25) %>% 
+  dplyr::mutate(fSID = factor(SID)) %>%
+  line_plot(xvar="fVN",
+            yvar="UDBP",
+            byvar="fSID",
+            xlab="Visit Number",
+            ylab="Urinary VDBP (ng/mL)")
+```
+
+UDBP change with ACR
+```{r growth curve acr}
+ds %>% 
+  dplyr::mutate(fSID = factor(SID)) %>%
+  line_plot(xvar="acrStatus",
+            yvar="UDBP",
+            byvar="fSID",
+            xlab="ACR",
+            ylab="Urinary VDBP (ng/mL)")
+```
+
+UDBP change with eGFR
+```{r growth curve eGFR}
+ds %>% 
+  dplyr::mutate(fSID = factor(SID)) %>%
+  line_plot(xvar="eGFRStatus",
+            yvar="UDBP",
+            byvar="fSID",
+            xlab="eGFR",
+            ylab="Urinary VDBP (ng/mL)")
+```
+
+Number of progressors (UDBP value was higher at subsequent visits compared to baseline)
+*NOTE: having trouble with missingness in coding
 ```{r progressors}
 
 ds_wide_udbp %>% 
@@ -105,37 +139,37 @@ ds_wide_udbp %>%
 ```
 
 
-Mixed models uses long-format data
+<!-- Mixed models uses long-format data -->
 
-```{r latent curve mixed models}
+<!-- ```{r latent curve mixed models} -->
 
-# Random slope model - assumes trajectory is different from person-to-person
-m <- lme4::lmer(UDBP ~ (VN | SID), data=ds)
-summary(m)
+<!-- # Random slope model - assumes trajectory is different from person-to-person -->
+<!-- m <- lme4::lmer(UDBP ~ (VN | SID), data=ds) -->
+<!-- summary(m) -->
 
-# Confidence intervals
-dat.new <- data.frame(time=1:3)
-dat.new$measure <- predict(m, dat.new, re.form=NA)
-m.mat <- model.matrix(terms(m), dat.new)
-dat.new$var <- diag(m.mat %*% vcov(m) %*% t(m.mat)) + VarCorr(m)$subject.id[1]
-dat.new$pvar <- dat.new$var + sigma(m)^2
-dat.new$ci.lb <- with(dat.new, measure - 1.96*sqrt(var))
-dat.new$ci.ub <- with(dat.new, measure + 1.96*sqrt(var))
-dat.new$pi.lb <- with(dat.new, measure - 1.96*sqrt(pvar))
-dat.new$pi.ub <- with(dat.new, measure + 1.96*sqrt(pvar))
+<!-- # Confidence intervals -->
+<!-- dat.new <- data.frame(time=1:3) -->
+<!-- dat.new$measure <- predict(m, dat.new, re.form=NA) -->
+<!-- m.mat <- model.matrix(terms(m), dat.new) -->
+<!-- dat.new$var <- diag(m.mat %*% vcov(m) %*% t(m.mat)) + VarCorr(m)$subject.id[1] -->
+<!-- dat.new$pvar <- dat.new$var + sigma(m)^2 -->
+<!-- dat.new$ci.lb <- with(dat.new, measure - 1.96*sqrt(var)) -->
+<!-- dat.new$ci.ub <- with(dat.new, measure + 1.96*sqrt(var)) -->
+<!-- dat.new$pi.lb <- with(dat.new, measure - 1.96*sqrt(pvar)) -->
+<!-- dat.new$pi.ub <- with(dat.new, measure + 1.96*sqrt(pvar)) -->
 
-# Plot
-ds %>% 
-  ggplot2::ggplot(ggplot2::aes(x=time, y=measure)) + 
-  geom_line(data=dat, alpha=.02, aes(group=subject.id)) + 
-  geom_errorbar(width=.02, colour='red', 
-                aes(x=time-.02, ymax=ci.ub, ymin=ci.lb)) +
-  geom_line(colour='red', linetype='dashed', aes(x=time-.02)) + 
-  geom_point(size=3.5, colour='red', fill='white', aes(x=time-.02)) +   
-  geom_errorbar(width=.02, colour='blue', 
-                aes(x=time+.02, ymax=pi.ub, ymin=pi.lb)) +
-  geom_line(colour='blue', linetype='dashed', aes(x=time+.02)) + 
-  geom_point(size=3.5, colour='blue', fill='white', aes(x=time+.02)) + 
-  theme_bw()
-```
+<!-- # Plot -->
+<!-- ds %>%  -->
+<!--   ggplot2::ggplot(ggplot2::aes(x=time, y=measure)) +  -->
+<!--   geom_line(data=dat, alpha=.02, aes(group=subject.id)) +  -->
+<!--   geom_errorbar(width=.02, colour='red',  -->
+<!--                 aes(x=time-.02, ymax=ci.ub, ymin=ci.lb)) + -->
+<!--   geom_line(colour='red', linetype='dashed', aes(x=time-.02)) +  -->
+<!--   geom_point(size=3.5, colour='red', fill='white', aes(x=time-.02)) +    -->
+<!--   geom_errorbar(width=.02, colour='blue',  -->
+<!--                 aes(x=time+.02, ymax=pi.ub, ymin=pi.lb)) + -->
+<!--   geom_line(colour='blue', linetype='dashed', aes(x=time+.02)) +  -->
+<!--   geom_point(size=3.5, colour='blue', fill='white', aes(x=time+.02)) +  -->
+<!--   theme_bw() -->
+<!-- ``` -->
 
