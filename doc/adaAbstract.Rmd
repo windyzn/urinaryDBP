@@ -89,7 +89,7 @@ ds %>%
   filter(fVN == "Baseline") %>% 
   select(acrStatus, udbpCrRatio) %>%
   na.omit() %>%
-  box_plot("acrStatus", "log(udbpCrRatio)", 
+  box_plot_poster("acrStatus", "log(udbpCrRatio)", 
             "Albuminuria",
             "log uVDBP:Creatinine")
 
@@ -114,12 +114,9 @@ rm(anova)
 
 ds %>% 
   filter(fVN == "Baseline") %>% 
-  select(ACR, udbpCrRatio) %>% 
-  na.omit() %>% 
-  scatter_plot("log(ACR)", "log(udbpCrRatio)",
+  scatter_plot_poster("log(ACR)", "log(udbpCrRatio)",
                "log Albumin:Creatinine Ratio",
-               "log UDBP:Creatinine",
-               line = TRUE)
+               "log UDBP:Creatinine")
 
 # Spearman Correlation ------------------------------------------
 
@@ -137,9 +134,9 @@ ds %>%
 
 ds %>% 
   filter(fVN == "Baseline") %>% 
-  select(eGFR_status, udbpCrRatio) %>% 
+  select(eGFRStatus, udbpCrRatio) %>% 
   na.omit() %>% 
-  box_plot2("eGFR_status", "log(udbpCrRatio)", 
+  box_plot_poster("eGFRStatus", "log(udbpCrRatio)", 
             "Estimated GFR (ml/min/1.73m^2)",
             "log uVDBP:Creatinine")
 
@@ -156,14 +153,10 @@ rm(anova)
 # Scatterplot of eGFR and uVDBP ----------------------------------
 
 ds %>% 
-  dplyr::filter(!(eGFR_status == "Moderate")) %>% 
-  dplyr::filter(eGFR < 150) %>% 
-  dplyr::select(eGFR, udbpCrRatio) %>% 
-  na.omit() %>% 
-  scatter_plot("eGFR", "log(udbpCrRatio)",
+  dplyr::filter(fVN == "Baseline") %>% 
+  scatter_plot_poster("eGFR", "log(udbpCrRatio)",
                "Estimated Glomerular Filtration Rate (ml/min/1.73m^2)",
-               "log UDBP:Creatinine") +
-  ggplot2::geom_smooth(method = lm, colour = "grey50")
+               "log UDBP:Creatinine")
 
 # Spearman Correlation ------------------------------------------
 
