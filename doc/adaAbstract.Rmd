@@ -209,14 +209,16 @@ corrplot::corrplot(cor(dsGEE[sapply(dsGEE, is.numeric)], use = "complete.obs"),
 ```
 
 
-```{r mason}
+```{r gee}
 
 gee <- ds %>%
   dplyr::mutate(
   udbpBase = ifelse(fVN == "Baseline", UDBP, NA),
   ageBase = ifelse(fVN == "Baseline", Age, NA),
-  fDM = relevel(as.factor(DM), "1")
-  # Ethnicity = ifelse(Ethnicity == "European", Ethnicity, "Other"),
+  DM = ifelse(DM == 1, "diabetes", "non_dia"),
+  fDM = relevel(as.factor(DM), "non_dia"),
+  Ethnicity = ifelse(Ethnicity == "European", Ethnicity, "Other"),
+  Ethnicity = relevel(as.factor(Ethnicity), "Other")
   ) %>%
   dplyr::filter(!(fVN == "Baseline" &
                     acrStatus == "Macroalbuminuria")) %>%
@@ -227,11 +229,18 @@ gee <- ds %>%
   dplyr::ungroup() %>%
   dplyr::mutate(UDBP = UDBP/1000) %>%
   dplyr::arrange(SID, VN) %>%
-  mason_gee(
-  yvars = c("ACR", "eGFR"),
-  xvars = "UDBP",
-  covars = c("VN", "ageBase", "fDM")
-  )
+  mason::design("gee") %>% 
+  mason::add_settings(
+      family = stats::gaussian(),
+      corstr = 'ar1',
+      cluster.id = 'SID'
+    ) %>%
+  mason::add_variables("yvars", c("ACR", "eGFR")) %>% 
+  mason::add_variables("xvars", "UDBP") %>% 
+  mason::add_variables("covariates", 
+                       c("VN", "ageBase", "Sex", "Ethnicity", "BMI", "fDM")) %>% 
+  mason::construct() %>%
+  mason::scrub()
 ```
 
 ```{r}
