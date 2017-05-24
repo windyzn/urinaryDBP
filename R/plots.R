@@ -306,3 +306,20 @@ line_plot = function(data, xvar, yvar, byvar, xlab='', ylab='') {
     ggplot2::xlab(xlab) +
     ggplot2::ylab(ylab)
 }
+
+
+# GEE Plot ----------------------------------------------------------------
+
+#' GEE Plot
+#'
+#' @return
+#' @export
+#'
+#' @examples
+gee_plot = function(gee_results, xlab = "") {
+  seer::view_main_effect(gee_results, "dot.size", group.label.switch = 'y') +
+    ggplot2::theme(legend.position = 'right') +
+    ggplot2::theme_bw() +
+    ggplot2::ylab('') +
+    ggplot2::xlab(xlab)
+}
