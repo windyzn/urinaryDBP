@@ -243,29 +243,34 @@ gee <- ds %>%
   mason::scrub()
 ```
 
-```{r}
-gee3 <- readRDS(file = "../data/ds.Rds") %>%
-  dplyr::mutate(
-  udbpBase = ifelse(fVN == "Baseline", UDBP, NA),
-  ageBase = ifelse(fVN == "Baseline", Age, NA),
-  VitaminD3 = ifelse(fVN == "6Year", NA, VitaminD)
-  # Ethnicity = ifelse(Ethnicity == "European", Ethnicity, "Other"),
-  ) %>%
-  dplyr::arrange(SID, fVN) %>%
-  dplyr::group_by(SID) %>%
-  tidyr::fill(udbpBase, ageBase) %>%
-  dplyr::ungroup() %>%
-  # dplyr::group_by(VN) %>%
-  # dplyr::mutate(udbpBase = as.numeric(scale(udbpBase))) %>%
-  dplyr::mutate(UDBP = UDBP/1000) %>%
-  # dplyr::ungroup() %>% 
-  dplyr::arrange(SID, VN) %>%
-  mason_gee(
-  yvars = c("VitaminD3"),
-  xvars = "UDBP",
-  covars = c("VN", "ageBase", "DM")
-  )
+```{r gee plot}
+
+gee %>% 
+  dplyr::mutate(Xterms = term) %>% 
+  dplyr::filter(!term == "(Intercept)") %>% 
+  dplyr::mutate(Yterms = factor(Yterms, 
+                                levels = c("ACR", "eGFR"),
+                                ordered = TRUE),
+                Xterms = factor(Xterms,
+                                levels = rev(c("<-Xterm",
+                                           "VN",
+                                           "ageBase",
+                                           "SexMale",
+                                           "EthnicityEuropean",
+                                           "BMI",
+                                           "fDMdiabetes")),
+                                labels = rev(c("uVDBP",
+                                           "Follow-up Duration",
+                                           "Baseline Age",
+                                           "Sex (male)",
+                                           "Ethnicity (European)",
+                                           "BMI",
+                                           "Diabetes")),
+                                ordered = TRUE)) %>% 
+  arrange(Xterms) %>% 
+  gee_plot(xlab = "Unit change for every unit increase in uVDBP")
 ```
+
 
 
 Graph
