@@ -93,14 +93,6 @@ ds %>%
             "Albuminuria",
             "log uVDBP:Creatinine")
 
-# Boxplot of ACR in uVDBP categories
-dsBase %>% 
-  select(UDBPStatus, ACR) %>% 
-  na.omit() %>% 
-  box_plot("UDBPStatus", "log(ACR)",
-           "Urinary VDBP status",
-           "log Urine ACR (mg/mmol)")
-
 # ANOVA
 anova <- aov(formula = log(udbpCrRatio)~acr_status, data = ds1)
 summary(anova)
@@ -166,6 +158,7 @@ ds %>%
 ```
 
 ```{r hyperfiltration}
+
 ds %>% 
   dplyr::filter(eGFR < 45) %>% 
   dplyr::select(SID, VN, Age, eGFR, dm_status, acr_status)
@@ -268,24 +261,5 @@ gee %>%
                                            "Diabetes")),
                                 ordered = TRUE)) %>% 
   arrange(Xterms) %>% 
-  gee_plot(xlab = "Unit change for every unit increase in uVDBP")
-```
-
-
-
-Graph
-```{r gee plot}
-
-gee %>%
-  dplyr::mutate(p.value = ifelse(p.value > 0.05, 1, 0.04)) %>%
-  seer::view_main_effect(
-  graph.options = 'dot.size',
-  groups = '~Yterms',
-  legend.title = 'p-values',
-  xlab = 'Percent difference with 95% CI in the outcomes\nfor each unit increase in baseline uVDBP',
-  ylab = 'Kidney Measures'
-  ) +
-  graph_theme(ticks = FALSE, legend.pos = 'right') +
-  ggplot2::theme(legend.margin = grid::unit(0, 'cm'))
-
+  gee_plot(xlab = "Percent difference in outcome for every unit increase in uVDBP")
 ```
