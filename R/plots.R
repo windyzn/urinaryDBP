@@ -129,17 +129,18 @@ box_plot_poster <- function(data, xvar, yvar, xlab="", ylab="", facet = FALSE) {
                          alpha = 0.3,
                          size = 1,
                          colour = "grey30") +
-    ggplot2::theme_minimal() +
     ggplot2::scale_color_manual(values = c("#2b3443", "#adc9b7", "#ffd91e")) +
     ggplot2::scale_fill_manual(values = c("#2b3443", "#adc9b7", "#ffd91e")) +
+    ggplot2::theme_grey() +
     ggplot2::theme(legend.position = "none",
                    panel.grid.major.x = ggplot2::element_blank(),
                    axis.line.y = ggplot2::element_blank(),
+                   plot.background = ggplot2::element_rect(colour = "grey60"),
                    text = ggplot2::element_text(size = 14, family = "Montserrat Light"),
                    axis.text.y = ggplot2::element_text(colour = "grey30"),
                    axis.ticks.y = ggplot2::element_line(colour = "grey"),
                    axis.text.x = ggplot2::element_text(colour = "grey30"),
-                   axis.title = ggplot2::element_text(family = "Montserrat Medium")) + #angle = 45
+                   axis.title = ggplot2::element_text(family = "Montserrat Medium")) +
     ggplot2::xlab(xlab) +
     ggplot2::ylab(ylab)
 
@@ -210,9 +211,10 @@ scatter_plot = function(data, xvar, yvar, xlab='', ylab='', line = TRUE, facet =
 #' @examples
 scatter_plot_poster = function(data, xvar, yvar, xlab='', ylab='', line = TRUE, facet = FALSE) {
   myplot <- ggplot2::ggplot(data, ggplot2::aes_string(x=xvar, y=yvar)) +
-    ggplot2::geom_point(colour = "#adc9b7", size = 1) + #mapping=aes(color=mcr_status)
-    ggplot2::theme_minimal() +
+    ggplot2::geom_point(colour = "#adc9b7", size = 1) +
     ggplot2::theme(panel.grid.major.x = ggplot2::element_blank(),
+                   panel.grid.minor.x = ggplot2::element_blank(),
+                   plot.background = ggplot2::element_rect(colour = "grey60"),
                    axis.line.y = ggplot2::element_blank(),
                    text = ggplot2::element_text(size = 14, family = "Montserrat Light"),
                    axis.text.y = ggplot2::element_text(colour = "grey30"),
@@ -262,7 +264,7 @@ histo_plot = function(data, variable, bin, xlab='', facet = FALSE) {
                    axis.line.y = ggplot2::element_blank(),
                    axis.text.y = ggplot2::element_text(colour = "grey"),
                    axis.ticks.y = ggplot2::element_line(colour = "grey"),
-                   axis.text.x = ggplot2::element_text(colour = "grey 30"), #angle = 45
+                   axis.text.x = ggplot2::element_text(colour = "grey30"), #angle = 45
                    axis.title = ggplot2::element_text(size = 10))
   if(facet == TRUE) {
     histoplot +
@@ -301,7 +303,7 @@ line_plot = function(data, xvar, yvar, byvar, xlab='', ylab='') {
                    axis.line.y = ggplot2::element_blank(),
                    axis.text.y = ggplot2::element_text(colour = "grey"),
                    axis.ticks.y = ggplot2::element_line(colour = "grey"),
-                   axis.text.x = ggplot2::element_text(colour = "grey 30"), #angle = 45
+                   axis.text.x = ggplot2::element_text(colour = "grey30"),
                    axis.title = ggplot2::element_text(size = 10)) +
     ggplot2::xlab(xlab) +
     ggplot2::ylab(ylab)
@@ -318,8 +320,19 @@ line_plot = function(data, xvar, yvar, byvar, xlab='', ylab='') {
 #' @examples
 gee_plot = function(gee_results, xlab = "") {
   seer::view_main_effect(gee_results, "dot.size", group.label.switch = 'y') +
-    ggplot2::theme(legend.position = 'right') +
-    ggplot2::theme_bw() +
+    ggplot2::theme_grey() +
+    ggplot2::theme(legend.position = 'right',
+                   panel.grid.major.x = ggplot2::element_blank(),
+                   panel.grid.minor.x = ggplot2::element_blank(),
+                   panel.spacing = ggplot2::unit(2, "lines"),
+                   strip.background = ggplot2::element_rect(colour = "#adc9b7", fill = "#adc9b7"),
+                   strip.text.x = ggplot2::element_text(colour = "white", face = "bold"),
+                   axis.line.y = ggplot2::element_blank(),
+                   axis.text.y = ggplot2::element_text(colour = "grey"),
+                   axis.ticks.y = ggplot2::element_line(colour = "grey"),
+                   axis.text.x = ggplot2::element_text(colour = "grey40"),
+                   axis.title = ggplot2::element_text(size = 10)) +
     ggplot2::ylab('') +
     ggplot2::xlab(xlab)
 }
+# "#2b3443", "#adc9b7", "#ffd91e"
