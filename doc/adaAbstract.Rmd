@@ -172,47 +172,18 @@ ds %>%
 Part 2 - GEE
 ============
 
-```{r correlation}
-dsGEE <- ds %>% 
-  dplyr::mutate(udbpBase = ifelse(fVN == "Baseline", UDBP, NA),
-                ageBase = ifelse(fVN == "Baseline", Age, NA),
-                bmiBase = ifelse(fVN == "Baseline", BMI, NA),
-                waistBase = ifelse(fVN == "Baseline", Waist, NA), 
-                Sex = ifelse(Sex == "Male", 1, 0),
-                Ethnicity = ifelse(Ethnicity == "European", Ethnicity, "Other"),
-                Ethnicity = ifelse(Ethnicity == "European", 0, 1),
-                fMedsBP = ifelse(fMedsBP == "Yes", 1, 0)
-                # vitdBase = ifelse(fVN == "6Year", NA, VitaminD)
-                ) %>% 
-  dplyr::arrange(SID, fVN) %>% 
-  dplyr::group_by(SID) %>% 
-  tidyr::fill(udbpBase, ageBase, bmiBase, waistBase) %>% 
-  dplyr::ungroup() %>%
-  dplyr::arrange(SID, VN) %>% 
-  dplyr::select(udbpBase, ACR, eGFR, VN, ageBase, Sex, Ethnicity, BMI, 
-                Waist, DM, fMedsBP)
-
-round(cor(dsGEE[sapply(dsGEE, is.numeric)], use = "complete.obs"), 2)
-
-# Heatmap
-
-corrplot::corrplot(cor(dsGEE[sapply(dsGEE, is.numeric)], use = "complete.obs"),
-                   method = "color")
-
-```
-
 
 ```{r gee}
 
 gee <- ds %>%
   dplyr::mutate(
-  udbpBase = ifelse(fVN == "Baseline", UDBP, NA),
-  ageBase = ifelse(fVN == "Baseline", Age, NA),
-  DM = ifelse(DM == 1, "diabetes", "non_dia"),
-  fDM = relevel(as.factor(DM), "non_dia"),
-  Ethnicity = ifelse(Ethnicity == "European", Ethnicity, "Other"),
-  Ethnicity = relevel(as.factor(Ethnicity), "Other")
-  ) %>%
+    udbpBase = ifelse(fVN == "Baseline", UDBP, NA),
+    ageBase = ifelse(fVN == "Baseline", Age, NA),
+    DM = ifelse(DM == 1, "diabetes", "non_dia"),
+    fDM = relevel(as.factor(DM), "non_dia"),
+    Ethnicity = ifelse(Ethnicity == "European", Ethnicity, "Other"),
+    Ethnicity = relevel(as.factor(Ethnicity), "Other")
+  ) %>% 
   dplyr::filter(!(fVN == "Baseline" &
                     acrStatus == "Macroalbuminuria")) %>%
   dplyr::filter(!(fVN == "Baseline" & eGFRStatus == "Moderate")) %>%
@@ -220,7 +191,7 @@ gee <- ds %>%
   dplyr::group_by(SID) %>%
   tidyr::fill(udbpBase, ageBase) %>%
   dplyr::ungroup() %>%
-  dplyr::mutate(UDBP = UDBP/1000) %>%
+  # dplyr::mutate(UDBP = UDBP/1000) %>%
   dplyr::arrange(SID, VN) %>%
   mason::design("gee") %>% 
   mason::add_settings(
@@ -230,10 +201,11 @@ gee <- ds %>%
     ) %>%
   mason::add_variables("yvars", c("ACR", "eGFR")) %>% 
   mason::add_variables("xvars", "UDBP") %>% 
-  mason::add_variables("covariates", 
-                       c("VN", "ageBase", "Sex", "Ethnicity", "BMI", "fDM")) %>% 
+  mason::add_variables("covariates", c("VN", "ageBase", "Sex", "Ethnicity", "BMI", "fDM")) %>% 
   mason::construct() %>%
-  mason::scrub()
+  mason::scrub() %>% 
+  mason::polish_transform_estimates(function(x) (exp(x) - 1) * 100) %>%
+  dplyr::select(Yterms, Xterms, term, estimate, conf.low, conf.high, p.value)
 ```
 
 ```{r gee plot}
@@ -261,5 +233,5 @@ gee %>%
                                            "Diabetes")),
                                 ordered = TRUE)) %>% 
   arrange(Xterms) %>% 
-  gee_plot(xlab = "Percent difference in outcome for every unit increase in uVDBP")
+  gee_plot(xlab = "Percent difference with 95% CI in outcome for every SD increase in uVDBP and covariates")
 ```

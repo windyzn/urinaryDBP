@@ -336,4 +336,3 @@ gee_plot = function(gee_results, xlab = "") {
     ggplot2::ylab('') +
     ggplot2::xlab(xlab)
 }
-# "#2b3443", "#adc9b7", "#ffd91e"
