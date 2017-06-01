@@ -136,11 +136,11 @@ box_plot_poster <- function(data, xvar, yvar, xlab="", ylab="", facet = FALSE) {
                    panel.grid.major.x = ggplot2::element_blank(),
                    axis.line.y = ggplot2::element_blank(),
                    plot.background = ggplot2::element_rect(colour = "grey60"),
-                   text = ggplot2::element_text(size = 14, family = "Montserrat Light"),
+                   text = ggplot2::element_text(size = 14, family = "Calibri Light"),
                    axis.text.y = ggplot2::element_text(colour = "grey30"),
                    axis.ticks.y = ggplot2::element_line(colour = "grey"),
                    axis.text.x = ggplot2::element_text(colour = "grey30"),
-                   axis.title = ggplot2::element_text(family = "Montserrat Medium")) +
+                   axis.title = ggplot2::element_text(family = "Calibri")) +
     ggplot2::xlab(xlab) +
     ggplot2::ylab(ylab)
 
@@ -327,11 +327,12 @@ gee_plot = function(gee_results, xlab = "") {
                    panel.spacing = ggplot2::unit(2, "lines"),
                    strip.background = ggplot2::element_rect(colour = "#adc9b7", fill = "#adc9b7"),
                    strip.text.x = ggplot2::element_text(colour = "white", face = "bold"),
+                   text = ggplot2::element_text(family = "Calibri"),
                    axis.line.y = ggplot2::element_blank(),
                    axis.text.y = ggplot2::element_text(colour = "grey"),
                    axis.ticks.y = ggplot2::element_line(colour = "grey"),
                    axis.text.x = ggplot2::element_text(colour = "grey40"),
-                   axis.title = ggplot2::element_text(size = 10)) +
+                   axis.title = ggplot2::element_text(size = 10, family = "Calibri")) +
     ggplot2::ylab('') +
     ggplot2::xlab(xlab)
 }
