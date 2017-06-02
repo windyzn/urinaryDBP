@@ -327,12 +327,12 @@ gee_plot = function(gee_results, xlab = "") {
                    panel.spacing = ggplot2::unit(2, "lines"),
                    strip.background = ggplot2::element_rect(colour = "#adc9b7", fill = "#adc9b7"),
                    strip.text.x = ggplot2::element_text(colour = "white", face = "bold"),
-                   text = ggplot2::element_text(family = "Calibri"),
+                   # text = ggplot2::element_text(family = "Montserrat"),
                    axis.line.y = ggplot2::element_blank(),
                    axis.text.y = ggplot2::element_text(colour = "grey"),
                    axis.ticks.y = ggplot2::element_line(colour = "grey"),
                    axis.text.x = ggplot2::element_text(colour = "grey40"),
-                   axis.title = ggplot2::element_text(size = 10, family = "Calibri")) +
+                   axis.title = ggplot2::element_text(size = 10)) + #family = "Montserrat"
     ggplot2::ylab('') +
     ggplot2::xlab(xlab)
 }
