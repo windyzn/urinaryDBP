@@ -7,6 +7,9 @@ output: word_document:
 ---
 
 ```{r setup, include=FALSE}
+
+# poster size: print at 63" x 31.5"
+
 knitr::opts_chunk$set(collapse = TRUE, echo = FALSE, message = FALSE, warning = FALSE)
 library(dplyr)
 devtools::load_all()
@@ -191,7 +194,7 @@ gee <- ds %>%
   dplyr::group_by(SID) %>%
   tidyr::fill(udbpBase, ageBase) %>%
   dplyr::ungroup() %>%
-  # dplyr::mutate(UDBP = UDBP/1000) %>%
+  dplyr::mutate(UDBP = UDBP/1000) %>%
   dplyr::arrange(SID, VN) %>%
   mason::design("gee") %>% 
   mason::add_settings(
@@ -204,7 +207,6 @@ gee <- ds %>%
   mason::add_variables("covariates", c("VN", "ageBase", "Sex", "Ethnicity", "BMI", "fDM")) %>% 
   mason::construct() %>%
   mason::scrub() %>% 
-  mason::polish_transform_estimates(function(x) (exp(x) - 1) * 100) %>%
   dplyr::select(Yterms, Xterms, term, estimate, conf.low, conf.high, p.value)
 ```
 
@@ -224,14 +226,14 @@ gee %>%
                                            "EthnicityEuropean",
                                            "BMI",
                                            "fDMdiabetes")),
-                                labels = rev(c("uVDBP",
-                                           "Follow-up Duration",
-                                           "Baseline Age",
+                                labels = rev(c("uVDBP (ug/mL)",
+                                           "Follow-up Duration (Years)",
+                                           "Baseline Age (Years)",
                                            "Sex (male)",
                                            "Ethnicity (European)",
-                                           "BMI",
+                                           "BMI (kg/m^2)",
                                            "Diabetes")),
                                 ordered = TRUE)) %>% 
   arrange(Xterms) %>% 
-  gee_plot(xlab = "Percent difference with 95% CI in outcome for every SD increase in uVDBP and covariates")
+  gee_plot(xlab = "Unit difference with 95% CI in outcome for every unit increase in uVDBP and covariates")
 ```
