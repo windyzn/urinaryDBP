@@ -69,10 +69,11 @@ fetch_data <- function() {
                        breaks = c(0, 1.23, 60, Inf),
                        labels = c("Trace", "Normal", "High"),
                        ordered_result = TRUE),
-      UDBPquartile = cut(UDBP,
-                         breaks = c(0, 12.015, 45.25, 90.975, 2123),
-                         labels = c("1st", "2nd", "3rd", "4th"),
-                         ordered_result = TRUE),
+      UDBPQuartile = ntile(UDBP, 4),
+      # UDBPQuartile = cut(UDBP,
+      #                    breaks = c(0, 12.015, 45.25, 90.975, 2123),
+      #                    labels = c("1st", "2nd", "3rd", "4th"),
+      #                    ordered_result = TRUE),
       udbpCrRatio = UDBP / UrineCreatinine,
       logUDBPRatio = log(udbpCrRatio)
     ) %>%
@@ -97,6 +98,7 @@ fetch_data <- function() {
       acrStatus,
       eGFRStatus,
       UDBPStatus,
+      UDBPQuartile,
       eGFR,
       ACR,
       UrineMicroalbumin,
@@ -119,8 +121,10 @@ fetch_data <- function() {
       BirthControl,
       PeriodsStopped,
       PeriodsStoppedAge,
+      MedsBloodPressure,
+      MedsDxDM
       # MedName,
-      dplyr::matches("meds")
+      # dplyr::matches("meds")
     )
 
   # Final dataset object

@@ -1,7 +1,7 @@
 ---
-bibliography: path/to/bib/file
-csl: path/to/bib/style/file
-output: word_document
+output:
+  word_document: default
+  html_document: default
 ---
 
 # Title page #
@@ -29,8 +29,11 @@ Funding support: CIHR, Sharon Zeiler, BBDC Novo Nordisk, Dairy Farmers
 -->
 
 ```{r setup, collapse=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+
 # Only set if the Rmd file is not in the parent directory (ie. 'projectname/')
 knitr::opts_knit$set(root.dir = '../')
+
+knitr::opts_chunk$set(collapse = TRUE, echo = FALSE, message = FALSE, warning = FALSE)
 library(dplyr)
 devtools::load_all()
 load_data(update = TRUE)
@@ -39,6 +42,7 @@ set_options()
 ```
 
 ```{r loadData, message=FALSE}
+
 # source('.Rprofile')
 # run_setup()
 # load_data('data/project_data.rda')
@@ -47,7 +51,9 @@ ds <- project_data
 ```
 
 ```{r caption_setup}
+
 ## Include captions below using `captioner` package
+
 figNums <- captioner::captioner(prefix = 'Figure')
 supFigNums <- captioner::captioner(prefix = 'Supplementary Figure')
 tabNums <- captioner::captioner(prefix = 'Table')
@@ -59,6 +65,30 @@ supTabNums <- captioner::captioner(prefix = 'Supplementary Table')
 TABLE 1: Subject characteristics across UDBP tertiles
 ```{r}
 
+sub_char_table <- tableone::CreateTableOne(
+  vars = c("Age",
+           "Sex",
+           "Ethnicity",
+           "BMI",
+           "Waist",
+           "eGFR",
+           "ACR",
+           "UrineCreatinine",
+           "UrineMicroalbumin",
+           "UrinaryCalcium",
+           "UDBP",
+           "Systolic",
+           "Diastolic",
+           "MeanArtPressure"),
+  strata = c("UDBPQuartile"),
+  data = ds,
+  factorVars = c("Sex", "Ethnicity")
+) %>% 
+  print(nonnormal = c("UDBP",
+                      "ACR",
+                      "UrineMicroalbumin"),
+        quote = FALSE,
+        noSpaces = TRUE)
 ```
 
 
