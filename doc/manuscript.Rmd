@@ -48,15 +48,19 @@ ds <- project_data
 
 ```{r caption_setup}
 ## Include captions below using `captioner` package
-figNums <- captioner(prefix = 'Figure')
-supFigNums <- captioner(prefix = 'Supplementary Figure')
-tabNums <- captioner(prefix = 'Table')
-supTabNums <- captioner(prefix = 'Supplementary Table')
+figNums <- captioner::captioner(prefix = 'Figure')
+supFigNums <- captioner::captioner(prefix = 'Supplementary Figure')
+tabNums <- captioner::captioner(prefix = 'Table')
+supTabNums <- captioner::captioner(prefix = 'Supplementary Table')
 ```
 
 # Results #
 
-Subject 
+TABLE 1: Subject characteristics across UDBP tertiles
+```{r}
+
+```
+
 
 # Discussion #
 
