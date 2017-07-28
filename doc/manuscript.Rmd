@@ -18,11 +18,17 @@ Correspondence: windy.wang@mail.utoronto.ca
 
 Funding support: CIHR, Sharon Zeiler, BBDC Novo Nordisk, Dairy Farmers
 
-# Abstract #
+Abstract
+========
 
-# Background #
+Background
+==========
 
-# Subjects and Methods #
+Methods
+=======
+
+Subjects
+--------
 
 <!--
 ## Load data ##
@@ -60,9 +66,14 @@ tabNums <- captioner::captioner(prefix = 'Table')
 supTabNums <- captioner::captioner(prefix = 'Supplementary Table')
 ```
 
-# Results #
+RESULTS
+=======
+
+Paper 1: Kidney Measures
+------------------------
 
 TABLE 1: Subject characteristics across UDBP tertiles
+
 ```{r}
 
 sub_char_table <- tableone::CreateTableOne(
@@ -89,6 +100,19 @@ sub_char_table <- tableone::CreateTableOne(
                       "UrineMicroalbumin"),
         quote = FALSE,
         noSpaces = TRUE)
+```
+
+Medication
+
+* There are 705 values across all time points with blood pressure medication data
+* This is approximately half of all observations (1852 vs 705)
+* CHECK IF MISSINGNESS == NOT TAKING OR REALLY MISSING!!
+
+```{r}
+
+ds_med <- ds %>% 
+  dplyr::select(SID, VN, fMedsBP) %>% 
+  na.omit()
 ```
 
 
