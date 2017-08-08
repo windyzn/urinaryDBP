@@ -1,5 +1,5 @@
 # Functions for the GEE analysis
-#
+
 
 # Grab or combine data ----------------------------------------------------
 
@@ -9,23 +9,25 @@
 #' @param data project data
 #' @export
 
+
 prep_gee_data <- function(data) {
   data %>%
     dplyr::mutate(
       udbpBase = ifelse(fVN == "Baseline", UDBP, NA),
       ageBase = ifelse(fVN == "Baseline", Age, NA),
-      fDM = relevel(as.factor(DM), "1")
-      # Ethnicity = ifelse(Ethnicity == "European", Ethnicity, "Other"),
+      DM = ifelse(DM == 1, "diabetes", "non_dia"),
+      fDM = relevel(as.factor(DM), "non_dia"),
+      Ethnicity = ifelse(Ethnicity == "European", Ethnicity, "Other"),
+      Ethnicity = relevel(as.factor(Ethnicity), "Other")
     ) %>%
     dplyr::filter(!(fVN == "Baseline" &
-                      acr_status == "Macroalbuminuria")) %>%
-    dplyr::filter(!(fVN == "Baseline" &
-                      eGFR_status == "Moderate")) %>%
+                      acrStatus == "Macroalbuminuria")) %>%
+    dplyr::filter(!(fVN == "Baseline" & eGFRStatus == "Moderate")) %>%
     dplyr::arrange(SID, fVN) %>%
     dplyr::group_by(SID) %>%
     tidyr::fill(udbpBase, ageBase) %>%
     dplyr::ungroup() %>%
-    dplyr::mutate(UDBP = UDBP / 1000) %>%
+    dplyr::mutate(UDBP = UDBP / 1000) %>% #udbp units to ug/mL
     dplyr::arrange(SID, VN)
 }
 
@@ -38,13 +40,49 @@ prep_gee_data <- function(data) {
 #' @export
 #'
 #' @examples
-analyze_gee <- function(data) {
+analyze_gee <- function(data,
+                        y = outcomes,
+                        x = xvar,
+                        covars = covariates,
+                        intvar = NULL) {
+
+  int <- !is.null(intvar)
+  if (int) {
+    extract_term <- ":"
+  } else {
+    extract_term <- "Xterm$"
+  }
+
   data %>%
-    mason::mason_gee(
-      yvars = c("ACR", "eGFR"),
-      xvars = "UDBP",
-      covars = c("VN", "ageBase", "fDM")
-    )
+    mason::design("gee") %>%
+    mason:::add_settings(family = stats::gaussian(),
+                         corstr = "ar1", cluster.id = "SID") %>%
+    mason::add_variables("yvars", y) %>%
+    mason::add_variables("xvars", x) %>%
+    mason::add_variables("covariates", covars) %>% {
+      if (int) {
+        mason::add_variables(., "interaction", intvar)
+      } else {
+        .
+      }
+    } %>%
+    mason::construct() %>%
+    mason::scrub() %>%
+    mason::polish_filter(extract_term, "term")
+}
+
+
+explore_gee <- function(data = project_data,
+                        covars = covariates, caption = NULL, graph = FALSE) {
+  m <- analyze_gee(data = data, covars = covars)
+  m <- filter(m, p.value <= 0.05)
+  print(nrow(m))
+  if (graph) {
+    print(caption)
+    plot_gee_main(m)
+  } else {
+    table_gee_main(m, caption = caption)
+  }
 }
 
 
