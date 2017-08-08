@@ -297,11 +297,10 @@ histo_plot = function(data=project_data, variable, bin, xlab='', facet = FALSE) 
 line_plot = function(data=project_data, xvar, yvar, byvar, xlab='', ylab='') {
   ggplot2::ggplot(data, ggplot2::aes_string(x=xvar, y=yvar,
                                             group=byvar, colour=byvar)) +
-    ggplot2::geom_line(alpha = 0.5) +
-    # ggplot2::geom_point(alpha = 0.5) +
+    ggplot2::geom_line(alpha = 0.7) +
+    ggplot2::geom_point(alpha = 0.5) +
     ggplot2::theme_minimal() +
-    ggplot2::theme(legend.position = "none",
-                   panel.grid.major.x = ggplot2::element_blank(),
+    ggplot2::theme(panel.grid.major.x = ggplot2::element_blank(),
                    axis.line.y = ggplot2::element_blank(),
                    axis.text.y = ggplot2::element_text(colour = "grey"),
                    axis.ticks.y = ggplot2::element_line(colour = "grey"),
@@ -311,6 +310,7 @@ line_plot = function(data=project_data, xvar, yvar, byvar, xlab='', ylab='') {
     ggplot2::ylab(ylab)
 }
 
+#legend.position = "none" was the first one under theme
 
 # GEE Plot ----------------------------------------------------------------
 
