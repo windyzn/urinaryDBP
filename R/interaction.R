@@ -6,7 +6,6 @@
 #' @examples
 #'
 plot_interaction <- function(data, y, x,
-                             fatty.acid.levels = c(2, 3, 4),
                              covars = covariates,
                              title = 'A',
                              interaction.term = 'VN',
