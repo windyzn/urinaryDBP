@@ -115,6 +115,48 @@ ds_med <- ds %>%
   na.omit()
 ```
 
+Generalized Estimating Equations
+
+```{r gee_analysis}
+
+ds %>% 
+  prep_gee_data() %>% 
+  analyze_gee(y = c("ACR", "eGFR"),
+              x = "UDBP",
+              covars = c("VN", "ageBase", "Sex", "Ethnicity", "BMI", "fDM"),
+              intvar = "VN")
+```
+
+```{r gee_plot}
+
+gee %>% 
+  dplyr::mutate(Xterms = term) %>% 
+  dplyr::filter(!term == "(Intercept)") %>% 
+  dplyr::mutate(Yterms = factor(Yterms, 
+                                levels = c("ACR", "eGFR"),
+                                ordered = TRUE),
+                Xterms = factor(Xterms,
+                                levels = rev(c("<-Xterm",
+                                           "VN",
+                                           "ageBase",
+                                           "SexMale",
+                                           "EthnicityEuropean",
+                                           "BMI",
+                                           "fDMdiabetes")),
+                                labels = rev(c("uVDBP (ug/mL)",
+                                           "Follow-up Duration (Years)",
+                                           "Baseline Age (Years)",
+                                           "Sex (male)",
+                                           "Ethnicity (European)",
+                                           "BMI (kg/m^2)",
+                                           "Diabetes")),
+                                ordered = TRUE)) %>% 
+  arrange(Xterms) %>% 
+  gee_plot(xlab = "Unit difference with 95% CI in outcome for every unit increase in uVDBP and covariates")
+```
+
+Paper 2: Vitamin D
+------------------
 
 # Discussion #
 
