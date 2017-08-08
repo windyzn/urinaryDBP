@@ -1,0 +1,32 @@
+---
+title: "Urinary Vitamin D Binding Protein Loss as a Potential Biomarker for Nephropathy in Patients at Risk for Type 2 Diabetes: The Prospective Metabolism and Islet Cell Evaluation (PROMISE) Cohort Study"
+author: "Windy Wang"
+site: bookdown::bookdown_site
+output: bookdown::gitbook
+documentclass: book
+bibliography: [book.bib] #packages.bib
+biblio-style: apalike
+link-citations: yes
+github-repo: windyzn/master-thesis
+description: "An exploration of the relationships between urinary vitamin D binding protein and kidney dysfunction, glycemic status, and 25(OH)D levels in subjects at risk for type 2 diabetes."
+---
+
+# Preface {-}
+
+This is my master's thesis written using bookdown.
+
+# Acknowledgements {-}
+
+Thank you for your help.
+
+# Abstract {-}
+
+**Background**: Recent studies have reported elevated urinary vitamin D binding protein (uVDBP) in patients with type 1 diabetes, although the utility of uVDBP to predict declines in kidney function over time has not been examined.  Our objective was to assess the association of uVDBP with longitudinal declines in kidney function.
+
+**Methods**: Data were derived from PROMISE, a cohort of adults at risk for type 2 diabetes. We used data from 3 clinical visits over 6 years (n = 730). Urinary albumin-to-creatinine ratio (ACR) and eGFR were used as markers of kidney function. Measurements of uVDBP were performed with ELISA and normalized to urine creatinine. Generalized estimating equations (GEE) evaluated longitudinal associations of uVDBP with kidney measures. Covariates included visit number, baseline age, and glycemic status.
+
+**Results**: Renal VDBP loss increased with ACR severity at baseline. Subjects with normoalbuminuria, microalbuminuria, and macroalbuminuria had median log uVDBP concentrations of 1.62 (IQR 0.95 – 1.98), 2.63 (IQR 2.25 – 3.37), and 2.48 (IQR 2.19 – 2.77) respectively (all p < 0.001), and ACR positively correlated with uVDBP concentrations (r = 0.38, p < 0.001). There was no significant association between uVDBP and eGFR at baseline (p = 0.20).  Adjusted GEE models indicated that each unit difference in uVDBP (μg/mL) predicted higher ACR (β = 0.55, p < 0.001) and lower eGFR (β = -0.50, p = 0.013) over 6 years.
+
+**Significance**: These results suggest that loss of uVDBP over time may be a useful marker for predicting renal dysfunction in subjects at risk for diabetes. 
+
+The code can be found at my [GitHub repository](https://github.com/windyzn/master-thesis)
