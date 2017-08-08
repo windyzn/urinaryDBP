@@ -21,7 +21,7 @@
 #'            "Albuminuria",
 #'            "log uVDBP:Creatinine")
 
-box_plot <- function(data, xvar, yvar, xlab="", ylab="", facet = FALSE) {
+box_plot <- function(data=project_data, xvar, yvar, xlab="", ylab="", facet = FALSE) {
   myboxplot <- ggplot2::ggplot(data, ggplot2::aes_string(x = xvar, y = yvar)) +
     ggplot2::geom_boxplot(ggplot2::aes_string(colour = xvar, fill = xvar),
                           outlier.shape = NA) +
@@ -68,7 +68,7 @@ box_plot <- function(data, xvar, yvar, xlab="", ylab="", facet = FALSE) {
 #' @return Plot
 #'
 #' @examples
-box_plot_slides <- function(data, xvar, yvar, xlab="", ylab="", facet = FALSE) {
+box_plot_slides <- function(data=project_data, xvar, yvar, xlab="", ylab="", facet = FALSE) {
   myboxplot <- ggplot2::ggplot(data, ggplot2::aes_string(x = xvar, y = yvar)) +
     ggplot2::geom_boxplot(ggplot2::aes_string(colour = xvar, fill = xvar),
                           outlier.shape = NA) +
@@ -116,7 +116,7 @@ box_plot_slides <- function(data, xvar, yvar, xlab="", ylab="", facet = FALSE) {
 #' @return Plot
 #'
 #' @examples
-box_plot_poster <- function(data, xvar, yvar, xlab="", ylab="", facet = FALSE) {
+box_plot_poster <- function(data=project_data, xvar, yvar, xlab="", ylab="", facet = FALSE) {
   myboxplot <- ggplot2::ggplot(data, ggplot2::aes_string(x = xvar, y = yvar)) +
     ggplot2::geom_boxplot(ggplot2::aes_string(colour = xvar, fill = xvar),
                           outlier.shape = NA) +
@@ -168,7 +168,8 @@ box_plot_poster <- function(data, xvar, yvar, xlab="", ylab="", facet = FALSE) {
 #' @return Plot
 #'
 #' @examples
-scatter_plot = function(data, xvar, yvar, xlab='', ylab='', line = TRUE, facet = FALSE) {
+scatter_plot = function(data=project_data,
+                        xvar, yvar, xlab='', ylab='', line = TRUE, facet = FALSE) {
   myplot <- ggplot2::ggplot(data, ggplot2::aes_string(x=xvar, y=yvar)) +
     ggplot2::geom_point(colour = "#0db7c4", size = 1) + #mapping=aes(color=mcr_status)
     ggplot2::theme_minimal() +
@@ -209,7 +210,8 @@ scatter_plot = function(data, xvar, yvar, xlab='', ylab='', line = TRUE, facet =
 #' @return Plot
 #'
 #' @examples
-scatter_plot_poster = function(data, xvar, yvar, xlab='', ylab='', line = TRUE, facet = FALSE) {
+scatter_plot_poster = function(data=project_data,
+                               xvar, yvar, xlab='', ylab='', line = TRUE, facet = FALSE) {
   myplot <- ggplot2::ggplot(data, ggplot2::aes_string(x=xvar, y=yvar)) +
     ggplot2::geom_point(colour = "#adc9b7", size = 1) +
     ggplot2::theme(panel.grid.major.x = ggplot2::element_blank(),
@@ -252,7 +254,7 @@ scatter_plot_poster = function(data, xvar, yvar, xlab='', ylab='', line = TRUE, 
 #' @return Plot
 #'
 #' @examples
-histo_plot = function(data, variable, bin, xlab='', facet = FALSE) {
+histo_plot = function(data=project_data, variable, bin, xlab='', facet = FALSE) {
   histoplot <- ggplot2::ggplot(data, ggplot2::aes_string(x=variable)) +
     ggplot2::geom_histogram(binwidth=bin,
                             colour='#0db7c4', fill='#0db7c4') +
@@ -292,7 +294,7 @@ histo_plot = function(data, variable, bin, xlab='', facet = FALSE) {
 #' ds %>%
 #'   dplyr::filter(SID < 1050 ) %>%
 #'   line_plot("fVN", "UDBP", "SID", "Visit Number", "UDBP")
-line_plot = function(data, xvar, yvar, byvar, xlab='', ylab='') {
+line_plot = function(data=project_data, xvar, yvar, byvar, xlab='', ylab='') {
   ggplot2::ggplot(data, ggplot2::aes_string(x=xvar, y=yvar,
                                             group=byvar, colour=byvar)) +
     ggplot2::geom_line(alpha = 0.5) +
