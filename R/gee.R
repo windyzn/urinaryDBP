@@ -40,7 +40,7 @@ prep_gee_data <- function(data) {
 #' @export
 #'
 #' @examples
-analyze_gee <- function(data,
+analyze_gee <- function(data = project_data,
                         y = outcomes,
                         x = xvar,
                         covars = covariates,
