@@ -54,6 +54,11 @@ set_options()
 # load_data('data/project_data.rda')
 # dim(ds)
 ds <- project_data
+
+dsComplete <- ds %>% 
+  dplyr::group_by(SID) %>%
+  dplyr::filter(n() == 3) %>%
+  dplyr::ungroup()
 ```
 
 ```{r caption_setup}
@@ -154,6 +159,31 @@ gee %>%
   gee_plot(xlab = "Unit difference with 95% CI in outcome for every unit increase in uVDBP and covariates")
 ```
 
+UDBP over Time
+```{r udbp_time}
+
+ds %>% 
+  box_plot(xvar="fVN",
+           yvar="log(UDBP)",
+           xlab="Visit Number",
+           ylab="UDBP")
+
+# ANOVA
+
+anova <- aov(formula = log(UDBP)~fVN, data = ds)
+summary(anova)
+TukeyHSD(anova)
+rm(anova)
+
+# By subject
+
+ds %>%
+  # dplyr::filter(MedsBloodPressure == 0) %>%
+  line_plot("fVN", "log(UDBP)", "fMedsBP", "Visit Number", "log(UDBP)")
+
+```
+
+
 Interaction with Time
 
 ```{r interaction_vn}
@@ -164,7 +194,8 @@ ds %>%
   analyze_gee(y = c("ACR", "eGFR"),
               x = "UDBP",
               covars = c("VN"),
-              intvar = "VN")
+              intvar = "VN") %>% 
+  dplyr::select(Yterms, Xterms, term, p.value, conf.low, conf.high, sample.total)
 
 # Adjusted interaction with visit number
 ds %>% 
@@ -172,12 +203,16 @@ ds %>%
   analyze_gee(y = c("ACR", "eGFR"),
               x = "UDBP",
               covars = c("VN", "ageBase", "Sex", "Ethnicity", "BMI", "fDM"),
-              intvar = "VN")
+              intvar = "VN") %>% 
+  dplyr::select(Yterms, Xterms, term, p.value, conf.low, conf.high, sample.total)
 
 # Unadjusted interaction with months from baseline
 
+
 # Adjusted interaction with months from baseline
 ```
+
+
 
 
 Paper 2: Vitamin D
