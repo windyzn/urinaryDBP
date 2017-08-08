@@ -123,8 +123,7 @@ ds %>%
   prep_gee_data() %>% 
   analyze_gee(y = c("ACR", "eGFR"),
               x = "UDBP",
-              covars = c("VN", "ageBase", "Sex", "Ethnicity", "BMI", "fDM"),
-              intvar = "VN")
+              covars = c("VN", "ageBase", "Sex", "Ethnicity", "BMI", "fDM"))
 ```
 
 ```{r gee_plot}
@@ -154,6 +153,32 @@ gee %>%
   arrange(Xterms) %>% 
   gee_plot(xlab = "Unit difference with 95% CI in outcome for every unit increase in uVDBP and covariates")
 ```
+
+Interaction with Time
+
+```{r interaction_vn}
+
+# Unadjusted interaction with visit number
+ds %>% 
+  prep_gee_data() %>% 
+  analyze_gee(y = c("ACR", "eGFR"),
+              x = "UDBP",
+              covars = c("VN"),
+              intvar = "VN")
+
+# Adjusted interaction with visit number
+ds %>% 
+  prep_gee_data() %>% 
+  analyze_gee(y = c("ACR", "eGFR"),
+              x = "UDBP",
+              covars = c("VN", "ageBase", "Sex", "Ethnicity", "BMI", "fDM"),
+              intvar = "VN")
+
+# Unadjusted interaction with months from baseline
+
+# Adjusted interaction with months from baseline
+```
+
 
 Paper 2: Vitamin D
 ------------------
