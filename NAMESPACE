@@ -2,7 +2,10 @@
 
 export(analyze_gee)
 export(fetch_data)
+export(gee_plot)
+export(interaction)
 export(load_data)
+export(med_ace)
 export(plot_gee_main)
 export(prep_gee_data)
 export(rename_table_rows)
