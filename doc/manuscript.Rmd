@@ -135,6 +135,22 @@ TukeyHSD(anova)
 rm(anova)
 ```
 
+```{r acr scatterplot}
+
+# Scatterplot of ACR and uVDBP ----------------------------------
+
+ds %>% 
+  filter(fVN == "Baseline") %>% 
+  scatter_plot_poster("log(ACR)", "log(udbpCrRatio)",
+               "log Albumin:Creatinine Ratio",
+               "log UDBP:Creatinine")
+
+# Spearman Correlation ------------------------------------------
+
+ds %>% 
+  filter(fVN == "Baseline") %>% 
+  cor.test(formula = ~ ACR + udbpCrRatio, data = ., method = "spearman")
+```
 
 Medication
 
