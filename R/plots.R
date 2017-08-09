@@ -175,19 +175,19 @@ scatter_plot = function(data=project_data,
     ggplot2::theme_minimal() +
     ggplot2::theme(panel.grid.major.x = ggplot2::element_blank(),
                    axis.line.y = ggplot2::element_blank(),
-                   text = ggplot2::element_text(size = 14, family = "Open Sans"),
+                   text = ggplot2::element_text(size = 14), #family = "Open Sans"
                    axis.text.y = ggplot2::element_text(colour = "grey30"), #"grey" normally
                    axis.ticks.y = ggplot2::element_line(colour = "grey"),
-                   axis.text.x = ggplot2::element_text(colour = "grey30"), #angle = 45
-                   axis.title = ggplot2::element_text(family = "Dosis")) + #size = 10 normally
+                   axis.text.x = ggplot2::element_text(colour = "grey30")) + #angle = 45
+                   # axis.title = ggplot2::element_text(family = "Dosis")) + #size = 10 normally
     ggplot2::xlab(xlab) +
     ggplot2::ylab(ylab)
   if(line == TRUE & facet == FALSE) {
     myplot +
-      ggplot2::geom_smooth(method = lm, colour = "grey50")
+      ggplot2::geom_smooth(method = loess, colour = "grey50")
   } else if(line == TRUE & facet == TRUE) {
     myplot +
-      ggplot2::geom_smooth(method = lm, colour = "grey50") +
+      ggplot2::geom_smooth(method = loess, colour = "grey50") +
       ggplot2::facet_grid(~fVN, switch = "x")
   } else if(line == FALSE & facet == TRUE) {
     myplot +
