@@ -1,7 +1,15 @@
-
+#' Summarise mean UDBP by a factor variable
+#'
+#' @param data
+#' @param by factor variable to summarise mean UDBP
+#'
+#' @export
+#'
+#' @examples
+#' trend <- summarise_progress_data(ds, by = "fMedsBP")
 summarise_progress_data <- function(data, by) {
   data %>%
-    dplyr::group_by(by, fVN) %>%
+    dplyr::group_by_(by, "fVN") %>%
     dplyr::summarise(UDBP=mean(log(UDBP)))
 }
 
@@ -14,7 +22,6 @@ summarise_progress_data <- function(data, by) {
 #' @param byvar
 #' @param groupby
 #'
-#' @return
 #' @export
 #'
 #' @examples
