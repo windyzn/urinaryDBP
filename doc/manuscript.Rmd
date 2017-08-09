@@ -55,10 +55,10 @@ set_options()
 # dim(ds)
 ds <- project_data
 
-dsComplete <- ds %>% 
-  dplyr::group_by(SID) %>%
-  dplyr::filter(n() == 3) %>%
-  dplyr::ungroup()
+# dsComplete <- ds %>% 
+#   dplyr::group_by(SID) %>%
+#   dplyr::filter(n() == 3) %>%
+#   dplyr::ungroup()
 ```
 
 ```{r caption_setup}
@@ -175,12 +175,24 @@ summary(anova)
 TukeyHSD(anova)
 rm(anova)
 
-# By subject
+# By variable
 
 ds %>%
   # dplyr::filter(MedsBloodPressure == 0) %>%
-  line_plot("fVN", "log(UDBP)", "fMedsBP", "Visit Number", "log(UDBP)")
+  line_plot("fVN", "log(UDBP)", "Sex", "Visit Number", "log(UDBP)")
 
+# LOESS curve
+ds %>% 
+  scatter_plot("VN", "log(UDBP)", 
+               "Visit Number", "log(UDBP)")
+
+# Clean up data
+trend <- ds %>% 
+  dplyr::group_by(fMedsBP, fVN) %>% 
+  dplyr::summarise(UDBP=mean(log(UDBP)))
+
+# Adjust plot to effectively differentiate data layers 
+plot_progress_data(ds, trend, byvar = "fMedsBP")
 ```
 
 
