@@ -111,17 +111,25 @@ Albuminuriar as assessed by albumin-to-creatinine ratio
 
 ```{r acr}
 
-# Box plot of uVDBP in different albuminuria categories
-ds %>% 
+# Clean data
+acr <- ds %>% 
   filter(fVN == "Baseline") %>% 
   select(acrStatus, udbpCrRatio) %>%
-  na.omit() %>%
-  box_plot_poster("acrStatus", "log(udbpCrRatio)", 
+  na.omit()
+
+# Box plot of uVDBP in different albuminuria categories
+acr %>% 
+  box_plot("acrStatus", "log(udbpCrRatio)", 
             "Albuminuria",
             "log uVDBP:Creatinine")
 
+# n
+acr %>% 
+  group_by(acrStatus) %>% 
+  summarise(n = n())
+
 # ANOVA
-anova <- aov(formula = log(udbpCrRatio)~acr_status, data = ds1)
+anova <- aov(formula = log(udbpCrRatio)~acrStatus, data = acr)
 summary(anova)
 TukeyHSD(anova)
 rm(anova)
