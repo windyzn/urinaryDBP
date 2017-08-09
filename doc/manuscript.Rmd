@@ -74,9 +74,6 @@ supTabNums <- captioner::captioner(prefix = 'Supplementary Table')
 RESULTS
 =======
 
-Paper 1: Kidney Measures
-------------------------
-
 TABLE 1: Subject characteristics across UDBP tertiles
 
 ```{r}
@@ -107,13 +104,37 @@ sub_char_table <- tableone::CreateTableOne(
         noSpaces = TRUE)
 ```
 
+Paper 1: Kidney Measures
+------------------------
+
+Albuminuriar as assessed by albumin-to-creatinine ratio
+
+```{r acr}
+
+# Box plot of uVDBP in different albuminuria categories
+ds %>% 
+  filter(fVN == "Baseline") %>% 
+  select(acrStatus, udbpCrRatio) %>%
+  na.omit() %>%
+  box_plot_poster("acrStatus", "log(udbpCrRatio)", 
+            "Albuminuria",
+            "log uVDBP:Creatinine")
+
+# ANOVA
+anova <- aov(formula = log(udbpCrRatio)~acr_status, data = ds1)
+summary(anova)
+TukeyHSD(anova)
+rm(anova)
+```
+
+
 Medication
 
 * There are 705 values across all time points with blood pressure medication data
 * This is approximately half of all observations (1852 vs 705)
 * CHECK IF MISSINGNESS == NOT TAKING OR REALLY MISSING!!
 
-```{r}
+```{r med}
 
 ds_med <- ds %>% 
   dplyr::select(SID, VN, fMedsBP) %>% 
