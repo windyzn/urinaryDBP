@@ -208,12 +208,10 @@ ds %>%
                "Visit Number", "log(UDBP)")
 
 # Clean up data
-trend <- ds %>% 
-  dplyr::group_by(fMedsBP, fVN) %>% 
-  dplyr::summarise(UDBP=mean(log(UDBP)))
+trend <- summarise_progress_data(ds, by = "fMedsBP")
 
-# Adjust plot to effectively differentiate data layers 
-plot_progress_data(ds, trend, byvar = "fMedsBP")
+# Adjust plot to effectively differentiate data layers
+plot_progress_data(ds, byvar = "fMedsBP")
 ```
 
 
