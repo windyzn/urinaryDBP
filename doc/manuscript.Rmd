@@ -141,7 +141,7 @@ rm(anova)
 
 ds %>% 
   filter(fVN == "Baseline") %>% 
-  scatter_plot_poster("log(ACR)", "log(udbpCrRatio)",
+  scatter_plot("log(ACR)", "log(udbpCrRatio)",
                "log Albumin:Creatinine Ratio",
                "log UDBP:Creatinine")
 
@@ -150,6 +150,26 @@ ds %>%
 ds %>% 
   filter(fVN == "Baseline") %>% 
   cor.test(formula = ~ ACR + udbpCrRatio, data = ., method = "spearman")
+
+# Linear Regression ---------------------------------------------
+
+ds %>%
+  dplyr::filter(fVN == "Baseline") %>% 
+  # dplyr::mutate(UDBP = UDBP/1000) %>%
+  dplyr::arrange(SID, VN) %>%
+  
+  mason::design("glm") %>% 
+  mason::add_settings(family = stats::gaussian()) %>% 
+  mason::add_variables("yvars", "UDBP") %>% 
+  mason::add_variables("xvars", c("ACR", "eGFR")) %>% 
+  mason::construct() %>% 
+  # mason::add_variables("covariates", c("DM", "MedsBloodPressure")) %>%
+  # mason::construct() %>%
+  mason::add_variables("yvars", "VitaminD") %>% 
+  mason::add_variables("xvars", "UDBP") %>% 
+  mason::construct() %>% 
+  mason::scrub()
+  
 ```
 
 Medication
