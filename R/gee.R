@@ -10,7 +10,7 @@
 #' @export
 
 
-prep_gee_data <- function(data) {
+prep_mason_data <- function(data) {
   data %>%
     dplyr::mutate(
       udbpBase = ifelse(fVN == "Baseline", UDBP, NA),
@@ -40,9 +40,9 @@ prep_gee_data <- function(data) {
 #' @export
 #'
 #' @examples
-analyze_gee <- function(data = project_data,
+mason_gee <- function(data = project_data,
                         y = outcomes,
-                        x = xvar,
+                        x = predictors,
                         covars = covariates,
                         intvar = NULL) {
 
