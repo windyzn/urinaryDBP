@@ -170,18 +170,23 @@ box_plot_poster <- function(data=project_data, xvar, yvar, xlab="", ylab="", fac
 #' @examples
 scatter_plot = function(data=project_data,
                         xvar, yvar, xlab='', ylab='', line = TRUE, facet = FALSE) {
+
   myplot <- ggplot2::ggplot(data, ggplot2::aes_string(x=xvar, y=yvar)) +
-    ggplot2::geom_point(colour = "#0db7c4", size = 1) + #mapping=aes(color=mcr_status)
+    ggplot2::geom_point(size = 1.5, alpha = 0.8) + #mapping=aes(color=mcr_status), #0db7c4
+    ggplot2::scale_fill_brewer(palette = "Dark2") +
+    ggplot2::scale_color_brewer(palette = "Dark2") +
     ggplot2::theme_minimal() +
     ggplot2::theme(panel.grid.major.x = ggplot2::element_blank(),
+                   panel.grid.minor.x = ggplot2::element_blank(),
                    axis.line.y = ggplot2::element_blank(),
-                   text = ggplot2::element_text(size = 14), #family = "Open Sans"
+                   text = ggplot2::element_text(size = 11, family = "Open Sans"), #family = "Open Sans"
                    axis.text.y = ggplot2::element_text(colour = "grey30"), #"grey" normally
                    axis.ticks.y = ggplot2::element_line(colour = "grey"),
                    axis.text.x = ggplot2::element_text(colour = "grey30")) + #angle = 45
                    # axis.title = ggplot2::element_text(family = "Dosis")) + #size = 10 normally
     ggplot2::xlab(xlab) +
     ggplot2::ylab(ylab)
+
   if(line == TRUE & facet == FALSE) {
     myplot +
       ggplot2::geom_smooth(method = loess, colour = "grey50")
@@ -216,7 +221,7 @@ scatter_plot_poster = function(data=project_data,
     ggplot2::geom_point(colour = "#adc9b7", size = 1) +
     ggplot2::theme(panel.grid.major.x = ggplot2::element_blank(),
                    panel.grid.minor.x = ggplot2::element_blank(),
-                   plot.background = ggplot2::element_rect(colour = "grey60"),
+                   panel.background = ggplot2::element_rect(colour = "grey60"),
                    axis.line.y = ggplot2::element_blank(),
                    text = ggplot2::element_text(size = 14, family = "Montserrat Light"),
                    axis.text.y = ggplot2::element_text(colour = "grey30"),
