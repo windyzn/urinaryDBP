@@ -36,7 +36,7 @@ prep_gee_data <- function(data) {
 
 #' Run GEE on prepared project data
 #'
-#' @param data
+#' @param data Cleaned data ready for GEE analysis
 #' @export
 #'
 #' @examples
@@ -90,7 +90,7 @@ explore_gee <- function(data = project_data,
 
 #' Plot GEE results in a forest plot-style
 #'
-#' @param results
+#' @param results Results of GEE analysis using mason package
 #'
 #' @return
 #' @export
