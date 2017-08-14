@@ -1,7 +1,6 @@
 #' Interaction with time
 #'
-#' @return
-#' @export
+#' @return Plot
 #'
 #' @examples
 #'
