@@ -154,21 +154,25 @@ ds %>%
 # Linear Regression ---------------------------------------------
 
 ds %>%
-  dplyr::filter(fVN == "Baseline") %>% 
-  # dplyr::mutate(UDBP = UDBP/1000) %>%
-  dplyr::arrange(SID, VN) %>%
-  
+  prep_mason_data() %>% 
   mason::design("glm") %>% 
   mason::add_settings(family = stats::gaussian()) %>% 
-  mason::add_variables("yvars", "UDBP") %>% 
-  mason::add_variables("xvars", c("ACR", "eGFR")) %>% 
+  mason::add_variables("yvars", "ACR") %>% 
+  mason::add_variables("xvars", "udbpCrRatio") %>% 
   mason::construct() %>% 
   # mason::add_variables("covariates", c("DM", "MedsBloodPressure")) %>%
   # mason::construct() %>%
-  mason::add_variables("yvars", "VitaminD") %>% 
-  mason::add_variables("xvars", "UDBP") %>% 
-  mason::construct() %>% 
+  # mason::add_variables("yvars", "VitaminD") %>% 
+  # mason::add_variables("xvars", "UDBP") %>% 
+  # mason::construct() %>% 
   mason::scrub()
+
+ds %>% 
+  prep_mason_data() %>% 
+  mason_glm(y = "ACR",
+            x = "udbpCrRatio",
+            covars = c("ageBase", "Sex", "Ethnicity", "fDM", "fMedsBP")
+            )
   
 ```
 
@@ -190,7 +194,7 @@ Generalized Estimating Equations
 ```{r gee_analysis}
 
 ds %>% 
-  prep_gee_data() %>% 
+  prep_mason_data() %>% 
   analyze_gee(y = c("ACR", "eGFR"),
               x = "UDBP",
               covars = c("VN", "ageBase", "Sex", "Ethnicity", "BMI", "fDM"))
