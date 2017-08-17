@@ -104,6 +104,34 @@ sub_char_table <- tableone::CreateTableOne(
         noSpaces = TRUE)
 ```
 
+```{r}
+
+# Transformed using log
+ds %>% 
+  dplyr::select(udbpCrRatio, UDBP, fVN) %>% 
+  box_plot("fVN", "log(udbpCrRatio)",
+           "Visit Number", "log UDBP:Creatinine")
+
+# ANOVA Transformed
+anova <- aov(formula = log(udbpCrRatio)~fVN, data = ds)
+summary(anova)
+TukeyHSD(anova)
+rm(anova)
+
+# Untransformed
+ds %>% 
+  dplyr::select(udbpCrRatio, UDBP, fVN) %>% 
+  box_plot("fVN", "udbpCrRatio",
+           "Visit Number", "UDBP:Creatinine")
+
+# ANOVA Untransformed
+anova <- aov(formula = udbpCrRatio~fVN, data = ds)
+summary(anova)
+TukeyHSD(anova)
+rm(anova)
+```
+
+
 Paper 1: Kidney Measures
 ------------------------
 
@@ -134,6 +162,7 @@ summary(anova)
 TukeyHSD(anova)
 rm(anova)
 ```
+
 
 ```{r acr scatterplot}
 
@@ -238,14 +267,17 @@ ds %>%
            ylab="UDBP")
 
 # ANOVA
-
 anova <- aov(formula = log(UDBP)~fVN, data = ds)
 summary(anova)
 TukeyHSD(anova)
 rm(anova)
 
-# By variable
+# n
+ds %>% 
+  group_by(fMedsBP) %>% 
+  summarise(n = n())
 
+# By variable
 ds %>%
   # dplyr::filter(MedsBloodPressure == 0) %>%
   line_plot("fVN", "log(UDBP)", "Sex", "Visit Number", "log(UDBP)")
@@ -255,11 +287,8 @@ ds %>%
   scatter_plot("VN", "log(UDBP)", 
                "Visit Number", "log(UDBP)")
 
-# Clean up data
-trend <- summarise_progress_data(ds, by = "fMedsBP")
-
 # Adjust plot to effectively differentiate data layers
-plot_progress_data(ds, byvar = "fMedsBP")
+plot_progress_data(ds, byvar = "dmStatus")
 ```
 
 
