@@ -42,6 +42,7 @@ fetch_data <- function() {
                          ifelse(IFG == 1 |
                                   IGT == 1, "PreDM",
                                 "NGT")),
+      dmStatus = ifelse(is.na(dmStatus), "NGT", dmStatus),
       dmStatus = factor(dmStatus,
                         levels = c("NGT", "PreDM", "DM"),
                         ordered = TRUE),
