@@ -298,8 +298,8 @@ Interaction with Time
 
 # Unadjusted interaction with visit number
 ds %>% 
-  prep_gee_data() %>% 
-  analyze_gee(y = c("ACR", "eGFR"),
+  prep_mason_data() %>% 
+  mason_gee(y = c("ACR", "eGFR"),
               x = "UDBP",
               covars = c("VN"),
               intvar = "VN") %>% 
@@ -315,9 +315,22 @@ ds %>%
   dplyr::select(Yterms, Xterms, term, p.value, conf.low, conf.high, sample.total)
 
 # Unadjusted interaction with months from baseline
-
+ds %>% 
+  prep_mason_data() %>% 
+  mason_gee(y = c("ACR", "eGFR"),
+              x = "UDBP",
+              covars = c("MonthsFromBaseline"),
+              intvar = "MonthsFromBaseline") %>% 
+  dplyr::select(Yterms, Xterms, term, p.value, conf.low, conf.high, sample.total)
 
 # Adjusted interaction with months from baseline
+ds %>% 
+  prep_mason_data() %>% 
+  mason_gee(y = c("ACR", "eGFR"),
+              x = "UDBP",
+              covars = c("MonthsFromBaseline", "ageBase", "Sex", "Ethnicity", "BMI", "fDM"),
+              intvar = "MonthsFromBaseline") %>% 
+  dplyr::select(Yterms, Xterms, term, p.value, conf.low, conf.high, sample.total)
 ```
 
 
