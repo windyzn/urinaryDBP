@@ -35,9 +35,14 @@ fetch_data <- function() {
       fMedsBP = factor(
         MedsBloodPressure,
         levels = c(0, 1),
-        labels = c("No", "Yes"),
-        ordered = TRUE
+        labels = c("No", "Yes")
       ),
+      Hypertension = ifelse(!(is.na(MedHistHypertenAge)), 1,
+                            ifelse(Systolic > 140 | Diastolic > 90, 1,
+                                   0)),
+      Hypertension = factor(Hypertension,
+                            levels = c(0, 1),
+                            labels = c("No", "Yes")),
       dmStatus = ifelse(DM == 1, "DM",
                          ifelse(IFG == 1 |
                                   IGT == 1, "PreDM",
@@ -111,6 +116,7 @@ fetch_data <- function() {
       MeanArtPressure,
       Systolic,
       Diastolic,
+      Hypertension,
       PTH,
       ALT,
       UrinaryCalcium,
@@ -122,6 +128,7 @@ fetch_data <- function() {
       BirthControl,
       PeriodsStopped,
       PeriodsStoppedAge,
+      MedHistHypertenAge,
       MedsBloodPressure,
       MedsDxDM,
       MonthsFromBaseline
