@@ -221,10 +221,9 @@ ds_med <- ds %>%
 Generalized Estimating Equations
 
 ```{r gee_analysis}
-
 ds %>% 
   prep_mason_data() %>% 
-  analyze_gee(y = c("ACR", "eGFR"),
+  mason_gee(y = c("ACR", "eGFR"),
               x = "UDBP",
               covars = c("VN", "ageBase", "Sex", "Ethnicity", "BMI", "fDM"))
 ```
@@ -287,8 +286,22 @@ ds %>%
   scatter_plot("VN", "log(UDBP)", 
                "Visit Number", "log(UDBP)")
 
-# Adjust plot to effectively differentiate data layers
-plot_progress_data(ds, byvar = "dmStatus")
+# Plot individual progression with mean
+plot_progress_data(ds, byvar = "Hypertension")
+
+# Plot subset of individual progression with mean
+ds %>% 
+  dplyr::filter(Hypertension == 0) %>% 
+  plot_progress_data(byvar = "fMedsBP")
+
+# Interaction between BP medication and hypertension
+ds %>% 
+  prep_mason_data() %>% 
+  mason_gee(y = c("UDBP"),
+              x = "MedsBloodPressure",
+              covars = c("VN", "ageBase", "Sex", "Ethnicity", "BMI", "fDM", "Hypertension"),
+            intvar = "Hypertension") %>% 
+  dplyr::select(Yterms, Xterms, term, p.value, conf.low, conf.high, sample.total)
 ```
 
 
