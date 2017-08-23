@@ -123,7 +123,8 @@ fetch_data <- function() {
       PeriodsStopped,
       PeriodsStoppedAge,
       MedsBloodPressure,
-      MedsDxDM
+      MedsDxDM,
+      MonthsFromBaseline
       # MedName,
       # dplyr::matches("meds")
     )
