@@ -55,6 +55,9 @@ set_options()
 # dim(ds)
 ds <- project_data
 
+dsBase <- ds %>% 
+  dplyr::filter(fVN == "Baseline")
+
 # dsComplete <- ds %>% 
 #   dplyr::group_by(SID) %>%
 #   dplyr::filter(n() == 3) %>%
@@ -74,11 +77,13 @@ supTabNums <- captioner::captioner(prefix = 'Supplementary Table')
 RESULTS
 =======
 
+### Subject Characteristics
+
 TABLE 1: Subject characteristics across UDBP tertiles
 
-```{r subchar_tertile}
+```{r subchar tertile}
 
-sub_char_table <- tableone::CreateTableOne(
+subchar_table_tert <- tableone::CreateTableOne(
   vars = c("Age",
            "Sex",
            "Ethnicity",
@@ -95,6 +100,35 @@ sub_char_table <- tableone::CreateTableOne(
            "MeanArtPressure",
            "dmStatus"),
   strata = c("UDBPTertile"),
+  data = dsBase,
+  factorVars = c("Sex", "Ethnicity", "dmStatus")
+) %>% 
+  print(nonnormal = c("UDBP",
+                      "ACR",
+                      "UrineMicroalbumin"),
+        quote = FALSE,
+        noSpaces = TRUE)
+```
+
+```{r subchar over time}
+
+subchar_table_time <- tableone::CreateTableOne(
+  vars = c("Age",
+           "Sex",
+           "Ethnicity",
+           "BMI",
+           "Waist",
+           "eGFR",
+           "ACR",
+           "UrineCreatinine",
+           "UrineMicroalbumin",
+           "UrinaryCalcium",
+           "UDBP",
+           "Systolic",
+           "Diastolic",
+           "MeanArtPressure",
+           "dmStatus"),
+  strata = c("fVN"),
   data = ds,
   factorVars = c("Sex", "Ethnicity", "dmStatus")
 ) %>% 
@@ -158,20 +192,6 @@ ds %>%
 
 # Linear Regression ---------------------------------------------
 
-ds %>%
-  prep_mason_data() %>% 
-  mason::design("glm") %>% 
-  mason::add_settings(family = stats::gaussian()) %>% 
-  mason::add_variables("yvars", "ACR") %>% 
-  mason::add_variables("xvars", "udbpCrRatio") %>% 
-  mason::construct() %>% 
-  # mason::add_variables("covariates", c("DM", "MedsBloodPressure")) %>%
-  # mason::construct() %>%
-  # mason::add_variables("yvars", "VitaminD") %>% 
-  # mason::add_variables("xvars", "UDBP") %>% 
-  # mason::construct() %>% 
-  mason::scrub()
-
 ds %>% 
   prep_mason_data() %>% 
   mason_glm(y = "ACR",
@@ -207,6 +227,42 @@ anova <- aov(formula = log(udbpCrRatio)~eGFRStatus, data = eGFR)
 summary(anova)
 TukeyHSD(anova)
 rm(anova)
+```
+
+```{r eGFR scatterplot}
+
+# Scatterplot of eGFR and uVDBP ----------------------------------
+
+ds %>% 
+  filter(fVN == "Baseline") %>% 
+  scatter_plot("log(eGFR)", "log(udbpCrRatio)",
+               "log Estimated Glomerular Filtration Rate",
+               "log UDBP:Creatinine")
+
+# Spearman Correlation ------------------------------------------
+
+ds %>% 
+  filter(fVN == "Baseline") %>% 
+  cor.test(formula = ~ eGFR + udbpCrRatio, data = ., method = "spearman")
+
+# Linear Regression ---------------------------------------------
+
+ds %>% 
+  prep_mason_data() %>% 
+  mason_glm(y = "eGFR",
+            x = "udbpCrRatio",
+            covars = c("ageBase", "Sex", "Ethnicity", "fDM", "fMedsBP")
+            )
+  
+```
+
+```{r}
+ds %>% 
+  prep_mason_data() %>% 
+  mason_glm(y = "eGFR",
+            x = "udbpCrRatio"
+            # covars = "ageBase"
+            )
 ```
 
 
@@ -261,7 +317,25 @@ gee %>%
   gee_plot(xlab = "Unit difference with 95% CI in outcome for every unit increase in uVDBP and covariates")
 ```
 
-UDBP over Time
+### Progression
+
+ACR Progression over time
+
+```{r acr progression}
+
+m <- ds %>% 
+  select(SID, fVN, eGFR) %>% 
+  na.omit() %>% 
+  group_by(fVN) %>% 
+  summarise(eGFR = mean(eGFR))
+
+ds %>% 
+  ggplot(aes(x = fVN, y = log(eGFR))) +
+  geom_line(data = ds, aes(group = SID), alpha = 0.1) +
+  geom_line(data = m, size = 5)
+```
+
+
 ```{r udbp_time}
 
 # Transformed using log
@@ -304,7 +378,7 @@ ds %>%
                "Visit Number", "log(UDBP)")
 
 # Plot individual progression with mean
-plot_progress_data(ds, byvar = "Hypertension")
+plot_progress_data_by(ds, byvar = "Hypertension")
 
 # Plot subset of individual progression with mean
 ds %>% 
