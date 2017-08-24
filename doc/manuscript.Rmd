@@ -92,10 +92,11 @@ sub_char_table <- tableone::CreateTableOne(
            "UDBP",
            "Systolic",
            "Diastolic",
-           "MeanArtPressure"),
-  strata = c("UDBPQuartile"),
+           "MeanArtPressure",
+           "dmStatus"),
+  strata = c("UDBPTertile"),
   data = ds,
-  factorVars = c("Sex", "Ethnicity")
+  factorVars = c("Sex", "Ethnicity", "dmStatus")
 ) %>% 
   print(nonnormal = c("UDBP",
                       "ACR",
@@ -259,14 +260,26 @@ gee %>%
 UDBP over Time
 ```{r udbp_time}
 
+# Transformed using log
 ds %>% 
-  box_plot(xvar="fVN",
-           yvar="log(UDBP)",
-           xlab="Visit Number",
-           ylab="UDBP")
+  dplyr::select(udbpCrRatio, UDBP, fVN) %>% 
+  box_plot("fVN", "log(udbpCrRatio)",
+           "Visit Number", "log UDBP:Creatinine")
 
-# ANOVA
-anova <- aov(formula = log(UDBP)~fVN, data = ds)
+# ANOVA Transformed
+anova <- aov(formula = log(udbpCrRatio)~fVN, data = ds)
+summary(anova)
+TukeyHSD(anova)
+rm(anova)
+
+# Untransformed
+ds %>% 
+  dplyr::select(udbpCrRatio, UDBP, fVN) %>% 
+  box_plot("fVN", "udbpCrRatio",
+           "Visit Number", "UDBP:Creatinine")
+
+# ANOVA Untransformed
+anova <- aov(formula = udbpCrRatio~fVN, data = ds)
 summary(anova)
 TukeyHSD(anova)
 rm(anova)
