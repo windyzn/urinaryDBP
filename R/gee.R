@@ -4,7 +4,9 @@
 # Grab or combine data ----------------------------------------------------
 
 
-#' Prepare the project data for analysis through GEE
+#' Prepare the project data for analysis through GEE. The output is a dataframe
+#' with baseline values. Subjects with macroalbuminuria and moderate kidney
+#' disease at baseline is omitted.
 #'
 #' @param data project data
 #' @export
