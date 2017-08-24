@@ -23,7 +23,7 @@ mason_glm <- function(data = project_data,
     mason::add_variables("xvars", x) %>%
     mason::construct() %>% {
       if (co) {
-        mason::add_variables("covariates", covars) %>%
+        mason::add_variables(., "covariates", covars) %>%
         mason::construct()
       } else {
         .
