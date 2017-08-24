@@ -21,8 +21,13 @@ mason_glm <- function(data = project_data,
     mason:::add_settings(family = stats::gaussian()) %>%
     mason::add_variables("yvars", y) %>%
     mason::add_variables("xvars", x) %>%
-    mason::construct() %>%
-
-    mason::construct() %>%
+    mason::construct() %>% {
+      if (co) {
+        mason::add_variables("covariates", covars) %>%
+        mason::construct()
+      } else {
+        .
+      }
+    } %>%
     mason::scrub()
 }
