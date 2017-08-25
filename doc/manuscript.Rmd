@@ -279,60 +279,32 @@ ds_med <- ds %>%
   na.omit()
 ```
 
-Generalized Estimating Equations
-
-```{r gee_analysis}
-ds %>% 
-  prep_mason_data() %>% 
-  mason_gee(y = c("ACR", "eGFR"),
-              x = "UDBP",
-              covars = c("VN", "ageBase", "Sex", "Ethnicity", "BMI", "fDM"))
-```
-
-```{r gee_plot}
-
-gee %>% 
-  dplyr::mutate(Xterms = term) %>% 
-  dplyr::filter(!term == "(Intercept)") %>% 
-  dplyr::mutate(Yterms = factor(Yterms, 
-                                levels = c("ACR", "eGFR"),
-                                ordered = TRUE),
-                Xterms = factor(Xterms,
-                                levels = rev(c("<-Xterm",
-                                           "VN",
-                                           "ageBase",
-                                           "SexMale",
-                                           "EthnicityEuropean",
-                                           "BMI",
-                                           "fDMdiabetes")),
-                                labels = rev(c("uVDBP (ug/mL)",
-                                           "Follow-up Duration (Years)",
-                                           "Baseline Age (Years)",
-                                           "Sex (male)",
-                                           "Ethnicity (European)",
-                                           "BMI (kg/m^2)",
-                                           "Diabetes")),
-                                ordered = TRUE)) %>% 
-  arrange(Xterms) %>% 
-  gee_plot(xlab = "Unit difference with 95% CI in outcome for every unit increase in uVDBP and covariates")
-```
 
 ### Progression
 
-ACR Progression over time
+ACR
 
 ```{r acr progression}
 
-m <- ds %>% 
-  select(SID, fVN, eGFR) %>% 
-  na.omit() %>% 
-  group_by(fVN) %>% 
-  summarise(eGFR = mean(eGFR))
+ds %>% 
+  plot_progress(yvar = "log(ACR)",
+                ylab = "log(ACR)")
+```
+
+eGFR
+```{r eGFR progression}
 
 ds %>% 
-  ggplot(aes(x = fVN, y = log(eGFR))) +
-  geom_line(data = ds, aes(group = SID), alpha = 0.1) +
-  geom_line(data = m, size = 5)
+  plot_progress(yvar = "log(eGFR)",
+                ylab = "log(eGFR)")
+```
+
+UDBP
+```{r udbp progression}
+
+ds %>% 
+  plot_progress(yvar = "log(UDBP)",
+                ylab = "log(UDBP)")
 ```
 
 
@@ -395,8 +367,65 @@ ds %>%
   dplyr::select(Yterms, Xterms, term, p.value, conf.low, conf.high, sample.total)
 ```
 
+### Prospective Analysis
 
-Interaction with Time
+Generalized Estimating Equations
+
+```{r gee_analysis}
+
+# Predictor is baseline UDBP ----------------------------------------
+
+gee <- ds %>% 
+  prep_mason_data() %>% 
+  mason_gee(y = c("ACR", "eGFR"),
+            x = "udbpBase",
+            covars = c("VN", "ageBase", "Sex", "Ethnicity", "BMI", "fDM")) 
+# %>% 
+#   dplyr::filter(!term == "(Intercept)") %>% 
+#   dplyr::select(Yterms, Xterms, term, estimate, p.value, conf.low, conf.high, std.error)
+
+# Predictor is UDBP at all time points ------------------------------
+
+gee <- ds %>% 
+  prep_mason_data() %>% 
+  mason_gee(y = c("ACR", "eGFR"),
+              x = "UDBP",
+              covars = c("VN", "ageBase", "Sex", "Ethnicity", "BMI", "fDM")) 
+# %>% 
+#   dplyr::filter(!term == "(Intercept)") %>% 
+#     dplyr::select(Yterms, Xterms, term, estimate, p.value, conf.low, conf.high, std.error)
+```
+
+```{r gee_plot}
+
+gee %>% 
+  dplyr::mutate(Xterms = term) %>% 
+  dplyr::filter(!term == "(Intercept)") %>% 
+  dplyr::mutate(Yterms = factor(Yterms, 
+                                levels = c("ACR", "eGFR"),
+                                ordered = TRUE),
+                Xterms = factor(Xterms,
+                                levels = rev(c("<-Xterm",
+                                           "VN",
+                                           "ageBase",
+                                           "SexMale",
+                                           "EthnicityEuropean",
+                                           "BMI",
+                                           "fDMdiabetes")),
+                                labels = rev(c("uVDBP (ug/mL)",
+                                           "Follow-up Duration (Years)",
+                                           "Baseline Age (Years)",
+                                           "Sex (male)",
+                                           "Ethnicity (European)",
+                                           "BMI (kg/m^2)",
+                                           "Diabetes")),
+                                ordered = TRUE)) %>% 
+  arrange(Xterms) %>% 
+  gee_plot(xlab = "Unit difference with 95% CI in outcome for every unit increase in uVDBP and covariates")
+```
+
+
+### Interaction with Time
 
 ```{r interaction_vn}
 
