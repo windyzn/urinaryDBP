@@ -14,17 +14,18 @@ plot_progress_by <- function(data,
                                xvar = "fVN", yvar = "log(UDBP)",
                                ylab = "log(UDBP)",
                                byvar, groupby = "SID") {
-  m <- data %>%
-    dplyr::group_by_(byvar, xvar) %>%
-    dplyr::summarise(UDBP=mean(UDBP))
+  # m <- data %>%
+  #   dplyr::group_by_(byvar, xvar) %>%
+  #   dplyr::summarise(UDBP=mean(UDBP))
 
   data %>%
     ggplot2::ggplot(ggplot2::aes_string(x = xvar,
                                y = yvar,
                                colour = byvar)) +
     ggplot2::geom_line(ggplot2::aes_string(group = groupby), alpha = 0.1) +
-    ggplot2::geom_line(data = m, ggplot2::aes_string(group = byvar),
-                       alpha = 0.7, size = 2) +
+    ggplot2::geom_line(ggplot2::aes_string(group = byvar),
+                       alpha = 0.7, size = 2,
+                       stat = "summary", fun.y = mean) +
     ggplot2::ylab(ylab)
 }
 
