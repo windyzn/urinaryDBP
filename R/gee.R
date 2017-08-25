@@ -95,11 +95,10 @@ explore_gee <- function(data = project_data,
 #'
 #' @param results Results of GEE analysis using mason package
 #'
-#' @return
 #' @export
 #'
 #' @examples
-plot_gee_main <- function(results) {
+plot_gee <- function(results) {
   results %>%
     seer::view_main_effect(
       groups = '~Yterms',
@@ -110,3 +109,29 @@ plot_gee_main <- function(results) {
     ) +
     graph_theme(ticks = FALSE)
 }
+
+
+gee %>%
+  dplyr::mutate(Xterms = term) %>%
+  dplyr::filter(!term == "(Intercept)") %>%
+  dplyr::mutate(Yterms = factor(Yterms,
+                                levels = c("ACR", "eGFR"),
+                                ordered = TRUE),
+                Xterms = factor(Xterms,
+                                levels = rev(c("<-Xterm",
+                                               "VN",
+                                               "ageBase",
+                                               "SexMale",
+                                               "EthnicityEuropean",
+                                               "BMI",
+                                               "fDMdiabetes")),
+                                labels = rev(c("uVDBP (ug/mL)",
+                                               "Follow-up Duration (Years)",
+                                               "Baseline Age (Years)",
+                                               "Sex (male)",
+                                               "Ethnicity (European)",
+                                               "BMI (kg/m^2)",
+                                               "Diabetes")),
+                                ordered = TRUE)) %>%
+  arrange(Xterms) %>%
+  gee_plot(xlab = "Unit difference with 95% CI in outcome for every unit increase in uVDBP and covariates")
