@@ -15,6 +15,7 @@
 prep_mason_data <- function(data) {
   data %>%
     dplyr::mutate(
+      UDBP = UDBP/1000, # udbp units to ug/mL
       udbpBase = ifelse(fVN == "Baseline", UDBP, NA),
       ageBase = ifelse(fVN == "Baseline", Age, NA),
       DM = ifelse(DM == 1, "diabetes", "non_dia"),
@@ -29,7 +30,6 @@ prep_mason_data <- function(data) {
     dplyr::group_by(SID) %>%
     tidyr::fill(udbpBase, ageBase) %>%
     dplyr::ungroup() %>%
-    dplyr::mutate(UDBP = UDBP / 1000) %>% #udbp units to ug/mL
     dplyr::arrange(SID, VN)
 }
 
