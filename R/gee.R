@@ -69,8 +69,9 @@ mason_gee <- function(data = project_data,
       }
     } %>%
     mason::construct() %>%
-    mason::scrub() %>%
-    mason::polish_filter(extract_term, "term")
+    mason::scrub()
+  # %>%
+  #   mason::polish_filter(extract_term, "term")
 }
 
 
