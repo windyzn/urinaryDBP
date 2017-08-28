@@ -76,12 +76,12 @@ fetch_data <- function() {
                        labels = c("Trace", "Normal", "High"),
                        ordered_result = TRUE),
       UDBPTertile = ntile(UDBP, 3),
-      # UDBPQuartile = cut(UDBP,
-      #                    breaks = c(0, 12.015, 45.25, 90.975, 2123),
-      #                    labels = c("1st", "2nd", "3rd", "4th"),
-      #                    ordered_result = TRUE),
       udbpCrRatio = UDBP / UrineCreatinine,
-      logUDBPRatio = log(udbpCrRatio)
+      logUDBPRatio = log(udbpCrRatio),
+      vitdStatus = cut(VitaminD,
+                       breaks = c(-Inf, 50, 75, Inf),
+                       labels = c("Deficient", "Insufficient", "Normal"),
+                       ordered = TRUE)
     ) %>%
     dplyr::filter(UDBP < 10000) %>%
     dplyr::filter(eGFR < 200) %>%
@@ -113,6 +113,7 @@ fetch_data <- function() {
       UDBP,
       udbpCrRatio,
       VitaminD,
+      vitdStatus,
       MeanArtPressure,
       Systolic,
       Diastolic,
