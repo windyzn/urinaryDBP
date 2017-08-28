@@ -74,8 +74,8 @@ tabNums <- captioner::captioner(prefix = 'Table')
 supTabNums <- captioner::captioner(prefix = 'Supplementary Table')
 ```
 
-RESULTS
-=======
+PAPER 1: KIDNEY MEASURE RESULTS
+===============================
 
 ### Subject Characteristics
 
@@ -468,9 +468,15 @@ ds %>%
 
 
 
+PAPER 2: VITAMIN D RESULTS
+==========================
 
-Paper 2: Vitamin D
-------------------
+### Subject Characteristics
+
+```{r}
+
+```
+
 
 # Discussion #
 
