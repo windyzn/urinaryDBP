@@ -98,40 +98,30 @@ explore_gee <- function(data = project_data,
 #' @export
 #'
 #' @examples
-plot_gee <- function(results) {
+plot_gee_results <- function(results, yvars,
+                     xlab = "Unit difference with 95% CI in outcome for every unit increase in uVDBP and covariates") {
   results %>%
-    seer::view_main_effect(
-      groups = '~Yterms',
-      legend.title = 'P-value',
-      xlab = 'Standard deviation difference with 95% CI in the outcomes\nfor every 1 unit increase in the component',
-      ylab = 'PLS components',
-      group.label.switch = 'both'
-    ) +
-    graph_theme(ticks = FALSE)
+    dplyr::mutate(Xterms = term) %>%
+    dplyr::filter(!term == "(Intercept)") %>%
+    dplyr::mutate(Yterms = factor(Yterms,
+                                  levels = yvars,
+                                  ordered = TRUE),
+                  Xterms = factor(Xterms,
+                                  levels = rev(c("<-Xterm",
+                                                 "VN",
+                                                 "ageBase",
+                                                 "SexMale",
+                                                 "EthnicityEuropean",
+                                                 "BMI",
+                                                 "fDMdiabetes")),
+                                  labels = rev(c("uVDBP (ug/mL)",
+                                                 "Follow-up Duration (Years)",
+                                                 "Baseline Age (Years)",
+                                                 "Sex (male)",
+                                                 "Ethnicity (European",
+                                                 "BMI (kg/m^2)",
+                                                 "Diabetes")),
+                                  ordered = TRUE)) %>%
+    arrange(Xterms) %>%
+    gee_plot(xlab = xlab)
 }
-
-
-gee %>%
-  dplyr::mutate(Xterms = term) %>%
-  dplyr::filter(!term == "(Intercept)") %>%
-  dplyr::mutate(Yterms = factor(Yterms,
-                                levels = c("ACR", "eGFR"),
-                                ordered = TRUE),
-                Xterms = factor(Xterms,
-                                levels = rev(c("<-Xterm",
-                                               "VN",
-                                               "ageBase",
-                                               "SexMale",
-                                               "EthnicityEuropean",
-                                               "BMI",
-                                               "fDMdiabetes")),
-                                labels = rev(c("uVDBP (ug/mL)",
-                                               "Follow-up Duration (Years)",
-                                               "Baseline Age (Years)",
-                                               "Sex (male)",
-                                               "Ethnicity (European)",
-                                               "BMI (kg/m^2)",
-                                               "Diabetes")),
-                                ordered = TRUE)) %>%
-  arrange(Xterms) %>%
-  gee_plot(xlab = "Unit difference with 95% CI in outcome for every unit increase in uVDBP and covariates")
