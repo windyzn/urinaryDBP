@@ -451,8 +451,42 @@ PAPER 2: VITAMIN D RESULTS
 
 ### Subject Characteristics
 
-```{r}
+```{r subchar vitamind baseline}
 
+# Diet information is not available at baseline. Only VN 3 data is available at the present time.
+
+subchar_vitd_base <- tableone::CreateTableOne(
+  vars = c("Age",
+           "Sex",
+           "Ethnicity",
+           "BMI",
+           "Waist",
+           "eGFR",
+           "ACR",
+           "UrineCreatinine",
+           "UrineMicroalbumin",
+           "UrinaryCalcium",
+           "UDBP",
+           "VitaminD",
+           "PTH",
+           "Systolic",
+           "Diastolic",
+           "MeanArtPressure",
+           "diet_milk",
+           "diet_cal",
+           "diet_supp_cal",
+           "diet_supp_vitd",
+           "OralContraceptive",
+           "dmStatus"),
+  strata = c("vitdStatus"),
+  data = dsBase,
+  factorVars = c("Sex", "Ethnicity", "OralContraceptive", "dmStatus")
+) %>% 
+  print(nonnormal = c("UDBP",
+                      "ACR",
+                      "UrineMicroalbumin"),
+        quote = FALSE,
+        noSpaces = TRUE)
 ```
 
 
