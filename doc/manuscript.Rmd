@@ -140,14 +140,11 @@ subchar_table_time <- tableone::CreateTableOne(
 ```
 
 
-Paper 1: Kidney Measures
-------------------------
-
 ### Cross-sectional
 
-Albuminuria as assessed by albumin-to-creatinine ratio
+#### ACR
 
-```{r acr}
+```{r acr boxplot}
 
 # Clean data
 acr <- ds %>% 
@@ -201,9 +198,9 @@ ds %>%
   
 ```
 
-eGFR
+#### eGFR
 
-```{r eGFR}
+```{r eGFR boxplot}
 
 # Clean data
 eGFR <- ds %>% 
@@ -266,7 +263,7 @@ ds %>%
 ```
 
 
-Medication
+### Medication
 
 * There are 705 values across all time points with blood pressure medication data
 * This is approximately half of all observations (1852 vs 705)
@@ -451,7 +448,7 @@ PAPER 2: VITAMIN D RESULTS
 
 ### Subject Characteristics
 
-```{r subchar vitamind baseline}
+```{r subchar vitd baseline}
 
 # Diet information is not available at baseline. Only VN 3 data is available at the present time.
 
@@ -489,6 +486,99 @@ subchar_vitd_base <- tableone::CreateTableOne(
         noSpaces = TRUE)
 ```
 
+```{r subchar vitd overtime}
+
+# Diet information is not available at baseline. Only VN 3 data is available at the present time.
+
+subchar_vitd_base <- tableone::CreateTableOne(
+  vars = c("Age",
+           "Sex",
+           "Ethnicity",
+           "BMI",
+           "Waist",
+           "eGFR",
+           "ACR",
+           "UrineCreatinine",
+           "UrineMicroalbumin",
+           "UrinaryCalcium",
+           "UDBP",
+           "VitaminD",
+           "PTH",
+           "Systolic",
+           "Diastolic",
+           "MeanArtPressure",
+           "diet_milk",
+           "diet_cal",
+           "diet_supp_cal",
+           "diet_supp_vitd",
+           "OralContraceptive",
+           "dmStatus"),
+  strata = c("vitdStatus"),
+  data = ds,
+  factorVars = c("Sex", "Ethnicity", "OralContraceptive", "dmStatus")
+) %>% 
+  print(nonnormal = c("UDBP",
+                      "ACR",
+                      "UrineMicroalbumin"),
+        quote = FALSE,
+        noSpaces = TRUE)
+```
+
+### Cross-Sectional
+
+```{r vitd boxplot}
+
+# Clean data
+vitd <- ds %>% 
+  filter(fVN == "Baseline") %>% 
+  select(vitdStatus, udbpCrRatio) %>%
+  na.omit()
+
+# Box plot of uVDBP in different albuminuria categories
+vitd %>% 
+  box_plot("vitdStatus", "log(udbpCrRatio)", 
+            "Vitamin D Status",
+            "log uVDBP:Creatinine")
+
+# n
+vitd %>% 
+  group_by(vitdStatus) %>% 
+  summarise(n = n())
+
+# ANOVA
+anova <- aov(formula = log(udbpCrRatio)~vitdStatus, data = vitd)
+summary(anova)
+TukeyHSD(anova)
+rm(anova)
+```
+
+
+```{r vitd scatterplot}
+
+# Scatterplot of ACR and uVDBP ----------------------------------
+
+ds %>% 
+  filter(fVN == "Baseline") %>% 
+  scatter_plot("VitaminD", "log(udbpCrRatio)",
+               "Serum 25(OH)D",
+               "log UDBP:Creatinine")
+
+# Spearman Correlation ------------------------------------------
+
+ds %>% 
+  filter(fVN == "Baseline") %>% 
+  cor.test(formula = ~ VitaminD + udbpCrRatio, data = ., method = "spearman")
+
+# Linear Regression ---------------------------------------------
+
+ds %>% 
+  prep_mason_data() %>% 
+  mason_glm(y = "VitaminD",
+            x = "udbpCrRatio",
+            covars = c("ageBase", "Sex", "Ethnicity", "fDM", "fMedsBP")
+            )
+  
+```
 
 # Discussion #
 
