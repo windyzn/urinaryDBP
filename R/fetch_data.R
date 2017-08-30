@@ -81,7 +81,8 @@ fetch_data <- function() {
       vitdStatus = cut(VitaminD,
                        breaks = c(-Inf, 50, 75, Inf),
                        labels = c("Deficient", "Insufficient", "Normal"),
-                       ordered = TRUE)
+                       ordered = TRUE),
+      OralContraceptive = ifelse(BirthControl == "2", 1, 0)
     ) %>%
     dplyr::filter(UDBP < 10000) %>%
     dplyr::filter(eGFR < 200) %>%
@@ -95,6 +96,7 @@ fetch_data <- function() {
       Ethnicity,
       VN,
       fVN,
+      MonthsFromBaseline,
       Glucose0,
       Glucose120,
       DM,
@@ -127,12 +129,16 @@ fetch_data <- function() {
       CRP,
       Canoe,
       BirthControl,
+      OralContraceptive,
       PeriodsStopped,
       PeriodsStoppedAge,
       MedHistHypertenAge,
       MedsBloodPressure,
       MedsDxDM,
-      MonthsFromBaseline
+      diet_milk,
+      diet_cal,
+      diet_supp_cal,
+      diet_supp_vitd
       # MedName,
       # dplyr::matches("meds")
     )
