@@ -10,8 +10,6 @@
 #'
 #' @param data project data
 #' @export
-
-
 prep_mason_data <- function(data) {
   data %>%
     dplyr::mutate(
@@ -33,6 +31,34 @@ prep_mason_data <- function(data) {
     dplyr::arrange(SID, VN)
 }
 
+
+
+#' Prepare the project data for analysis through GEE. The output is a dataframe
+#' with baseline values. Subjects with deficient vitamin D status at baseline
+#' is omitted.
+#'
+#' @param data
+#'
+#' @export
+prep_mason_data_vitd <- function(data) {
+  data %>%
+    dplyr::mutate(
+      UDBP = UDBP/1000, # udbp units to ug/mL
+      udbpBase = ifelse(fVN == "Baseline", UDBP, NA),
+      ageBase = ifelse(fVN == "Baseline", Age, NA),
+      DM = ifelse(DM == 1, "diabetes", "non_dia"),
+      fDM = relevel(as.factor(DM), "non_dia"),
+      Ethnicity = ifelse(Ethnicity == "European", Ethnicity, "Other"),
+      Ethnicity = relevel(as.factor(Ethnicity), "Other")
+    ) %>%
+    dplyr::filter(!(fVN == "Baseline" &
+                      vitdStatus == "Deficient")) %>%
+    dplyr::arrange(SID, fVN) %>%
+    dplyr::group_by(SID) %>%
+    tidyr::fill(udbpBase, ageBase) %>%
+    dplyr::ungroup() %>%
+    dplyr::arrange(SID, VN)
+}
 
 # Analyze -----------------------------------------------------------------
 
