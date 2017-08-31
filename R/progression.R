@@ -42,7 +42,7 @@ plot_progress <- function(data = project_data,
                                         y = yvar)) +
     ggplot2::geom_line(data = data, ggplot2::aes_string(group = groupby), alpha = 0.7,
                        colour = "#cccccc") +
-    ggplot2::geom_line(aes(group = 1), alpha = 0.7, size = 2, colour = "#050202",
+    ggplot2::geom_line(ggplot2::aes(group = 1), alpha = 0.7, size = 2, colour = "#050202",
                        stat = "summary", fun.y = mean) +
     ggplot2::ylab(ylab)
 }
