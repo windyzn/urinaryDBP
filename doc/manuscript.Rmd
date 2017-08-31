@@ -364,9 +364,7 @@ ds %>%
   dplyr::select(Yterms, Xterms, term, p.value, conf.low, conf.high, sample.total)
 ```
 
-### Prospective Analysis
-
-Generalized Estimating Equations
+### Generalized Estimating Equations
 
 ```{r gee_analysis}
 
@@ -587,6 +585,38 @@ ds %>%
 ds %>% 
   plot_progress(yvar = "VitaminD",
                 ylab = "Serum 25(OH)D")
+```
+
+### Generalized Estimating Equations
+
+```{r gee_analysis}
+
+# Predictor is baseline UDBP ----------------------------------------
+
+gee <- ds %>% 
+  prep_mason_data() %>% 
+  mason_gee(y = c("VitaminD"),
+            x = "udbpBase",
+            covars = c("VN", "ageBase", "Sex", "Ethnicity", "BMI", "PTH", "fDM"))
+  # dplyr::filter(!term == "(Intercept)") %>%
+  # dplyr::select(Yterms, Xterms, term, estimate, p.value, conf.low, conf.high, std.error, sample.total)
+  # knitr::kable()
+
+# Predictor is UDBP at all time points ------------------------------
+
+gee <- ds %>% 
+  prep_mason_data() %>% 
+  mason_gee(y = c("VitaminD"),
+              x = "UDBP",
+              covars = c("VN", "ageBase", "Sex", "Ethnicity", "BMI", "PTH", "fDM")) %>%
+  dplyr::filter(!term == "(Intercept)") %>%
+  dplyr::select(Yterms, Xterms, term, estimate, p.value, conf.low, conf.high, std.error, sample.total)
+```
+
+```{r gee_plot}
+
+plot_gee_results_vitd(gee,
+                 yvars = c("VitaminD"))
 ```
 
 
