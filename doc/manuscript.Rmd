@@ -297,7 +297,7 @@ ds %>%
 ```
 
 UDBP
-```{r udbp progression}
+ ```{r udbp progression}
 
 ds %>% 
   plot_progress(yvar = "log(UDBP)",
@@ -336,18 +336,13 @@ ds %>%
   group_by(fMedsBP) %>% 
   summarise(n = n())
 
-# By variable
-ds %>%
-  # dplyr::filter(MedsBloodPressure == 0) %>%
-  line_plot("fVN", "log(UDBP)", "Sex", "Visit Number", "log(UDBP)")
-
 # LOESS curve
 ds %>% 
   scatter_plot("VN", "log(UDBP)", 
                "Visit Number", "log(UDBP)")
 
 # Plot individual progression with mean
-plot_progress_data_by(ds, byvar = "Hypertension")
+plot_progress_by(ds, byvar = "Sex")
 
 # Plot subset of individual progression with mean
 ds %>% 
