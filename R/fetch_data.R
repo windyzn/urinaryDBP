@@ -82,21 +82,24 @@ fetch_data <- function() {
                        breaks = c(-Inf, 50, 75, Inf),
                        labels = c("Deficient", "Insufficient", "Normal"),
                        ordered = TRUE),
-      OralContraceptive = ifelse(BirthControl == "2", 1, 0)
+      OralContraceptive = ifelse(BirthControl == "2", 1, 0),
+      Season = ifelse(lubridate::month(VisitDate) %in% c("5", "6", "7", "8", "9", "10"),
+                      "Summer", "Winter")
     ) %>%
     dplyr::filter(UDBP < 10000) %>%
     dplyr::filter(eGFR < 200) %>%
     dplyr::filter(Creatinine < 200) %>%
     dplyr::select(
       SID,
+      VN,
+      fVN,
+      MonthsFromBaseline,
+      VisitDate,
       BMI,
       Waist,
       Age,
       Sex,
       Ethnicity,
-      VN,
-      fVN,
-      MonthsFromBaseline,
       Glucose0,
       Glucose120,
       DM,
@@ -116,6 +119,7 @@ fetch_data <- function() {
       udbpCrRatio,
       VitaminD,
       vitdStatus,
+      Season,
       MeanArtPressure,
       Systolic,
       Diastolic,
@@ -125,6 +129,7 @@ fetch_data <- function() {
       UrinaryCalcium,
       ScrKidDis,
       fMedsBP,
+      MET,
       SmokeCigs,
       CRP,
       Canoe,
