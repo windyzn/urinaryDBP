@@ -58,10 +58,10 @@ ds <- project_data
 dsBase <- ds %>% 
   dplyr::filter(fVN == "Baseline")
 
-# dsComplete <- ds %>% 
-#   dplyr::group_by(SID) %>%
-#   dplyr::filter(n() == 3) %>%
-#   dplyr::ungroup()
+dsComplete <- ds %>%
+  dplyr::group_by(SID) %>%
+  dplyr::filter(n() == 3) %>%
+  dplyr::ungroup()
 ```
 
 ```{r caption_setup}
@@ -461,6 +461,7 @@ subchar_vitd_base <- tableone::CreateTableOne(
            "udbpCrRatio",
            "VitaminD",
            "PTH",
+           "MET",
            "Systolic",
            "Diastolic",
            "MeanArtPressure",
