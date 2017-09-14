@@ -58,10 +58,13 @@ ds <- project_data
 dsBase <- ds %>% 
   dplyr::filter(fVN == "Baseline")
 
+# Subjects with measurements at all visit numbers
+
 dsComplete <- ds %>%
   dplyr::group_by(SID) %>%
   dplyr::filter(n() == 3) %>%
   dplyr::ungroup()
+
 ```
 
 ```{r caption_setup}
@@ -81,7 +84,7 @@ PAPER 1: KIDNEY MEASURE RESULTS
 
 TABLE 1: Subject characteristics across UDBP tertiles
 
-```{r subchar tertile}
+```{r subchar udbp tertile}
 
 subchar_table_tert <- tableone::CreateTableOne(
   vars = c("Age",
@@ -100,7 +103,7 @@ subchar_table_tert <- tableone::CreateTableOne(
            "Diastolic",
            "MeanArtPressure",
            "dmStatus"),
-  strata = c("UDBPTertile"),
+  strata = c("udbpTertile"),
   data = dsBase,
   factorVars = c("Sex", "Ethnicity", "dmStatus")
 ) %>% 
@@ -110,6 +113,40 @@ subchar_table_tert <- tableone::CreateTableOne(
         quote = FALSE,
         noSpaces = TRUE)
 ```
+
+TABLE 2: Subject characteristics across UDBP:cR tertiles
+
+```{r subchar udbpCrRatio tertile}
+
+subchar_table_tert <- tableone::CreateTableOne(
+  vars = c("Age",
+           "Sex",
+           "Ethnicity",
+           "BMI",
+           "Waist",
+           "eGFR",
+           "ACR",
+           "UrineCreatinine",
+           "UrineMicroalbumin",
+           "UrinaryCalcium",
+           "UDBP",
+           "udbpCrRatio",
+           "Systolic",
+           "Diastolic",
+           "MeanArtPressure",
+           "dmStatus"),
+  strata = c("udbpCrTertile"),
+  data = dsBase,
+  factorVars = c("Sex", "Ethnicity", "dmStatus")
+) %>% 
+  print(nonnormal = c("UDBP",
+                      "ACR",
+                      "UrineMicroalbumin"),
+        quote = FALSE,
+        noSpaces = TRUE)
+```
+
+TABLE 3: Subject characteristics across time
 
 ```{r subchar over time}
 
@@ -123,8 +160,8 @@ subchar_table_time <- tableone::CreateTableOne(
            "ACR",
            "UrineCreatinine",
            "UrineMicroalbumin",
-           "UrinaryCalcium",
            "UDBP",
+           "udbpCrRatio",
            "Systolic",
            "Diastolic",
            "MeanArtPressure",
@@ -134,12 +171,44 @@ subchar_table_time <- tableone::CreateTableOne(
   factorVars = c("Sex", "Ethnicity", "dmStatus")
 ) %>% 
   print(nonnormal = c("UDBP",
+                      "udbpCrRatio",
                       "ACR",
                       "UrineMicroalbumin"),
         quote = FALSE,
         noSpaces = TRUE)
 ```
 
+TABLE 4: Subject characteristics across time (complete data)
+
+```{r subchar over time complete}
+
+subchar_table_time <- tableone::CreateTableOne(
+  vars = c("Age",
+           "Sex",
+           "Ethnicity",
+           "BMI",
+           "Waist",
+           "eGFR",
+           "ACR",
+           "UrineCreatinine",
+           "UrineMicroalbumin",
+           "UDBP",
+           "udbpCrRatio",
+           "Systolic",
+           "Diastolic",
+           "MeanArtPressure",
+           "dmStatus"),
+  strata = c("fVN"),
+  data = dsComplete,
+  factorVars = c("Sex", "Ethnicity", "dmStatus")
+) %>% 
+  print(nonnormal = c("UDBP",
+                      "udbpCrRatio",
+                      "ACR",
+                      "UrineMicroalbumin"),
+        quote = FALSE,
+        noSpaces = TRUE)
+```
 
 ### Cross-sectional
 
