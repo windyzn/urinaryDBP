@@ -41,12 +41,15 @@ prep_mason_data_kidney <- function(data) {
       ageBase = ifelse(fVN == "Baseline", Age, NA),
       DM = ifelse(DM == 1, "diabetes", "non_dia"),
       fDM = relevel(as.factor(DM), "non_dia"),
+      PreDM = ifelse(dmStatus == "PreDM", "PreDM", "nPreDm"),
+      fPreDM = relevel(as.factor(PreDM), "nPreDM"),
       Ethnicity = ifelse(Ethnicity == "European", Ethnicity, "Other"),
       Ethnicity = relevel(as.factor(Ethnicity), "Other")
     ) %>%
     dplyr::filter(!(fVN == "Baseline" &
                       acrStatus == "Macroalbuminuria")) %>%
     dplyr::filter(!(fVN == "Baseline" & eGFRStatus == "Moderate")) %>%
+    dplyr::filter(!(fVN == "Baseline" & dmStatus == "DM")) %>%
     dplyr::arrange(SID, fVN) %>%
     dplyr::group_by(SID) %>%
     tidyr::fill(udbpBase, ageBase) %>%
