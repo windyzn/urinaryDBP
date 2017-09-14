@@ -356,6 +356,12 @@ ACR
 ds %>% 
   plot_progress(yvar = "log(ACR)",
                 ylab = "log(ACR)")
+
+# Complete data
+
+dsComplete %>% 
+  plot_progress(yvar = "log(ACR)",
+                ylab = "log(ACR)")
 ```
 
 eGFR
@@ -364,12 +370,24 @@ eGFR
 ds %>% 
   plot_progress(yvar = "log(eGFR)",
                 ylab = "log(eGFR)")
+
+# Complete data
+
+dsComplete %>% 
+  plot_progress(yvar = "log(eGFR)",
+                ylab = "log(eGFR)")
 ```
 
 UDBP
- ```{r udbp progression}
+```{r udbp progression}
 
 ds %>% 
+  plot_progress(yvar = "log(UDBP)",
+                ylab = "log(UDBP)")
+
+# Complete data
+
+dsComplete %>% 
   plot_progress(yvar = "log(UDBP)",
                 ylab = "log(UDBP)")
 ```
