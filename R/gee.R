@@ -41,8 +41,8 @@ prep_mason_data_kidney <- function(data) {
       ageBase = ifelse(fVN == "Baseline", Age, NA),
       DM = ifelse(DM == 1, "diabetes", "non_dia"),
       fDM = relevel(as.factor(DM), "non_dia"),
-      PreDM = ifelse(dmStatus == "PreDM", "PreDM", "nPreDm"),
-      fPreDM = relevel(as.factor(PreDM), "nPreDM"),
+      fPreDM = ifelse(dmStatus == "PreDM", "PreDM", "nPreDm"),
+      fDysglycemia = ifelse(!(dmStatus == "NGT"), "Dysglycemia", "nDysglycemia"),
       Ethnicity = ifelse(Ethnicity == "European", Ethnicity, "Other"),
       Ethnicity = relevel(as.factor(Ethnicity), "Other")
     ) %>%
@@ -164,15 +164,15 @@ plot_gee_results_kidney <- function(results, yvars,
                                                  "ageBase",
                                                  "SexMale",
                                                  "EthnicityEuropean",
-                                                 "BMI",
-                                                 "fDMdiabetes")),
+                                                 "fPreDMPreDM",
+                                                 "fDysglycemianDysglycemia")),
                                   labels = rev(c("Baseline uVDBP (ug/mL)",
                                                  "Follow-up Duration (Years)",
                                                  "Baseline Age (Years)",
                                                  "Sex (male)",
-                                                 "Ethnicity (European",
-                                                 "BMI (kg/m^2)",
-                                                 "Diabetes")),
+                                                 "Ethnicity (European)",
+                                                 "Pre-Diabetes",
+                                                 "Dysglycemia")),
                                   ordered = TRUE)) %>%
     arrange(Xterms) %>%
     gee_plot(xlab = xlab)

@@ -477,21 +477,20 @@ ds %>%
 # Predictor is baseline UDBP ----------------------------------------
 
 gee <- ds %>% 
-  prep_mason_data() %>% 
+  prep_mason_data_kidney() %>% 
   mason_gee(y = c("ACR", "eGFR"),
             x = "udbpBase",
-            covars = c("VN", "ageBase", "Sex", "Ethnicity", "BMI", "fDM")) 
-# %>% 
-#   dplyr::filter(!term == "(Intercept)") %>% 
-#   dplyr::select(Yterms, Xterms, term, estimate, p.value, conf.low, conf.high, std.error)
+            covars = c("VN", "ageBase", "Sex", "Ethnicity", "fPreDM", "fDysglycemia")) %>%
+  dplyr::filter(!term == "(Intercept)") %>%
+  dplyr::select(Yterms, Xterms, term, estimate, p.value, conf.low, conf.high, std.error)
 
 # Predictor is UDBP at all time points ------------------------------
 
 gee <- ds %>% 
-  prep_mason_data() %>% 
+  prep_mason_data_kidney() %>% 
   mason_gee(y = c("ACR", "eGFR"),
               x = "UDBP",
-              covars = c("VN", "ageBase", "Sex", "Ethnicity", "BMI", "fDM")) 
+              covars = c("VN", "ageBase", "Sex", "Ethnicity", "fDM")) 
 # %>% 
 #   dplyr::filter(!term == "(Intercept)") %>% 
 #     dplyr::select(Yterms, Xterms, term, estimate, p.value, conf.low, conf.high, std.error)
@@ -499,7 +498,7 @@ gee <- ds %>%
 
 ```{r gee_plot}
 
-plot_gee_results(gee,
+plot_gee_results_kidney(gee,
                  yvars = c("ACR", "eGFR"))
 ```
 
