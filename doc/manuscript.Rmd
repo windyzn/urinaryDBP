@@ -362,9 +362,17 @@ ds %>%
 dsComplete %>% 
   plot_progress(yvar = "log(ACR)",
                 ylab = "log(ACR)")
+
+# ANOVA
+
+anova <- aov(formula = log(ACR)~fVN, data = ds)
+summary(anova)
+TukeyHSD(anova)
+rm(anova)
 ```
 
 eGFR
+
 ```{r eGFR progression}
 
 ds %>% 
@@ -376,20 +384,35 @@ ds %>%
 dsComplete %>% 
   plot_progress(yvar = "log(eGFR)",
                 ylab = "log(eGFR)")
+
+# ANOVA
+
+anova <- aov(formula = log(eGFR)~fVN, data = dsComplete)
+summary(anova)
+TukeyHSD(anova)
+rm(anova)
 ```
 
 UDBP
+
 ```{r udbp progression}
 
 ds %>% 
-  plot_progress(yvar = "log(UDBP)",
-                ylab = "log(UDBP)")
+  plot_progress(yvar = "log(udbpCrRatio)",
+                ylab = "log(UDBP:Cr)")
 
 # Complete data
 
 dsComplete %>% 
-  plot_progress(yvar = "log(UDBP)",
-                ylab = "log(UDBP)")
+  plot_progress(yvar = "log(udbpCrRatio)",
+                ylab = "log(UDBP:Cr)")
+
+# ANOVA
+
+anova <- aov(formula = log(udbpCrRatio)~fVN, data = dsComplete)
+summary(anova)
+TukeyHSD(anova)
+rm(anova)
 ```
 
 
