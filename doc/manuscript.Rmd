@@ -490,10 +490,9 @@ gee <- ds %>%
   prep_mason_data_kidney() %>% 
   mason_gee(y = c("ACR", "eGFR"),
               x = "UDBP",
-              covars = c("VN", "ageBase", "Sex", "Ethnicity", "fDM")) 
-# %>% 
-#   dplyr::filter(!term == "(Intercept)") %>% 
-#     dplyr::select(Yterms, Xterms, term, estimate, p.value, conf.low, conf.high, std.error)
+              covars = c("VN", "ageBase", "Sex", "Ethnicity", "fPreDM", "fDysglycemia")) %>%
+  dplyr::filter(!term == "(Intercept)") %>%
+  dplyr::select(Yterms, Xterms, term, estimate, p.value, conf.low, conf.high, std.error)
 ```
 
 ```{r gee_plot}
