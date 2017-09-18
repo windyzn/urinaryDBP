@@ -121,7 +121,8 @@ mason_gee <- function(data = project_data,
       }
     } %>%
     mason::construct() %>%
-    mason::scrub()
+    mason::scrub() %>%
+    mason::polish_renaming(rename_variables)
   # %>%
   #   mason::polish_filter(extract_term, "term")
 }
@@ -160,18 +161,18 @@ plot_gee_results_kidney <- function(results, yvars,
                                   ordered = TRUE),
                   Xterms = factor(Xterms,
                                   levels = rev(c("<-Xterm",
-                                                 "VN",
+                                                 "MonthsFromBaseline",
                                                  "ageBase",
                                                  "SexMale",
                                                  "EthnicityEuropean",
                                                  "fPreDMPreDM",
                                                  "fDysglycemianDysglycemia")),
                                   labels = rev(c("Baseline uVDBP (ug/mL)",
-                                                 "Follow-up Duration (Years)",
+                                                 "Follow-up Duration (Months)",
                                                  "Baseline Age (Years)",
                                                  "Sex (male)",
                                                  "Ethnicity (European)",
-                                                 "Pre-Diabetes",
+                                                 "Prediabetes",
                                                  "Dysglycemia")),
                                   ordered = TRUE)) %>%
     arrange(Xterms) %>%
