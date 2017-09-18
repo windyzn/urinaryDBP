@@ -729,28 +729,65 @@ rm(anova)
 
 # Scatterplot of ACR and uVDBP ----------------------------------
 
-ds %>% 
-  filter(fVN == "Baseline") %>% 
-  scatter_plot("VitaminD", "log(udbpCrRatio)",
-               "Serum 25(OH)D",
-               "log UDBP:Creatinine")
+dsBase %>% 
+  scatter_plot("log(udbpCrRatio)", "VitaminD", 
+               "log UDBP:Creatinine",
+               "Serum 25(OH)D")
 
 # Spearman Correlation ------------------------------------------
 
-ds %>% 
-  filter(fVN == "Baseline") %>% 
+dsBase %>% 
   cor.test(formula = ~ VitaminD + udbpCrRatio, data = ., method = "spearman")
 
 # Linear Regression ---------------------------------------------
 
-ds %>% 
+dsBase %>% 
   prep_mason_data() %>% 
   mason_glm(y = "VitaminD",
             x = "udbpCrRatio",
-            covars = c("ageBase", "Sex", "Ethnicity", "fDM", "fMedsBP")
-            )
+            covars = c("ageBase", "Sex", "Ethnicity", "MET", "BMI", "Season", "fDM")
+            ) %>% 
+  dplyr::filter(!term == "(Intercept)") %>%
+  dplyr::mutate(p = round(p.value, 2),
+    p = ifelse(p == "0", "<0.001", p),
+    estCI = paste0(round(estimate, 2), " (",
+                               round(conf.low, 2), ", ",
+                               round(conf.high, 2), ")")) %>% 
+  dplyr::select(Yterms, Xterms, term, estCI, p) %>% 
+  # tidyr::spread(Yterms, estCI) %>%
+  pander::pander()
   
 ```
+
+PTH
+
+```{r}
+
+# Scatterplot
+
+dsBase %>% 
+  scatter_plot("PTH", "VitaminD", 
+               "Parathyroid Hormone (pmol/L)",
+               "Serum 25(OH)D (nmol/L)")
+
+# Linear Regression ---------------------------------------------
+
+dsBase %>% 
+  prep_mason_data() %>% 
+  mason_glm(y = "VitaminD",
+            x = "PTH"
+            ) %>% 
+  dplyr::filter(!term == "(Intercept)") %>%
+  dplyr::mutate(p = round(p.value, 2),
+    p = ifelse(p == "0", "<0.001", p),
+    estCI = paste0(round(estimate, 2), " (",
+                               round(conf.low, 2), ", ",
+                               round(conf.high, 2), ")")) %>% 
+  dplyr::select(Yterms, Xterms, term, estCI, p) %>% 
+  # tidyr::spread(Yterms, estCI) %>%
+  pander::pander()
+```
+
 
 ### Progression
 
@@ -759,9 +796,47 @@ ds %>%
 ds %>% 
   plot_progress(yvar = "VitaminD",
                 ylab = "Serum 25(OH)D")
+
+# Complete data
+
+dsComplete %>% 
+  plot_progress(yvar = "VitaminD",
+                ylab = "Serum 25(OH)D")
 ```
 
 ### Generalized Estimating Equations
+
+```{r vitD gee baseline}
+
+# Predictor is baseline UDBP ----------------------------------------
+
+gee_baseline <- ds %>% 
+  prep_mason_data_kidney() %>% 
+  mason_gee(y = c("ACR", "eGFR"),
+            x = "udbpBase",
+            covars = c("MonthsFromBaseline", "ageBase", "Sex", "Ethnicity", "BMI", "Season", "fDM")) %>%
+  dplyr::filter(!term == "(Intercept)") %>%
+  dplyr::select(Yterms, Xterms, term, estimate, p.value, conf.low, conf.high, std.error)
+
+# GEE table ----------------------------------------------------------
+
+gee_baseline %>% 
+  dplyr::mutate(p = round(p.value, 2),
+    p = ifelse(p == "0", "<0.001", p),
+    estCI = paste0(round(estimate, 2), " (",
+                               round(conf.low, 2), ", ",
+                               round(conf.high, 2), ")")) %>% 
+  dplyr::select(Yterms, Xterms, term, estCI, p) %>% 
+  # tidyr::spread(Yterms, estCI) %>%
+  pander::pander()
+
+# Plot ---------------------------------------------------------------
+
+plot_gee_results_kidney(gee_baseline,
+                 yvars = c("uAlbumin:creatinine (mg/mmol)", 
+                           "eGFR (ml/min/1.73m^2)"))
+```
+
 
 ```{r gee_analysis}
 
