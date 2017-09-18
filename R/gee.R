@@ -129,20 +129,6 @@ mason_gee <- function(data = project_data,
 }
 
 
-explore_gee <- function(data = project_data,
-                        covars = covariates, caption = NULL, graph = FALSE) {
-  m <- analyze_gee(data = data, covars = covars)
-  m <- filter(m, p.value <= 0.05)
-  print(nrow(m))
-  if (graph) {
-    print(caption)
-    plot_gee_main(m)
-  } else {
-    table_gee_main(m, caption = caption)
-  }
-}
-
-
 # Plotting ----------------------------------------------------------------
 
 #' Plot GEE results in a forest plot-style
@@ -161,13 +147,13 @@ plot_gee_results_kidney <- function(results, yvars,
                                   levels = yvars,
                                   ordered = TRUE),
                   Xterms = factor(Xterms,
-                                  levels = rev(c("<-Xterm",
-                                                 "MonthsFromBaseline",
-                                                 "ageBase",
+                                  levels = rev(c("Baseline uVDBP (ug/mL)",
+                                                 "Follow-up Duration (months)",
+                                                 "Baseline Age (years)",
                                                  "SexMale",
                                                  "EthnicityEuropean",
-                                                 "fPreDMPreDM",
-                                                 "fDysglycemianDysglycemia")),
+                                                 "Prediabetes",
+                                                 "Dysglycemia")),
                                   labels = rev(c("Baseline uVDBP (ug/mL)",
                                                  "Follow-up Duration (Months)",
                                                  "Baseline Age (Years)",
