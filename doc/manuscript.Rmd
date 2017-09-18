@@ -363,14 +363,42 @@ dsComplete %>%
   plot_progress(yvar = "log(ACR)",
                 ylab = "log(ACR)")
 
-# ANOVA
+# ANOVA ------------------------------------------------------------
 
 anova <- aov(formula = log(ACR)~fVN, data = ds)
 summary(anova)
 TukeyHSD(anova)
 rm(anova)
 
+# GEE ---------------------------------------------------------------
 
+ds %>% 
+  prep_mason_data() %>% 
+  mason_gee(y = c("ACR", "eGFR"),
+            x = "VN") %>%
+  dplyr::filter(!term == "(Intercept)") %>%
+  dplyr::mutate(p = round(p.value, 2),
+    p = ifelse(p == "0", "<0.001", p),
+    estCI = paste0(round(estimate, 2), " (",
+                               round(conf.low, 2), ", ",
+                               round(conf.high, 2), ")")) %>% 
+  dplyr::select(Yterms, Xterms, term, estCI, p) %>% 
+  # tidyr::spread(Yterms, estCI) %>%
+  pander::pander()
+
+dsComplete %>% 
+  prep_mason_data() %>% 
+  mason_gee(y = c("ACR", "eGFR"),
+            x = "VN") %>%
+  dplyr::filter(!term == "(Intercept)") %>%
+  dplyr::mutate(p = round(p.value, 2),
+    p = ifelse(p == "0", "<0.001", p),
+    estCI = paste0(round(estimate, 2), " (",
+                               round(conf.low, 2), ", ",
+                               round(conf.high, 2), ")")) %>% 
+  dplyr::select(Yterms, Xterms, term, estCI, p) %>% 
+  # tidyr::spread(Yterms, estCI) %>%
+  pander::pander()
 ```
 
 eGFR
@@ -393,6 +421,8 @@ anova <- aov(formula = log(eGFR)~fVN, data = dsComplete)
 summary(anova)
 TukeyHSD(anova)
 rm(anova)
+
+# GEE see above code chunk (ACR)
 ```
 
 UDBP
@@ -474,6 +504,8 @@ ds %>%
 
 ### Generalized Estimating Equations
 
+GEE where predictor is baseline UDBP
+
 ```{r gee_baseline}
 
 # Predictor is baseline UDBP ----------------------------------------
@@ -489,19 +521,23 @@ gee_baseline <- ds %>%
 # GEE table ----------------------------------------------------------
 
 gee_baseline %>% 
-  dplyr::mutate(estCI = paste0(round(estimate, 2), " (",
+  dplyr::mutate(p = round(p.value, 2),
+    p = ifelse(p == "0", "<0.001", p),
+    estCI = paste0(round(estimate, 2), " (",
                                round(conf.low, 2), ", ",
                                round(conf.high, 2), ")")) %>% 
-  dplyr::select(Yterms, Xterms, term, estCI) %>% 
-  tidyr::spread(Yterms, estCI) %>% 
+  dplyr::select(Yterms, Xterms, term, estCI, p) %>% 
+  # tidyr::spread(Yterms, estCI) %>%
   pander::pander()
 
 # Plot ---------------------------------------------------------------
 
 plot_gee_results_kidney(gee_baseline,
-                 yvars = c("ACR", "eGFR"))
+                 yvars = c("uAlbumin:creatinine (mg/mmol)", 
+                           "eGFR (ml/min/1.73m^2)"))
 ```
 
+GEE where predictor is UDBP over time
 
 ```{r gee}
 # Predictor is UDBP at all time points ------------------------------
@@ -517,17 +553,20 @@ gee <- ds %>%
 # GEE table ----------------------------------------------------------
 
 gee %>% 
-  dplyr::mutate(estCI = paste0(round(estimate, 2), " (",
+  dplyr::mutate(p = round(p.value, 2),
+    p = ifelse(p == "0", "<0.001", p),
+    estCI = paste0(round(estimate, 2), " (",
                                round(conf.low, 2), ", ",
                                round(conf.high, 2), ")")) %>% 
-  dplyr::select(Yterms, Xterms, term, estCI) %>% 
-  tidyr::spread(Yterms, estCI) %>% 
+  dplyr::select(Yterms, Xterms, term, estCI, p) %>% 
+  # tidyr::spread(Yterms, estCI) %>%
   pander::pander()
 
 # Plot ---------------------------------------------------------------
 
 plot_gee_results_kidney(gee,
-                 yvars = c("ACR", "eGFR"))
+                 yvars = c("uAlbumin:creatinine (mg/mmol)", 
+                           "eGFR (ml/min/1.73m^2)"))
 ```
 
 
