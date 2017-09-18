@@ -369,6 +369,8 @@ anova <- aov(formula = log(ACR)~fVN, data = ds)
 summary(anova)
 TukeyHSD(anova)
 rm(anova)
+
+
 ```
 
 eGFR
@@ -472,11 +474,11 @@ ds %>%
 
 ### Generalized Estimating Equations
 
-```{r gee_analysis}
+```{r gee_baseline}
 
 # Predictor is baseline UDBP ----------------------------------------
 
-gee <- ds %>% 
+gee_baseline <- ds %>% 
   prep_mason_data_kidney() %>% 
   mason_gee(y = c("ACR", "eGFR"),
             x = "udbpBase",
@@ -484,6 +486,24 @@ gee <- ds %>%
   dplyr::filter(!term == "(Intercept)") %>%
   dplyr::select(Yterms, Xterms, term, estimate, p.value, conf.low, conf.high, std.error)
 
+# GEE table ----------------------------------------------------------
+
+gee_baseline %>% 
+  dplyr::mutate(estCI = paste0(round(estimate, 2), " (",
+                               round(conf.low, 2), ", ",
+                               round(conf.high, 2), ")")) %>% 
+  dplyr::select(Yterms, Xterms, term, estCI) %>% 
+  tidyr::spread(Yterms, estCI) %>% 
+  pander::pander()
+
+# Plot ---------------------------------------------------------------
+
+plot_gee_results_kidney(gee_baseline,
+                 yvars = c("ACR", "eGFR"))
+```
+
+
+```{r gee}
 # Predictor is UDBP at all time points ------------------------------
 
 gee <- ds %>% 
@@ -493,9 +513,18 @@ gee <- ds %>%
               covars = c("MonthsFromBaseline", "ageBase", "Sex", "Ethnicity", "fPreDM", "fDysglycemia")) %>%
   dplyr::filter(!term == "(Intercept)") %>%
   dplyr::select(Yterms, Xterms, term, estimate, p.value, conf.low, conf.high, std.error)
-```
 
-```{r gee_plot}
+# GEE table ----------------------------------------------------------
+
+gee %>% 
+  dplyr::mutate(estCI = paste0(round(estimate, 2), " (",
+                               round(conf.low, 2), ", ",
+                               round(conf.high, 2), ")")) %>% 
+  dplyr::select(Yterms, Xterms, term, estCI) %>% 
+  tidyr::spread(Yterms, estCI) %>% 
+  pander::pander()
+
+# Plot ---------------------------------------------------------------
 
 plot_gee_results_kidney(gee,
                  yvars = c("ACR", "eGFR"))
