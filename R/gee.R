@@ -41,10 +41,11 @@ prep_mason_data_kidney <- function(data) {
       ageBase = ifelse(fVN == "Baseline", Age, NA),
       DM = ifelse(DM == 1, "diabetes", "non_dia"),
       fDM = relevel(as.factor(DM), "non_dia"),
-      fPreDM = ifelse(dmStatus == "PreDM", "PreDM", "nPreDm"),
-      fDysglycemia = ifelse(!(dmStatus == "NGT"), "Dysglycemia", "nDysglycemia"),
+      fPreDM = ifelse(dmStatus == "PreDM", "PreDM", "notPreDM"),
+      fDysglycemia = ifelse(!(dmStatus == "NGT"), "Dysglycemia", "notDysglycemia"),
       Ethnicity = ifelse(Ethnicity == "European", Ethnicity, "Other"),
-      Ethnicity = relevel(as.factor(Ethnicity), "Other")
+      Ethnicity = relevel(as.factor(Ethnicity), "Other"),
+      fDysglycemia = relevel(as.factor(fDysglycemia), "notDysglycemia")
     ) %>%
     dplyr::filter(!(fVN == "Baseline" &
                       acrStatus == "Macroalbuminuria")) %>%
@@ -122,7 +123,7 @@ mason_gee <- function(data = project_data,
     } %>%
     mason::construct() %>%
     mason::scrub() %>%
-    mason::polish_renaming(rename_variables)
+    mason::polish_renaming(rename_gee_kidney)
   # %>%
   #   mason::polish_filter(extract_term, "term")
 }
