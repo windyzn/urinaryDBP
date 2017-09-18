@@ -30,10 +30,8 @@ rename_variables <- function(x) {
     gsub('Glucose0', 'Fasting', .) %>%
     gsub('Glucose120', '2h OGTT', .) %>%
     gsub('dm_status', 'Diabetic Status', .) %>%
-    gsub("fPreDMPreDM", "Prediabetes", .) %>%
     gsub('DM', 'Diabetes', .) %>%
-    gsub('NGT', 'Normal Glucose Tolerance', .) %>%
-    gsub("fDysglycemianDysglycemia", "Dysglycemia", .)
+    gsub('NGT', 'Normal Glucose Tolerance', .)
 }
 
 
@@ -52,8 +50,8 @@ rename_gee_kidney <- function(x) {
     gsub("MonthsFromBaseline", "Follow-up Duration (months)", .) %>%
     gsub('Age', 'Age (years)', .) %>%
     gsub("ageBase", "Baseline Age (years)", .) %>%
-    gsub('eGFR', 'Estimated GFR (ml/min/1.73m^2)', .) %>%
-    gsub('ACR', 'Urinary albumin:creatinine (mg/mmol)', .) %>%
+    gsub('eGFR', 'eGFR (ml/min/1.73m^2)', .) %>%
+    gsub('ACR', 'uAlbumin:creatinine (mg/mmol)', .) %>%
     gsub('UDBP', 'Urinary VDBP (ng/mL)', .) %>%
     gsub("udbpBase", "Baseline uVDBP (ug/mL)", .) %>%
     gsub('udbpCrRatio', 'uVDBP:creatinine (ug/mmol)', .) %>%
