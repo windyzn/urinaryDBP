@@ -189,10 +189,10 @@ scatter_plot = function(data=project_data,
 
   if(line == TRUE & facet == FALSE) {
     myplot +
-      ggplot2::geom_smooth(method = loess, colour = "grey50")
+      ggplot2::geom_smooth(method = lm, colour = "grey50")
   } else if(line == TRUE & facet == TRUE) {
     myplot +
-      ggplot2::geom_smooth(method = loess, colour = "grey50") +
+      ggplot2::geom_smooth(method = lm, colour = "grey50") +
       ggplot2::facet_grid(~fVN, switch = "x")
   } else if(line == FALSE & facet == TRUE) {
     myplot +
@@ -342,4 +342,35 @@ gee_plot = function(gee_results, xlab = "") {
                    axis.title = ggplot2::element_text(size = 10)) + #family = "Montserrat"
     ggplot2::ylab('') +
     ggplot2::xlab(xlab)
+}
+
+
+# Interaction -------------------------------------------------------------
+
+#' Plot interaction terms
+#'
+#' @param data
+#' @param xvar
+#' @param yvar
+#' @param intvar
+#' @param xlab
+#' @param ylab
+#'
+#' @return
+#'
+#' @examples
+interac_plot = function(data = project_data,
+                        xvar = "log(udbpCrRatio)",
+                        yvar,
+                        intvar,
+                        xlab = "log uVDBP:creatinine (ug/mmol)",
+                        ylab
+                        ) {
+  ggplot2::ggplot(data, ggplot2::aes_string(x = xvar,
+                                            y = yvar,
+                                            colour = intvar)) +
+  ggplot2::geom_point(colour = "grey", alpha = 0.5) +
+  ggplot2::geom_smooth(method = "lm") +
+  ggplot2::xlab(xlab) +
+  ggplot2::ylab(ylab)
 }
