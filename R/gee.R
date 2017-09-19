@@ -15,8 +15,9 @@ prep_mason_data <- function(data) {
       UDBP = UDBP/1000, # udbp units to ug/mL
       udbpBase = ifelse(fVN == "Baseline", UDBP, NA),
       ageBase = ifelse(fVN == "Baseline", Age, NA),
-      DM = ifelse(DM == 1, "diabetes", "non_dia"),
-      fDM = relevel(as.factor(DM), "non_dia"),
+      DM = ifelse(DM == 1, "DM", "notDM"),
+      fDM = relevel(as.factor(DM), "notDM"),
+      fDysglycemia = ifelse(!(dmStatus == "NGT"), "Dysglycemia", "notDysglycemia"),
       Ethnicity = ifelse(Ethnicity == "European", Ethnicity, "Other"),
       Ethnicity = relevel(as.factor(Ethnicity), "Other")
     ) %>%
@@ -132,6 +133,44 @@ mason_gee <- function(data = project_data,
         .
       }
     } %>%
+    mason::scrub()
+}
+
+
+mason_geeplot <- function(data = project_data,
+                      y = outcomes,
+                      x = predictors,
+                      covars = NULL,
+                      intvar = NULL) {
+
+  int <- !is.null(intvar)
+  if (int) {
+    extract_term <- ":"
+  } else {
+    extract_term <- "Xterm$"
+  }
+
+  co <- !is.null(covars)
+
+  data %>%
+    mason::design("gee") %>%
+    mason:::add_settings(family = stats::gaussian(),
+                         corstr = "ar1", cluster.id = "SID") %>%
+    mason::add_variables("yvars", y) %>%
+    mason::add_variables("xvars", x) %>% {
+      if (co) {
+        mason::add_variables(., "covariates", covars) %>% {
+            if (int) {
+              mason::add_variables(., "interaction", intvar)
+            } else {
+              .
+            }
+          }
+      } else {
+        .
+      }
+    } %>%
+    mason::construct() %>%
     mason::scrub()
 }
 
