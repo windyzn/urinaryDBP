@@ -235,11 +235,12 @@ dsComplete %>%
 # Predictor is baseline UDBP ----------------------------------------
 
 gee_vitd_baseline <- ds %>% 
-  prep_mason_data_kidney() %>% 
+  prep_mason_data_vitd() %>% 
   mason_gee(y = c("VitaminD"),
             x = "udbpBase",
             covars = c("MonthsFromBaseline", "ageBase", "Sex", "Ethnicity", "BMI", "dmStatus", "Season"),
-            intvar = "Season")
+            intvar = "Season") %>% 
+  mason::polish_renaming(rename_gee_vitd)
 
 # GEE table ----------------------------------------------------------
 
@@ -257,8 +258,33 @@ gee_vitd_baseline %>%
 # Plot ---------------------------------------------------------------
 
 plot_gee_results_vitd(gee_vitd_baseline,
-                 yvars = c("uAlbumin:creatinine (mg/mmol)", 
-                           "eGFR (ml/min/1.73m^2)"))
+                 yvars = "Serum 25(OH)D (nmol/L)")
+
+# Plot interaction ---------------------------------------------------
+
+dsBase %>% 
+  ggplot2::ggplot(ggplot2::aes(x = log(udbpCrRatio), y = VitaminD, colour = Season)) +
+  ggplot2::geom_point(colour = "grey", alpha = 0.5) +
+  ggplot2::geom_smooth(method = "lm") +
+  ggplot2::xlab("log uVDBP:creatinine (ug/mmol)") +
+  ggplot2::ylab("Serum 25(OH)D (nmol/L)")
+```
+
+```{r}
+gee_vitd_baseline <- ds %>% 
+  prep_mason_data_vitd() %>% 
+  mason_gee(y = c("VitaminD"),
+            x = "udbpBase",
+            covars = c("MonthsFromBaseline", "ageBase", "Sex", "Ethnicity", "BMI", "dmStatus", "PTH"),
+            intvar = "PTH") %>% 
+  mason::polish_renaming(rename_gee_vitd)
+
+# Plot interaction ---------------------------------------------------
+
+dsBase %>% 
+  interac_plot(yvar = "VitaminD",
+               intvar = "Season",
+               ylab = "Serum 25(OH)D (nmol/L)")
 ```
 
 
