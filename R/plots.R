@@ -371,6 +371,13 @@ interac_plot = function(data = project_data,
                                             colour = intvar)) +
   ggplot2::geom_point(colour = "grey", alpha = 0.5) +
   ggplot2::geom_smooth(method = "lm") +
+  ggplot2::theme(panel.grid.major.x = ggplot2::element_blank(),
+                 panel.grid.minor.x = ggplot2::element_blank(),
+                 axis.line.y = ggplot2::element_blank(),
+                 axis.text.y = ggplot2::element_text(colour = "grey"),
+                 axis.ticks.y = ggplot2::element_line(colour = "grey"),
+                 axis.text.x = ggplot2::element_text(colour = "grey30"), #angle = 45
+                 axis.title = ggplot2::element_text(size = 10)) +
   ggplot2::xlab(xlab) +
   ggplot2::ylab(ylab)
 }
