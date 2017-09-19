@@ -73,13 +73,14 @@ prep_mason_data_vitd <- function(data) {
       UDBP = UDBP/1000, # udbp units to ug/mL
       udbpBase = ifelse(fVN == "Baseline", UDBP, NA),
       ageBase = ifelse(fVN == "Baseline", Age, NA),
-      DM = ifelse(DM == 1, "diabetes", "non_dia"),
-      fDM = relevel(as.factor(DM), "non_dia"),
+      DM = ifelse(DM == 1, "DM", "notDM"),
+      fDM = relevel(as.factor(DM), "notDM"),
       Ethnicity = ifelse(Ethnicity == "European", Ethnicity, "Other"),
-      Ethnicity = relevel(as.factor(Ethnicity), "Other")
+      Ethnicity = relevel(as.factor(Ethnicity), "Other"),
+      dmStatus = factor(dmStatus, ordered = FALSE)
     ) %>%
-    dplyr::filter(!(fVN == "Baseline" &
-                      vitdStatus == "Deficient")) %>%
+    dplyr::filter(!(fVN == "Baseline" & vitdStatus == "Deficient")) %>%
+    dplyr::filter(!(fVN == "Baseline" & dmStatus == "DM")) %>%
     dplyr::arrange(SID, fVN) %>%
     dplyr::group_by(SID) %>%
     tidyr::fill(udbpBase, ageBase) %>%
@@ -98,7 +99,7 @@ prep_mason_data_vitd <- function(data) {
 mason_gee <- function(data = project_data,
                         y = outcomes,
                         x = predictors,
-                        covars = covariates,
+                        covars = NULL,
                         intvar = NULL) {
 
   int <- !is.null(intvar)
@@ -108,24 +109,30 @@ mason_gee <- function(data = project_data,
     extract_term <- "Xterm$"
   }
 
+  co <- !is.null(covars)
+
   data %>%
     mason::design("gee") %>%
     mason:::add_settings(family = stats::gaussian(),
                          corstr = "ar1", cluster.id = "SID") %>%
     mason::add_variables("yvars", y) %>%
     mason::add_variables("xvars", x) %>%
-    mason::add_variables("covariates", covars) %>% {
-      if (int) {
-        mason::add_variables(., "interaction", intvar)
+    mason::construct() %>% {
+      if (co) {
+        mason::add_variables(., "covariates", covars) %>%
+        mason::construct() %>% {
+          if (int) {
+            mason::add_variables(., "interaction", intvar) %>%
+            mason::construct()
+          } else {
+            .
+          }
+        }
       } else {
         .
       }
     } %>%
-    mason::construct() %>%
-    mason::scrub() %>%
-    mason::polish_renaming(rename_gee_kidney)
-  # %>%
-  #   mason::polish_filter(extract_term, "term")
+    mason::scrub()
 }
 
 
@@ -189,22 +196,26 @@ plot_gee_results_vitd <- function(results, yvars,
                                   levels = yvars,
                                   ordered = TRUE),
                   Xterms = factor(Xterms,
-                                  levels = rev(c("<-Xterm",
-                                                 "VN",
-                                                 "ageBase",
+                                  levels = rev(c("Baseline uVDBP (ug/mL)",
+                                                 "Follow-up Duration (months)",
+                                                 "Baseline Age (years)",
                                                  "SexMale",
                                                  "EthnicityEuropean",
-                                                 "BMI",
-                                                 "PTH",
-                                                 "fDMdiabetes")),
+                                                 "BMI (kg/m^2) (kg/m^2)",
+                                                 "dmStatusPreDiabetes",
+                                                 "dmStatusDiabetes",
+                                                 "SeasonWinter",
+                                                 "Baseline uVDBP (ug/mL):SeasonWinter")),
                                   labels = rev(c("Baseline uVDBP (ug/mL)",
-                                                 "Follow-up Duration (Years)",
-                                                 "Baseline Age (Years)",
+                                                 "Follow-up Duration (months)",
+                                                 "Baseline Age (years)",
                                                  "Sex (male)",
-                                                 "Ethnicity (European",
+                                                 "Ethnicity (European)",
                                                  "BMI (kg/m^2)",
-                                                 "Parathyroid Hormone (pmol/L)",
-                                                 "Diabetes")),
+                                                 "Prediabetes",
+                                                 "Diabetes",
+                                                 "Seasonality (winter)",
+                                                 "Season:Baseline uVDBP interaction")),
                                   ordered = TRUE)) %>%
     arrange(Xterms) %>%
     gee_plot(xlab = xlab)
