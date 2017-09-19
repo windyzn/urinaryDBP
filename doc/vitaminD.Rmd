@@ -1,0 +1,294 @@
+---
+title: 'Paper 2: Vitamin D'
+author: "Windy Wang"
+output: word_document
+---
+
+```{r setup, collapse=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+
+# Only set if the Rmd file is not in the parent directory (ie. 'projectname/')
+knitr::opts_knit$set(root.dir = '../')
+
+knitr::opts_chunk$set(collapse = TRUE, echo = FALSE, message = FALSE, warning = FALSE)
+library(tidyverse)
+devtools::load_all()
+load_data(update = TRUE)
+set_options()
+# extrafont::loadfonts(device="win")
+```
+
+```{r loadData, message=FALSE}
+
+# source('.Rprofile')
+# run_setup()
+# load_data('data/project_data.rda')
+# dim(ds)
+ds <- project_data
+
+dsBase <- ds %>% 
+  dplyr::filter(fVN == "Baseline")
+
+# Subjects with measurements at all visit numbers
+
+dsComplete <- ds %>%
+  dplyr::group_by(SID) %>%
+  dplyr::filter(n() == 3) %>%
+  dplyr::ungroup()
+
+```
+
+PAPER 2: VITAMIN D RESULTS
+==========================
+
+### Subject Characteristics
+
+```{r subchar_vitd_baseline}
+
+# Diet information is not available at baseline. Only VN 3 data is available at the present time.
+
+subchar_vitd_base <- tableone::CreateTableOne(
+  vars = c("Age",
+           "Sex",
+           "Ethnicity",
+           "BMI",
+           "Waist",
+           "eGFR",
+           "ACR",
+           "UrineCreatinine",
+           "UrineMicroalbumin",
+           "UrinaryCalcium",
+           "UDBP",
+           "udbpCrRatio",
+           "VitaminD",
+           "PTH",
+           "MET",
+           "Systolic",
+           "Diastolic",
+           "MeanArtPressure",
+           "diet_milk",
+           "diet_cal",
+           "diet_supp_cal",
+           "diet_supp_vitd",
+           "OralContraceptive",
+           "dmStatus"),
+  strata = c("vitdStatus"),
+  data = dsBase,
+  factorVars = c("Sex", "Ethnicity", "OralContraceptive", "dmStatus")
+) %>% 
+  print(nonnormal = c("UDBP",
+                      "ACR",
+                      "UrineMicroalbumin"),
+        quote = FALSE,
+        noSpaces = TRUE)
+```
+
+```{r subchar_vitd_time}
+
+# Diet information is not available at baseline. Only VN 3 data is available at the present time.
+
+subchar_vitd_base <- tableone::CreateTableOne(
+  vars = c("Age",
+           "Sex",
+           "Ethnicity",
+           "BMI",
+           "Waist",
+           "eGFR",
+           "ACR",
+           "UrineCreatinine",
+           "UrineMicroalbumin",
+           "UrinaryCalcium",
+           "UDBP",
+           "VitaminD",
+           "PTH",
+           "Systolic",
+           "Diastolic",
+           "MeanArtPressure",
+           "diet_milk",
+           "diet_cal",
+           "diet_supp_cal",
+           "diet_supp_vitd",
+           "OralContraceptive",
+           "dmStatus"),
+  strata = c("fVN"),
+  data = ds,
+  factorVars = c("Sex", "Ethnicity", "OralContraceptive", "dmStatus")
+) %>% 
+  print(nonnormal = c("UDBP",
+                      "ACR",
+                      "UrineMicroalbumin"),
+        quote = FALSE,
+        noSpaces = TRUE)
+```
+
+### Cross-Sectional
+
+```{r vitd_boxplot}
+
+# Clean data
+vitd <- ds %>% 
+  filter(fVN == "Baseline") %>% 
+  select(vitdStatus, udbpCrRatio) %>%
+  na.omit()
+
+# Box plot of uVDBP in different albuminuria categories
+vitd %>% 
+  box_plot("vitdStatus", "log(udbpCrRatio)", 
+            "Vitamin D Status",
+            "log uVDBP:Creatinine")
+
+# n
+vitd %>% 
+  group_by(vitdStatus) %>% 
+  summarise(n = n())
+
+# ANOVA
+anova <- aov(formula = log(udbpCrRatio)~vitdStatus, data = vitd)
+summary(anova)
+TukeyHSD(anova)
+rm(anova)
+```
+
+
+```{r vitd_scatterplot}
+
+# Scatterplot of ACR and uVDBP ----------------------------------
+
+dsBase %>% 
+  scatter_plot("log(udbpCrRatio)", "VitaminD", 
+               "log UDBP:Creatinine",
+               "Serum 25(OH)D")
+
+# Spearman Correlation ------------------------------------------
+
+dsBase %>% 
+  cor.test(formula = ~ VitaminD + udbpCrRatio, data = ., method = "spearman")
+
+# Linear Regression ---------------------------------------------
+
+dsBase %>% 
+  prep_mason_data() %>% 
+  mason_glm(y = "VitaminD",
+            x = "udbpCrRatio",
+            covars = c("ageBase", "Sex", "Ethnicity", "MET", "BMI", "Season", "fDM")
+            ) %>% 
+  dplyr::filter(!term == "(Intercept)") %>%
+  dplyr::mutate(p = round(p.value, 2),
+    p = ifelse(p == "0", "<0.001", p),
+    estCI = paste0(round(estimate, 2), " (",
+                               round(conf.low, 2), ", ",
+                               round(conf.high, 2), ")")) %>% 
+  dplyr::select(Yterms, Xterms, term, estCI, p) %>% 
+  # tidyr::spread(Yterms, estCI) %>%
+  pander::pander()
+  
+```
+
+PTH
+
+```{r vitd_pth}
+
+# Scatterplot
+
+dsBase %>% 
+  scatter_plot("PTH", "VitaminD", 
+               "Parathyroid Hormone (pmol/L)",
+               "Serum 25(OH)D (nmol/L)")
+
+# Linear Regression ---------------------------------------------
+
+dsBase %>% 
+  prep_mason_data() %>% 
+  mason_glm(y = "VitaminD",
+            x = "PTH"
+            ) %>% 
+  dplyr::filter(!term == "(Intercept)") %>%
+  dplyr::mutate(p = round(p.value, 2),
+    p = ifelse(p == "0", "<0.001", p),
+    estCI = paste0(round(estimate, 2), " (",
+                               round(conf.low, 2), ", ",
+                               round(conf.high, 2), ")")) %>% 
+  dplyr::select(Yterms, Xterms, term, estCI, p) %>% 
+  # tidyr::spread(Yterms, estCI) %>%
+  pander::pander()
+```
+
+
+### Progression
+
+```{r vitd_progression}
+
+ds %>% 
+  plot_progress(yvar = "VitaminD",
+                ylab = "Serum 25(OH)D")
+
+# Complete data
+
+dsComplete %>% 
+  plot_progress(yvar = "VitaminD",
+                ylab = "Serum 25(OH)D")
+```
+
+### Generalized Estimating Equations
+
+```{r vitD_gee_baseline}
+
+# Predictor is baseline UDBP ----------------------------------------
+
+gee_vitd_baseline <- ds %>% 
+  prep_mason_data_kidney() %>% 
+  mason_gee(y = c("VitaminD"),
+            x = "udbpBase",
+            covars = c("MonthsFromBaseline", "ageBase", "Sex", "Ethnicity", "BMI", "dmStatus", "Season"),
+            intvar = "Season")
+
+# GEE table ----------------------------------------------------------
+
+gee_vitd_baseline %>% 
+  dplyr::filter(!term == "(Intercept)") %>% 
+  dplyr::mutate(p = round(p.value, 2),
+    p = ifelse(p == "0", "<0.001", p),
+    estCI = paste0(round(estimate, 2), " (",
+                               round(conf.low, 2), ", ",
+                               round(conf.high, 2), ")")) %>% 
+  dplyr::select(Yterms, Xterms, term, estCI, p) %>% 
+  # tidyr::spread(Yterms, estCI) %>%
+  pander::pander()
+
+# Plot ---------------------------------------------------------------
+
+plot_gee_results_vitd(gee_vitd_baseline,
+                 yvars = c("uAlbumin:creatinine (mg/mmol)", 
+                           "eGFR (ml/min/1.73m^2)"))
+```
+
+
+
+```{r vitD_gee}
+
+# Predictor is baseline UDBP ----------------------------------------
+
+gee <- ds %>% 
+  prep_mason_data() %>% 
+  mason_gee(y = c("VitaminD"),
+            x = "udbpBase",
+            covars = c("VN", "ageBase", "Sex", "Ethnicity", "BMI", "PTH", "fDM"))
+  # dplyr::filter(!term == "(Intercept)") %>%
+  # dplyr::select(Yterms, Xterms, term, estimate, p.value, conf.low, conf.high, std.error, sample.total)
+  # knitr::kable()
+
+# Predictor is UDBP at all time points ------------------------------
+
+gee <- ds %>% 
+  prep_mason_data() %>% 
+  mason_gee(y = c("VitaminD"),
+              x = "UDBP",
+              covars = c("VN", "ageBase", "Sex", "Ethnicity", "BMI", "PTH", "fDM")) %>%
+  dplyr::filter(!term == "(Intercept)") %>%
+  dplyr::select(Yterms, Xterms, term, estimate, p.value, conf.low, conf.high, std.error, sample.total)
+```
+
+```{r gee_plot}
+
+plot_gee_results_vitd(gee,
+                 yvars = c("VitaminD"))
+```
