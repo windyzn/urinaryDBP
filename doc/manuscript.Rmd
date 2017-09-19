@@ -515,12 +515,12 @@ gee_baseline <- ds %>%
   mason_gee(y = c("ACR", "eGFR"),
             x = "udbpBase",
             covars = c("MonthsFromBaseline", "ageBase", "Sex", "Ethnicity", "fPreDM", "fDysglycemia")) %>%
-  dplyr::filter(!term == "(Intercept)") %>%
-  dplyr::select(Yterms, Xterms, term, estimate, p.value, conf.low, conf.high, std.error)
+  mason::polish_renaming(rename_gee_kidney)
 
 # GEE table ----------------------------------------------------------
 
 gee_baseline %>% 
+  dplyr::filter(!term == "(Intercept)") %>%
   dplyr::mutate(p = round(p.value, 2),
     p = ifelse(p == "0", "<0.001", p),
     estCI = paste0(round(estimate, 2), " (",
@@ -810,17 +810,17 @@ dsComplete %>%
 
 # Predictor is baseline UDBP ----------------------------------------
 
-gee_baseline <- ds %>% 
+gee_vitd_baseline <- ds %>% 
   prep_mason_data_kidney() %>% 
-  mason_gee(y = c("ACR", "eGFR"),
+  mason_gee(y = c("VitaminD"),
             x = "udbpBase",
-            covars = c("MonthsFromBaseline", "ageBase", "Sex", "Ethnicity", "BMI", "Season", "fDM")) %>%
-  dplyr::filter(!term == "(Intercept)") %>%
-  dplyr::select(Yterms, Xterms, term, estimate, p.value, conf.low, conf.high, std.error)
+            covars = c("MonthsFromBaseline", "ageBase", "Sex", "Ethnicity", "BMI", "fDM", "Season"),
+            intvar = "Season")
 
 # GEE table ----------------------------------------------------------
 
-gee_baseline %>% 
+gee_vitd_baseline %>% 
+  dplyr::filter(!term == "(Intercept)") %>% 
   dplyr::mutate(p = round(p.value, 2),
     p = ifelse(p == "0", "<0.001", p),
     estCI = paste0(round(estimate, 2), " (",
@@ -832,13 +832,14 @@ gee_baseline %>%
 
 # Plot ---------------------------------------------------------------
 
-plot_gee_results_kidney(gee_baseline,
+plot_gee_results_kidney(gee_vitd_baseline,
                  yvars = c("uAlbumin:creatinine (mg/mmol)", 
                            "eGFR (ml/min/1.73m^2)"))
 ```
 
 
-```{r gee_analysis}
+
+```{r vitD gee}
 
 # Predictor is baseline UDBP ----------------------------------------
 
