@@ -87,5 +87,6 @@ rename_gee_vitd <- function(x) {
     gsub('DM', 'Diabetes', .) %>%
     gsub('NGT', 'Normal Glucose Tolerance', .) %>%
     gsub("fDysglycemiaDysglycemia", "Dysglycemia", .) %>%
-    gsub("PTH", "Parathyroid Hormone (pmol/L)", .)
+    gsub("PTH", "PTH (pmol/L)", .) %>%
+    gsub("MET", "MET (kcal/kg/h)", .)
 }
