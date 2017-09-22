@@ -79,8 +79,8 @@ fetch_data <- function() {
       udbpCrRatio = UDBP / UrineCreatinine,
       logudbpCrRatio = log(udbpCrRatio),
       udbpCrTertile = ntile(udbpCrRatio, 3),
-      vitdStatus = cut(VitaminD,
-                       breaks = c(-Inf, 30, 50, Inf),
+      vitdStatus = cut(VitaminD, # Endocrine Soceity guidelines
+                       breaks = c(-Inf, 50, 75, Inf),
                        labels = c("Deficient", "Insufficient", "Normal"),
                        ordered = TRUE),
       OralContraceptive = ifelse(BirthControl == "2", 1, 0),
