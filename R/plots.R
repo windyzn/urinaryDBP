@@ -359,7 +359,7 @@ gee_plot = function(gee_results, xlab = "") {
 #' @return
 #'
 #' @examples
-interac_plot = function(data = project_data,
+interac_plot = function(data,
                         xvar = "log(udbpCrRatio)",
                         yvar,
                         intvar,
