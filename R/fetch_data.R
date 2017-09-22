@@ -81,7 +81,7 @@ fetch_data <- function() {
       udbpCrTertile = ntile(udbpCrRatio, 3),
       vitdStatus = cut(VitaminD, # Endocrine Soceity guidelines
                        breaks = c(-Inf, 50, 75, Inf),
-                       labels = c("Deficient", "Insufficient", "Normal"),
+                       labels = c("Deficient", "Insufficient", "Sufficient"),
                        ordered = TRUE),
       OralContraceptive = ifelse(BirthControl == "2", 1, 0),
       Season = ifelse(lubridate::month(VisitDate) %in% c("5", "6", "7", "8", "9", "10"),
