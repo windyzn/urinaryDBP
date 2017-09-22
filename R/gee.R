@@ -69,9 +69,10 @@ prep_mason_data_kidney <- function(data) {
 #'
 #' @export
 prep_mason_data_vitd <- function(data) {
+
   data %>%
     dplyr::mutate(
-      UDBP = UDBP/1000, # udbp units to ug/mL
+      # UDBP = UDBP/1000, # udbp units to ug/mL
       udbpBase = ifelse(fVN == "Baseline", UDBP, NA),
       ageBase = ifelse(fVN == "Baseline", Age, NA),
       DM = ifelse(DM == 1, "DM", "notDM"),
@@ -82,11 +83,20 @@ prep_mason_data_vitd <- function(data) {
     ) %>%
     dplyr::filter(!(fVN == "Baseline" & vitdStatus == "Deficient")) %>%
     dplyr::filter(!(fVN == "Baseline" & dmStatus == "DM")) %>%
+
+    dplyr::mutate_each(dplyr::funs(as.numeric(scale(.))),
+                       UDBP,
+                       udbpBase,
+                       MonthsFromBaseline,
+                       ageBase,
+                       MET,
+                       BMI) %>%
+
     dplyr::arrange(SID, fVN) %>%
     dplyr::group_by(SID) %>%
     tidyr::fill(udbpBase, ageBase) %>%
     dplyr::ungroup() %>%
-    dplyr::arrange(SID, VN)
+    dplyr::arrange(SID, fVN)
 }
 
 # Analyze -----------------------------------------------------------------
@@ -134,9 +144,21 @@ mason_gee <- function(data = project_data,
       }
     } %>%
     mason::scrub()
+    # mason::polish_transform_estimates(function(x) (exp(x) - 1) * 100)
 }
 
 
+#' Run GEE on prepared project data simplified for graphical purposes (plot_gee_results)
+#'
+#' @param data
+#' @param y
+#' @param x
+#' @param covars
+#' @param intvar
+#'
+#' @return
+#'
+#' @examples
 mason_geeplot <- function(data = project_data,
                       y = outcomes,
                       x = predictors,
@@ -172,6 +194,7 @@ mason_geeplot <- function(data = project_data,
     } %>%
     mason::construct() %>%
     mason::scrub()
+    # mason::polish_transform_estimates(function(x) (exp(x) - 1) * 100)
 }
 
 
@@ -227,7 +250,7 @@ plot_gee_results_kidney <- function(results, yvars,
 #'
 #' @examples
 plot_gee_results_vitd <- function(results, yvars,
-                                    xlab = "Unit difference with 95% CI in outcome for every unit increase in uVDBP and covariates") {
+                                    xlab = "Unit difference with 95% CI in the outcomes for each SD increase in uVDBP and covariates") {
   results %>%
     dplyr::mutate(Xterms = term) %>%
     dplyr::filter(!term == "(Intercept)") %>%
@@ -240,7 +263,7 @@ plot_gee_results_vitd <- function(results, yvars,
                                                  "Baseline Age (years)",
                                                  "SexMale",
                                                  "EthnicityEuropean",
-                                                 "MET",
+                                                 "MET (kcal/kg/h)",
                                                  "BMI (kg/m^2)",
                                                  "dmStatusPreDiabetes",
                                                  "dmStatusDiabetes",
