@@ -21,8 +21,8 @@ rename_variables <- function(x) {
     gsub('UrineMicroalbumin', 'Urinary Microalbumin (mg/L)', .) %>%
     gsub('VitaminD', 'Serum 25(OH)D (nmol/L)', .) %>%
     gsub('UDBP', 'Urinary VDBP (ng/mL)', .) %>%
-    gsub("udbpBase", "Baseline uVDBP (ug/mL)", .) %>%
-    gsub('udbpCrRatio', 'uVDBP:creatinine (ug/mmol)', .) %>%
+    gsub("udbpBase", "Baseline uVDBP (μg/mL)", .) %>%
+    gsub('udbpCrRatio', 'uVDBP:creatinine (μg/mmol)', .) %>%
     gsub('Diastolic', 'Diastolic Blood Pressure (mmHg)', .) %>%
     gsub('MeanArtPressure', 'Mean Arterial Pressure (mmHg)', .) %>%
     gsub('Systolic', 'Systolic Blood Pressure (mmHg)', .) %>%
