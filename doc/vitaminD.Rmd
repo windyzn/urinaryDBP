@@ -124,7 +124,14 @@ subchar_vitd_base <- tableone::CreateTableOne(
   print(nonnormal = c("UDBP",
                       "udbpCrRatio"),
         quote = FALSE,
-        noSpaces = TRUE)
+        noSpaces = TRUE) %>% 
+  knitr::kable()
+
+ds %>%
+  dplyr::select(VN, PTH) %>%
+  dplyr::group_by(VN) %>%
+  na.omit() %>%
+  summarise(n = n())
 ```
 
 ### Cross-Sectional
@@ -141,7 +148,14 @@ vitd <- ds %>%
 vitd %>% 
   box_plot("vitdStatus", "log(udbpCrRatio)", 
             "Vitamin D Status",
-            "log uVDBP:Creatinine")
+            "log uVDBP:Creatinine (μg/mmol)")
+
+# value
+vitd %>%
+  dplyr::group_by(vitdStatus) %>% 
+  dplyr::summarise(Median = median(log(udbpCrRatio)), 
+                   IQR = IQR(log(udbpCrRatio))
+                   )
 
 # n
 vitd %>% 
@@ -278,6 +292,8 @@ gee_vitd_baseline <- ds %>%
 
 # GEE table ----------------------------------------------------------
 
+tab_nums(gee_vitd_baseline, "GEE results for uVDBP at baseline (predictor) with 25(OH)D and (outcomes), adjusted for follow-up duration (in months), baseline age, sex, ethnicity, physical activity (MET), BMI, diabetes status, and seasonality; subjects with deficient vitamin D status at baseline excluded (n = 713).")
+
 gee_vitd_baseline %>% 
   dplyr::filter(!term == "(Intercept)") %>% 
   dplyr::mutate(p = round(p.value, 2),
@@ -309,6 +325,8 @@ dsBase %>%
   interac_plot(yvar = "PTH",
                intvar = "Season",
                ylab = "Parathyroid Hormone (pmol/L)") #Serum 25(OH)D (nmol/L) #Parathyroid Hormone (pmol/L)
+
+rms::ols(VitaminD ~ udbpCrRatio * Season, data = dsBase)
 ```
 
 
@@ -357,5 +375,7 @@ ds %>%
   interac_plot(yvar = "VitaminD",
                intvar = "Season",
                ylab = "Serum 25(OH)D (nmol/L)")
+
+rms::ols(VitaminD ~ udbpCrRatio * Season, data = ds)
 ```
 
