@@ -41,10 +41,10 @@ dsComplete <- ds %>%
 
 ## Include captions below using `captioner` package
 
-fig_nums <- captioner::captioner(prefix = 'Figure')
-supfig_nums <- captioner::captioner(prefix = 'Supplementary Figure')
-tab_nums <- captioner::captioner(prefix = 'Table')
-suptab_nums <- captioner::captioner(prefix = 'Supplementary Table')
+fig_nums <- captioner::captioner(prefix = 'FIGURE')
+supfig_nums <- captioner::captioner(prefix = 'SUPPLEMENTARY FIGURE')
+tab_nums <- captioner::captioner(prefix = 'TABLE')
+suptab_nums <- captioner::captioner(prefix = 'SUPPLEMENTARY TABLE')
 ```
 
 PAPER 1: KIDNEY DYSFUNCTION RESULTS
