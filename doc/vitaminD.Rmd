@@ -279,13 +279,7 @@ gee_vitd_baseline <- ds %>%
 # GEE table ----------------------------------------------------------
 
 gee_vitd_baseline %>% 
-  dplyr::filter(!term == "(Intercept)") %>% 
-  dplyr::mutate(p = round(p.value, 2),
-    p = ifelse(p == "0", "<0.001", p),
-    estCI = paste0(round(estimate, 2), " (",
-                               round(conf.low, 2), ", ",
-                               round(conf.high, 2), ")")) %>% 
-  dplyr::select(Yterms, Xterms, term, estCI, p) %>% 
+  gee_results_table() %>% 
   # tidyr::spread(Yterms, estCI) %>%
   pander::pander()
 
@@ -295,7 +289,8 @@ gee_vitd_baseline <- ds %>%
   prep_mason_data_vitd() %>% 
   mason_geeplot(y = c("VitaminD", "PTH"),
             x = "udbpBase",
-            covars = c("MonthsFromBaseline", "ageBase", "Sex", "Ethnicity", "MET", "BMI", "dmStatus", "Season"),
+            covars = c("MonthsFromBaseline", "ageBase", "Sex", 
+                       "Ethnicity", "MET", "BMI", "dmStatus", "Season"),
             intvar = "Season") %>% 
   mason::polish_renaming(rename_gee_vitd)
 
