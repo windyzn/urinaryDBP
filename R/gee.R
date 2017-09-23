@@ -194,13 +194,7 @@ gee_results_table <- function(results, table = TRUE) {
                   estCI = paste0(round(estimate, 2), " (",
                                  round(conf.low, 2), ", ",
                                  round(conf.high, 2), ")")) %>%
-    dplyr::select(Yterms, Xterms, term, estCI, p) %>% {
-      if(table) {
-        pander::pander()
-      } else {
-        .
-      }
-    }
+    dplyr::select(Yterms, Xterms, term, estCI, p)
 }
 
 # Plotting ----------------------------------------------------------------
@@ -226,15 +220,15 @@ plot_gee_results_kidney <- function(results, yvars,
                                                  "Baseline Age (years)",
                                                  "SexMale",
                                                  "EthnicityEuropean",
-                                                 "Prediabetes",
-                                                 "Dysglycemia")),
+                                                 "dmStatusPreDiabetes",
+                                                 "dmStatusDiabetes")),
                                   labels = rev(c("Baseline uVDBP (ug/mL)",
                                                  "Follow-up Duration (Months)",
                                                  "Baseline Age (Years)",
                                                  "Sex (male)",
                                                  "Ethnicity (European)",
                                                  "Prediabetes",
-                                                 "Dysglycemia")),
+                                                 "Diabetes")),
                                   ordered = TRUE)) %>%
     arrange(Xterms) %>%
     gee_plot(xlab = xlab)
