@@ -362,36 +362,6 @@ anova <- aov(formula = log(ACR)~fVN, data = ds)
 summary(anova)
 TukeyHSD(anova)
 rm(anova)
-
-# GEE ---------------------------------------------------------------
-
-ds %>% 
-  prep_mason_data() %>% 
-  mason_gee(y = c("ACR", "eGFR"),
-            x = "VN") %>%
-  dplyr::filter(!term == "(Intercept)") %>%
-  dplyr::mutate(p = round(p.value, 2),
-    p = ifelse(p == "0", "<0.001", p),
-    estCI = paste0(round(estimate, 2), " (",
-                               round(conf.low, 2), ", ",
-                               round(conf.high, 2), ")")) %>% 
-  dplyr::select(Yterms, Xterms, term, estCI, p) %>% 
-  # tidyr::spread(Yterms, estCI) %>%
-  pander::pander()
-
-dsComplete %>% 
-  prep_mason_data() %>% 
-  mason_gee(y = c("ACR", "eGFR"),
-            x = "VN") %>%
-  dplyr::filter(!term == "(Intercept)") %>%
-  dplyr::mutate(p = round(p.value, 2),
-    p = ifelse(p == "0", "<0.001", p),
-    estCI = paste0(round(estimate, 2), " (",
-                               round(conf.low, 2), ", ",
-                               round(conf.high, 2), ")")) %>% 
-  dplyr::select(Yterms, Xterms, term, estCI, p) %>% 
-  # tidyr::spread(Yterms, estCI) %>%
-  pander::pander()
 ```
 
 eGFR
@@ -412,8 +382,6 @@ anova <- aov(formula = log(eGFR)~fVN, data = dsComplete)
 summary(anova)
 TukeyHSD(anova)
 rm(anova)
-
-# GEE see above code chunk (ACR)
 ```
 
 UDBP
