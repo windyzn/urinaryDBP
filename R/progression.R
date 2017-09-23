@@ -12,7 +12,7 @@
 #' @examples
 plot_progress_by <- function(data,
                                xvar = "fVN", yvar = "log(UDBP)",
-                               ylab = "log(UDBP)",
+                               ylab = yvar,
                                byvar, groupby = "SID") {
   # m <- data %>%
   #   dplyr::group_by_(byvar, xvar) %>%
@@ -26,6 +26,7 @@ plot_progress_by <- function(data,
     ggplot2::geom_line(ggplot2::aes_string(group = byvar),
                        alpha = 0.7, size = 2,
                        stat = "summary", fun.y = mean) +
+    ggplot2::xlab("Follow-up Duration (years)") +
     ggplot2::ylab(ylab)
 }
 
@@ -43,7 +44,7 @@ plot_progress_by <- function(data,
 #' @examples
 plot_progress <- function(data = project_data,
                                xvar = "fVN", yvar,
-                               ylab,
+                               ylab = yvar,
                                groupby = "SID") {
 
   data %>%
@@ -53,6 +54,7 @@ plot_progress <- function(data = project_data,
                        colour = "#cccccc") +
     ggplot2::geom_line(ggplot2::aes(group = 1), alpha = 0.7, size = 2, colour = "#050202",
                        stat = "summary", fun.y = mean) +
+    ggplot2::xlab("Follow-up Duration (years)") +
     ggplot2::ylab(ylab)
 }
 
@@ -61,7 +63,7 @@ plot_progress <- function(data = project_data,
 
 plot_progress_boxplot <- function (data,
                                    xvar = "fVN",
-                                   yvar, ylab,
+                                   yvar, ylab = yvar,
                                    groupby = "SID") {
 
   data %>%
@@ -86,5 +88,6 @@ plot_progress_boxplot <- function (data,
                   axis.ticks.y = ggplot2::element_line(colour = "grey"),
                   axis.text.x = ggplot2::element_text(colour = "grey30"), #angle = 45
                   axis.title = ggplot2::element_text(size = 10)) +
+  ggplot2::xlab("Follow-up Duration (years)") +
   ggplot2::ylab(ylab)
 }
