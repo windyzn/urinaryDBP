@@ -1,0 +1,593 @@
+---
+title: "Paper 1: Kidney Dysfunction"
+author: "Windy Wang"
+output: word_document
+---
+
+```{r setup, collapse=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+
+# Only set if the Rmd file is not in the parent directory (ie. 'projectname/')
+knitr::opts_knit$set(root.dir = '../')
+
+knitr::opts_chunk$set(collapse = TRUE, echo = FALSE, message = FALSE, warning = FALSE)
+library(tidyverse)
+devtools::load_all()
+load_data(update = TRUE)
+set_options()
+# extrafont::loadfonts(device="win")
+```
+
+```{r loadData, message=FALSE}
+
+# source('.Rprofile')
+# run_setup()
+# load_data('data/project_data.rda')
+# dim(ds)
+ds <- project_data
+
+dsBase <- ds %>% 
+  dplyr::filter(fVN == "Baseline")
+
+# Subjects with measurements at all visit numbers
+
+dsComplete <- ds %>%
+  dplyr::group_by(SID) %>%
+  dplyr::filter(n() == 3) %>%
+  dplyr::ungroup()
+
+```
+
+```{r caption_setup}
+
+## Include captions below using `captioner` package
+
+fig_nums <- captioner::captioner(prefix = 'Figure')
+supfig_nums <- captioner::captioner(prefix = 'Supplementary Figure')
+tab_nums <- captioner::captioner(prefix = 'Table')
+suptab_nums <- captioner::captioner(prefix = 'Supplementary Table')
+```
+
+PAPER 1: KIDNEY DYSFUNCTION RESULTS
+===================================
+
+### Subject Characteristics
+
+```{r subchar udbp tertile}
+
+tab_nums(kidney_subchar_baseline, "Subject characteristics across uVDBP tertiles at baseline")
+
+dsBaseNoBPMeds <- dsBase %>% 
+  dplyr::filter(fMedsBP == "No")
+
+subchar_table_tert <- tableone::CreateTableOne(
+  vars = c("Age",
+           "Sex",
+           "Ethnicity",
+           "BMI",
+           "Waist",
+           "eGFR",
+           "ACR",
+           "UrineCreatinine",
+           "UrineMicroalbumin",
+           "UrinaryCalcium",
+           "UDBP",
+           "udbpCrRatio",
+           "Systolic",
+           "Diastolic",
+           "MeanArtPressure",
+           "dmStatus"),
+  strata = c("udbpTertile"),
+  data = dsBaseNoBPMeds,
+  factorVars = c("Sex", "Ethnicity", "dmStatus")
+) %>% 
+  print(nonnormal = c("UDBP",
+                      "ACR",
+                      "UrineMicroalbumin"),
+        quote = FALSE,
+        noSpaces = TRUE)
+
+# explore non-linear variables (delete later)
+
+dsBase %>% 
+  scatter_plot("udbpCrRatio", "BMI",
+               "uVDBP:cr", "BMI")
+
+```
+
+TABLE 2: Subject characteristics across UDBP:cR tertiles
+
+```{r subchar udbpCrRatio tertile}
+
+subchar_table_tert <- tableone::CreateTableOne(
+  vars = c("Age",
+           "Sex",
+           "Ethnicity",
+           "BMI",
+           "Waist",
+           "eGFR",
+           "ACR",
+           "UrineCreatinine",
+           "UrineMicroalbumin",
+           "UrinaryCalcium",
+           "UDBP",
+           "udbpCrRatio",
+           "Systolic",
+           "Diastolic",
+           "MeanArtPressure",
+           "dmStatus"),
+  strata = c("udbpCrTertile"),
+  data = dsBase,
+  factorVars = c("Sex", "Ethnicity", "dmStatus")
+) %>% 
+  print(nonnormal = c("UDBP",
+                      "ACR",
+                      "UrineMicroalbumin"),
+        quote = FALSE,
+        noSpaces = TRUE)
+```
+
+TABLE 3: Subject characteristics across time
+
+```{r subchar_time}
+
+subchar_table_time <- tableone::CreateTableOne(
+  vars = c("Age",
+           "Sex",
+           "Ethnicity",
+           "BMI",
+           "Waist",
+           "eGFR",
+           "ACR",
+           "UrineCreatinine",
+           "UrineMicroalbumin",
+           "UDBP",
+           "udbpCrRatio",
+           "Systolic",
+           "Diastolic",
+           "MeanArtPressure",
+           "dmStatus"),
+  strata = c("fVN"),
+  data = ds,
+  factorVars = c("Sex", "Ethnicity", "dmStatus")
+) %>% 
+  print(nonnormal = c("UDBP",
+                      "udbpCrRatio",
+                      "ACR",
+                      "UrineMicroalbumin"),
+        quote = FALSE,
+        noSpaces = TRUE)
+```
+
+TABLE 4: Subject characteristics across time (complete data)
+
+```{r subchar over time complete}
+
+subchar_table_time <- tableone::CreateTableOne(
+  vars = c("Age",
+           "Sex",
+           "Ethnicity",
+           "BMI",
+           "Waist",
+           "eGFR",
+           "ACR",
+           "UrineCreatinine",
+           "UrineMicroalbumin",
+           "UDBP",
+           "udbpCrRatio",
+           "Systolic",
+           "Diastolic",
+           "MeanArtPressure",
+           "dmStatus"),
+  strata = c("fVN"),
+  data = dsComplete,
+  factorVars = c("Sex", "Ethnicity", "dmStatus")
+) %>% 
+  print(nonnormal = c("UDBP",
+                      "udbpCrRatio",
+                      "ACR",
+                      "UrineMicroalbumin"),
+        quote = FALSE,
+        noSpaces = TRUE)
+```
+
+### Cross-sectional
+
+#### ACR
+
+```{r acr boxplot}
+
+# Clean data
+acr <- ds %>% 
+  filter(fVN == "Baseline") %>% 
+  select(acrStatus, udbpCrRatio) %>%
+  na.omit()
+
+# Box plot of uVDBP in different albuminuria categories
+acr %>% 
+  box_plot("acrStatus", "log(udbpCrRatio)", 
+            "Albuminuria",
+            "log uVDBP:Creatinine")
+
+# n
+acr %>% 
+  group_by(acrStatus) %>% 
+  summarise(n = n())
+
+# ANOVA
+anova <- aov(formula = log(udbpCrRatio)~acrStatus, data = acr)
+summary(anova)
+TukeyHSD(anova)
+rm(anova)
+```
+
+
+```{r acr scatterplot}
+
+# Scatterplot of ACR and uVDBP ----------------------------------
+
+dsBase %>% 
+  scatter_plot("log(ACR)", "log(udbpCrRatio)",
+               "log Albumin:Creatinine Ratio",
+               "log UDBP:Creatinine")
+
+# Spearman Correlation ------------------------------------------
+
+ds %>% 
+  filter(fVN == "Baseline") %>% 
+  cor.test(formula = ~ ACR + udbpCrRatio, data = ., method = "spearman")
+
+# Linear Regression ---------------------------------------------
+
+dsBase %>% 
+  prep_mason_data() %>% 
+  mason_glm(y = "ACR",
+            x = "udbpCrRatio",
+            covars = c("Age", "Sex", "Ethnicity", "fDM", "fMedsBP")
+            ) %>% 
+  gee_results_table() %>% 
+  pander::pander()
+  
+```
+
+#### eGFR
+
+```{r eGFR boxplot}
+
+# Clean data
+eGFR <- ds %>% 
+  filter(fVN == "Baseline") %>% 
+  select(eGFRStatus, udbpCrRatio) %>%
+  na.omit()
+
+# Box plot of uVDBP in different eGFR categories
+eGFR %>% 
+  box_plot("eGFRStatus", "log(udbpCrRatio)", 
+            "Kidney Status",
+            "log uVDBP:Creatinine")
+
+# n
+eGFR %>% 
+  group_by(eGFRStatus) %>% 
+  summarise(n = n())
+
+# ANOVA
+anova <- aov(formula = log(udbpCrRatio)~eGFRStatus, data = eGFR)
+summary(anova)
+TukeyHSD(anova)
+rm(anova)
+```
+
+```{r eGFR scatterplot}
+
+# Scatterplot of eGFR and uVDBP ----------------------------------
+
+ds %>% 
+  filter(fVN == "Baseline") %>% 
+  scatter_plot("log(eGFR)", "log(udbpCrRatio)",
+               "log Estimated Glomerular Filtration Rate",
+               "log UDBP:Creatinine")
+
+# Spearman Correlation ------------------------------------------
+
+ds %>% 
+  filter(fVN == "Baseline") %>% 
+  cor.test(formula = ~ eGFR + udbpCrRatio, data = ., method = "spearman")
+
+# Linear Regression ---------------------------------------------
+
+dsBase %>% 
+  prep_mason_data() %>% 
+  mason_glm(y = "eGFR",
+            x = "udbpCrRatio",
+            covars = c("ageBase", "Sex", "Ethnicity", "fDM", "fMedsBP")
+            )
+  
+```
+
+```{r}
+ds %>% 
+  prep_mason_data() %>% 
+  mason_glm(y = "eGFR",
+            x = "udbpCrRatio"
+            # covars = "ageBase"
+            )
+```
+
+
+### Medication
+
+* There are 705 values across all time points with blood pressure medication data
+* This is approximately half of all observations (1852 vs 705)
+* CHECK IF MISSINGNESS == NOT TAKING OR REALLY MISSING!!
+
+```{r med}
+
+ds_med <- ds %>% 
+  dplyr::select(SID, VN, fMedsBP) %>% 
+  na.omit()
+```
+
+
+### Progression
+
+ACR
+
+```{r acr progression}
+
+ds %>% 
+  plot_progress(yvar = "log(ACR)",
+                ylab = "log(ACR)")
+
+# Complete data
+
+dsComplete %>% 
+  plot_progress(yvar = "log(ACR)",
+                ylab = "log(ACR)")
+
+# ANOVA ------------------------------------------------------------
+
+anova <- aov(formula = log(ACR)~fVN, data = ds)
+summary(anova)
+TukeyHSD(anova)
+rm(anova)
+
+# GEE ---------------------------------------------------------------
+
+ds %>% 
+  prep_mason_data() %>% 
+  mason_gee(y = c("ACR", "eGFR"),
+            x = "VN") %>%
+  dplyr::filter(!term == "(Intercept)") %>%
+  dplyr::mutate(p = round(p.value, 2),
+    p = ifelse(p == "0", "<0.001", p),
+    estCI = paste0(round(estimate, 2), " (",
+                               round(conf.low, 2), ", ",
+                               round(conf.high, 2), ")")) %>% 
+  dplyr::select(Yterms, Xterms, term, estCI, p) %>% 
+  # tidyr::spread(Yterms, estCI) %>%
+  pander::pander()
+
+dsComplete %>% 
+  prep_mason_data() %>% 
+  mason_gee(y = c("ACR", "eGFR"),
+            x = "VN") %>%
+  dplyr::filter(!term == "(Intercept)") %>%
+  dplyr::mutate(p = round(p.value, 2),
+    p = ifelse(p == "0", "<0.001", p),
+    estCI = paste0(round(estimate, 2), " (",
+                               round(conf.low, 2), ", ",
+                               round(conf.high, 2), ")")) %>% 
+  dplyr::select(Yterms, Xterms, term, estCI, p) %>% 
+  # tidyr::spread(Yterms, estCI) %>%
+  pander::pander()
+```
+
+eGFR
+
+```{r eGFR progression}
+
+ds %>% 
+  plot_progress(yvar = "log(eGFR)",
+                ylab = "log(eGFR)")
+
+# Complete data
+
+dsComplete %>% 
+  plot_progress(yvar = "log(eGFR)",
+                ylab = "log(eGFR)")
+
+# ANOVA
+
+anova <- aov(formula = log(eGFR)~fVN, data = dsComplete)
+summary(anova)
+TukeyHSD(anova)
+rm(anova)
+
+# GEE see above code chunk (ACR)
+```
+
+UDBP
+
+```{r udbp progression}
+
+ds %>% 
+  plot_progress(yvar = "log(udbpCrRatio)",
+                ylab = "log(UDBP:Cr)")
+
+# Complete data
+
+dsComplete %>% 
+  plot_progress(yvar = "log(udbpCrRatio)",
+                ylab = "log(UDBP:Cr)")
+
+# ANOVA
+
+anova <- aov(formula = log(udbpCrRatio)~fVN, data = dsComplete)
+summary(anova)
+TukeyHSD(anova)
+rm(anova)
+```
+
+
+```{r udbp_time}
+
+# Transformed using log
+ds %>% 
+  dplyr::select(udbpCrRatio, UDBP, fVN) %>% 
+  box_plot("fVN", "log(udbpCrRatio)",
+           "Visit Number", "log UDBP:Creatinine")
+
+# ANOVA Transformed
+anova <- aov(formula = log(udbpCrRatio)~fVN, data = ds)
+summary(anova)
+TukeyHSD(anova)
+rm(anova)
+
+# Untransformed
+ds %>% 
+  dplyr::select(udbpCrRatio, UDBP, fVN) %>% 
+  box_plot("fVN", "udbpCrRatio",
+           "Visit Number", "UDBP:Creatinine")
+
+# ANOVA Untransformed
+anova <- aov(formula = udbpCrRatio~fVN, data = ds)
+summary(anova)
+TukeyHSD(anova)
+rm(anova)
+
+# n
+ds %>% 
+  group_by(fMedsBP) %>% 
+  summarise(n = n())
+
+# LOESS curve
+ds %>% 
+  scatter_plot("VN", "log(UDBP)", 
+               "Visit Number", "log(UDBP)")
+
+# Plot individual progression with mean
+plot_progress_by(ds, byvar = "Sex")
+
+# Plot subset of individual progression with mean
+ds %>% 
+  dplyr::filter(Hypertension == 0) %>% 
+  plot_progress_data(byvar = "fMedsBP")
+
+# Interaction between BP medication and hypertension
+ds %>% 
+  prep_mason_data() %>% 
+  mason_gee(y = c("UDBP"),
+              x = "MedsBloodPressure",
+              covars = c("VN", "ageBase", "Sex", "Ethnicity", "BMI", "fDM", "Hypertension"),
+            intvar = "Hypertension") %>% 
+  dplyr::select(Yterms, Xterms, term, p.value, conf.low, conf.high, sample.total)
+```
+
+### Generalized Estimating Equations
+
+GEE where predictor is baseline UDBP
+
+```{r gee_baseline}
+
+# Predictor is baseline UDBP ----------------------------------------
+
+gee_baseline <- ds %>% 
+  prep_mason_data_kidney() %>% 
+  mason_gee(y = c("ACR", "eGFR"),
+            x = "udbpBase",
+            covars = c("MonthsFromBaseline", "ageBase", "Sex", "Ethnicity", "fPreDM", "fDysglycemia")) %>%
+  mason::polish_renaming(rename_gee_kidney)
+
+# GEE table ----------------------------------------------------------
+
+gee_baseline %>% 
+  dplyr::filter(!term == "(Intercept)") %>%
+  dplyr::mutate(p = round(p.value, 2),
+    p = ifelse(p == "0", "<0.001", p),
+    estCI = paste0(round(estimate, 2), " (",
+                               round(conf.low, 2), ", ",
+                               round(conf.high, 2), ")")) %>% 
+  dplyr::select(Yterms, Xterms, term, estCI, p) %>% 
+  # tidyr::spread(Yterms, estCI) %>%
+  pander::pander()
+
+# Plot ---------------------------------------------------------------
+
+plot_gee_results_kidney(gee_baseline,
+                 yvars = c("uAlbumin:creatinine (mg/mmol)", 
+                           "eGFR (ml/min/1.73m^2)"))
+```
+
+GEE where predictor is UDBP over time
+
+```{r gee}
+# Predictor is UDBP at all time points ------------------------------
+
+gee <- ds %>% 
+  prep_mason_data_kidney() %>% 
+  mason_gee(y = c("ACR", "eGFR"),
+              x = "UDBP",
+              covars = c("MonthsFromBaseline", "ageBase", "Sex", "Ethnicity", "fPreDM", "fDysglycemia")) %>%
+  dplyr::filter(!term == "(Intercept)") %>%
+  dplyr::select(Yterms, Xterms, term, estimate, p.value, conf.low, conf.high, std.error)
+
+# GEE table ----------------------------------------------------------
+
+gee %>% 
+  dplyr::mutate(p = round(p.value, 2),
+    p = ifelse(p == "0", "<0.001", p),
+    estCI = paste0(round(estimate, 2), " (",
+                               round(conf.low, 2), ", ",
+                               round(conf.high, 2), ")")) %>% 
+  dplyr::select(Yterms, Xterms, term, estCI, p) %>% 
+  # tidyr::spread(Yterms, estCI) %>%
+  pander::pander()
+
+# Plot ---------------------------------------------------------------
+
+plot_gee_results_kidney(gee,
+                 yvars = c("uAlbumin:creatinine (mg/mmol)", 
+                           "eGFR (ml/min/1.73m^2)"))
+```
+
+
+### Interaction with Time
+
+```{r interaction_vn}
+
+# Unadjusted interaction with visit number
+ds %>% 
+  prep_mason_data() %>% 
+  mason_gee(y = c("ACR", "eGFR"),
+              x = "UDBP",
+              covars = c("VN"),
+              intvar = "VN") %>% 
+  dplyr::select(Yterms, Xterms, term, p.value, conf.low, conf.high, sample.total)
+
+# Adjusted interaction with visit number
+ds %>% 
+  prep_gee_data() %>% 
+  analyze_gee(y = c("ACR", "eGFR"),
+              x = "UDBP",
+              covars = c("VN", "ageBase", "Sex", "Ethnicity", "BMI", "fDM"),
+              intvar = "VN") %>% 
+  dplyr::select(Yterms, Xterms, term, p.value, conf.low, conf.high, sample.total)
+
+# Unadjusted interaction with months from baseline
+ds %>% 
+  prep_mason_data() %>% 
+  mason_gee(y = c("ACR", "eGFR"),
+              x = "UDBP",
+              covars = c("MonthsFromBaseline"),
+              intvar = "MonthsFromBaseline") %>% 
+  dplyr::select(Yterms, Xterms, term, p.value, conf.low, conf.high, sample.total)
+
+# Adjusted interaction with months from baseline
+ds %>% 
+  prep_mason_data() %>% 
+  mason_gee(y = c("ACR", "eGFR"),
+              x = "UDBP",
+              covars = c("MonthsFromBaseline", "ageBase", "Sex", "Ethnicity", "BMI", "fDM"),
+              intvar = "MonthsFromBaseline") %>% 
+  dplyr::select(Yterms, Xterms, term, p.value, conf.low, conf.high, sample.total)
+```
