@@ -345,6 +345,17 @@ dsComplete %>%
   plot_progress(yvar = "log(ACR)",
                 ylab = "log(ACR)")
 
+# Boxplot ----------------------------------------------------------
+
+ds %>% 
+  plot_progress_boxplot(yvar = "log(ACR)")
+
+# Complete data
+
+dsComplete %>% 
+  plot_progress_boxplot(yvar = "log(ACR)",
+                        ylab = "log(ACR)")
+
 # ANOVA ------------------------------------------------------------
 
 anova <- aov(formula = log(ACR)~fVN, data = ds)
@@ -388,14 +399,12 @@ eGFR
 ```{r eGFR progression}
 
 ds %>% 
-  plot_progress(yvar = "log(eGFR)",
-                ylab = "log(eGFR)")
+  plot_progress_boxplot(yvar = "log(eGFR)")
 
 # Complete data
 
 dsComplete %>% 
-  plot_progress(yvar = "log(eGFR)",
-                ylab = "log(eGFR)")
+  plot_progress_boxplot(yvar = "log(eGFR)")
 
 # ANOVA
 
@@ -412,14 +421,14 @@ UDBP
 ```{r udbp progression}
 
 ds %>% 
-  plot_progress(yvar = "log(udbpCrRatio)",
-                ylab = "log(UDBP:Cr)")
+  plot_progress_boxplot(yvar = "log(udbpCrRatio)",
+                ylab = "log(UDBP:cr)")
 
 # Complete data
 
 dsComplete %>% 
-  plot_progress(yvar = "log(udbpCrRatio)",
-                ylab = "log(UDBP:Cr)")
+  plot_progress_boxplot(yvar = "log(udbpCrRatio)",
+                ylab = "log(UDBP:cr)")
 
 # ANOVA
 
