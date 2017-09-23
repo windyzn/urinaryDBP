@@ -179,7 +179,7 @@ scatter_plot = function(data=project_data,
     ggplot2::theme(panel.grid.major.x = ggplot2::element_blank(),
                    panel.grid.minor.x = ggplot2::element_blank(),
                    axis.line.y = ggplot2::element_blank(),
-                   text = ggplot2::element_text(size = 11, family = "Open Sans"), #family = "Open Sans"
+                   text = ggplot2::element_text(size = 11), #family = "Open Sans"
                    axis.text.y = ggplot2::element_text(colour = "grey30"), #"grey" normally
                    axis.ticks.y = ggplot2::element_line(colour = "grey"),
                    axis.text.x = ggplot2::element_text(colour = "grey30")) + #angle = 45
