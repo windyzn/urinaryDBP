@@ -175,6 +175,26 @@ mason_geeplot <- function(data = project_data,
 }
 
 
+# Table -------------------------------------------------------------------
+
+#' Display GEE results in a table. Use pander::pander() to print as a table when knitting document.
+#'
+#' @param results
+#'
+#' @return
+#'
+#' @examples
+gee_results_table <- function(results) {
+  results %>%
+    dplyr::filter(!term == "(Intercept)") %>%
+    dplyr::mutate(p = round(p.value, 2),
+                  p = ifelse(p == "0", "<0.001", p),
+                  estCI = paste0(round(estimate, 2), " (",
+                                 round(conf.low, 2), ", ",
+                                 round(conf.high, 2), ")")) %>%
+    dplyr::select(Yterms, Xterms, term, estCI, p)
+}
+
 # Plotting ----------------------------------------------------------------
 
 #' Plot GEE results in a forest plot-style
