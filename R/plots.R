@@ -47,7 +47,7 @@ box_plot <- function(data=project_data, xvar, yvar, xlab="", ylab="", facet = FA
     ggplot2::xlab(xlab) +
     ggplot2::ylab(ylab)
 
-  if(facet == TRUE) {
+  if(facet) {
     myboxplot +
       ggplot2::facet_grid(~fVN, switch = "x")
   } else {
@@ -95,7 +95,7 @@ box_plot_slides <- function(data=project_data, xvar, yvar, xlab="", ylab="", fac
     ggplot2::xlab(xlab) +
     ggplot2::ylab(ylab)
 
-  if(facet == TRUE) {
+  if(facet) {
     myboxplot +
       ggplot2::facet_grid(~fVN, switch = "x")
   } else {
@@ -144,7 +144,7 @@ box_plot_poster <- function(data=project_data, xvar, yvar, xlab="", ylab="", fac
     ggplot2::xlab(xlab) +
     ggplot2::ylab(ylab)
 
-  if(facet == TRUE) {
+  if(facet) {
     myboxplot +
       ggplot2::facet_grid(~fVN, switch = "x")
   } else {
