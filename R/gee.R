@@ -186,7 +186,7 @@ mason_geeplot <- function(data = project_data,
 #' @return
 #'
 #' @examples
-gee_results_table <- function(results) {
+gee_results_table <- function(results, table = TRUE) {
   results %>%
     dplyr::filter(!term == "(Intercept)") %>%
     dplyr::mutate(p = round(p.value, 2),
@@ -194,7 +194,13 @@ gee_results_table <- function(results) {
                   estCI = paste0(round(estimate, 2), " (",
                                  round(conf.low, 2), ", ",
                                  round(conf.high, 2), ")")) %>%
-    dplyr::select(Yterms, Xterms, term, estCI, p)
+    dplyr::select(Yterms, Xterms, term, estCI, p) %>% {
+      if(table) {
+        pander::pander()
+      } else {
+        .
+      }
+    }
 }
 
 # Plotting ----------------------------------------------------------------
