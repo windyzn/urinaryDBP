@@ -15,7 +15,7 @@ rename_variables <- function(x) {
     gsub("BMI", "BMI (kg/m^2)", .) %>%
     gsub('Waist', 'Waist Circumference (cm)', .) %>%
     gsub('eGFR', 'Estimated GFR (ml/min/1.73m^2)', .) %>%
-    gsub('ACR', 'Urinary albumin:creatinine (mg/mmol)', .) %>%
+    gsub('ACR', 'ACR (mg/mmol)', .) %>%
     gsub('MicroalbCreatRatio', 'Microalbumin:Creatinine', .) %>%
     gsub('UrineCreatinine', 'Urinary Creatinine (mmol/L)', .) %>%
     gsub('UrineMicroalbumin', 'Urinary Microalbumin (mg/L)', .) %>%
@@ -52,7 +52,7 @@ rename_gee_kidney <- function(x) {
     gsub('Age', 'Age (years)', .) %>%
     gsub("ageBase", "Baseline Age (years)", .) %>%
     gsub('eGFR', 'eGFR (ml/min/1.73m^2)', .) %>%
-    gsub('ACR', 'uAlbumin:creatinine (mg/mmol)', .) %>%
+    gsub('ACR', 'ACR (mg/mmol)', .) %>%
     gsub('UDBP', 'Urinary VDBP (ng/mL)', .) %>%
     gsub("udbpBase", "Baseline uVDBP (ug/mL)", .) %>%
     gsub('udbpCrRatio', 'uVDBP:creatinine (ug/mmol)', .) %>%
