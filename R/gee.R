@@ -13,7 +13,7 @@ prep_mason_data <- function(data) {
   data %>%
     dplyr::mutate(
       UDBP = UDBP/1000, # udbp units to ug/mL
-      udbpBase = ifelse(fVN == "Baseline", UDBP, NA),
+      udbpCrBase = ifelse(fVN == "Baseline", udbpCrRatio, NA),
       ageBase = ifelse(fVN == "Baseline", Age, NA),
       DM = ifelse(DM == 1, "DM", "notDM"),
       fDM = relevel(as.factor(DM), "notDM"),
@@ -24,7 +24,7 @@ prep_mason_data <- function(data) {
     ) %>%
     dplyr::arrange(SID, fVN) %>%
     dplyr::group_by(SID) %>%
-    tidyr::fill(udbpBase, ageBase) %>%
+    tidyr::fill(udbpCrBase, ageBase) %>%
     dplyr::ungroup() %>%
     dplyr::arrange(SID, VN)
 }
@@ -39,7 +39,7 @@ prep_mason_data_kidney <- function(data) {
   data %>%
     dplyr::mutate(
       UDBP = UDBP/1000, # udbp units to ug/mL
-      udbpBase = ifelse(fVN == "Baseline", UDBP, NA),
+      udbpCrBase = ifelse(fVN == "Baseline", udbpCrRatio, NA),
       ageBase = ifelse(fVN == "Baseline", Age, NA),
       DM = ifelse(DM == 1, "diabetes", "non_dia"),
       fDM = relevel(as.factor(DM), "non_dia"),
@@ -56,7 +56,7 @@ prep_mason_data_kidney <- function(data) {
     dplyr::filter(!(fVN == "Baseline" & dmStatus == "DM")) %>%
     dplyr::arrange(SID, fVN) %>%
     dplyr::group_by(SID) %>%
-    tidyr::fill(udbpBase, ageBase) %>%
+    tidyr::fill(udbpCrBase, ageBase) %>%
     dplyr::ungroup() %>%
     dplyr::arrange(SID, VN)
 }
@@ -74,7 +74,7 @@ prep_mason_data_vitd <- function(data) {
   data %>%
     dplyr::mutate(
       UDBP = UDBP/1000, # udbp units to ug/mL
-      udbpBase = ifelse(fVN == "Baseline", UDBP, NA),
+      udbpCrBase = ifelse(fVN == "Baseline", udbpCrRatio, NA),
       ageBase = ifelse(fVN == "Baseline", Age, NA),
       DM = ifelse(DM == 1, "DM", "notDM"),
       fDM = relevel(as.factor(DM), "notDM"),
@@ -86,7 +86,7 @@ prep_mason_data_vitd <- function(data) {
     dplyr::filter(!(fVN == "Baseline" & dmStatus == "DM")) %>%
     dplyr::arrange(SID, fVN) %>%
     dplyr::group_by(SID) %>%
-    tidyr::fill(udbpBase, ageBase) %>%
+    tidyr::fill(udbpCrBase, ageBase) %>%
     dplyr::ungroup() %>%
     dplyr::arrange(SID, VN)
 }
@@ -207,7 +207,22 @@ gee_results_table <- function(results, table = TRUE) {
 #'
 #' @examples
 plot_gee_results_kidney <- function(results, yvars,
-                     xlab = "Unit difference with 95% CI in outcome for every unit increase in uVDBP and covariates") {
+                     xlab = "Unit difference with 95% CI in outcome for
+                     every unit increase in uVDBP and covariates",
+                     terms = c("Baseline uVDBP (ug/mL)",
+                               "Follow-up Duration (months)",
+                               "Baseline Age (years)",
+                               "SexMale",
+                               "EthnicityEuropean",
+                               "dmStatusPreDiabetes",
+                               "dmStatusDiabetes"),
+                     labels = c("Baseline uVDBP (ug/mL)",
+                                "Follow-up Duration (Months)",
+                                "Baseline Age (Years)",
+                                "Sex (male)",
+                                "Ethnicity (European)",
+                                "Prediabetes",
+                                "Diabetes")) {
   results %>%
     dplyr::mutate(Xterms = term) %>%
     dplyr::filter(!term == "(Intercept)") %>%
@@ -215,20 +230,8 @@ plot_gee_results_kidney <- function(results, yvars,
                                   levels = yvars,
                                   ordered = TRUE),
                   Xterms = factor(Xterms,
-                                  levels = rev(c("Baseline uVDBP (ug/mL)",
-                                                 "Follow-up Duration (months)",
-                                                 "Baseline Age (years)",
-                                                 "SexMale",
-                                                 "EthnicityEuropean",
-                                                 "dmStatusPreDiabetes",
-                                                 "dmStatusDiabetes")),
-                                  labels = rev(c("Baseline uVDBP (ug/mL)",
-                                                 "Follow-up Duration (Months)",
-                                                 "Baseline Age (Years)",
-                                                 "Sex (male)",
-                                                 "Ethnicity (European)",
-                                                 "Prediabetes",
-                                                 "Diabetes")),
+                                  levels = rev(terms),
+                                  labels = rev(labels),
                                   ordered = TRUE)) %>%
     arrange(Xterms) %>%
     gee_plot(xlab = xlab)

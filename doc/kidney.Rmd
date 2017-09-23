@@ -469,30 +469,31 @@ GEE where predictor is baseline UDBP
 
 # Predictor is baseline UDBP ----------------------------------------
 
-gee_baseline <- ds %>% 
+gee_kidney_baseline <- ds %>% 
   prep_mason_data_kidney() %>% 
   mason_gee(y = c("ACR", "eGFR"),
-            x = "udbpBase",
-            covars = c("MonthsFromBaseline", "ageBase", "Sex", "Ethnicity", "fPreDM", "fDysglycemia")) %>%
+            x = "udbpCrBase",
+            covars = c("MonthsFromBaseline", "ageBase", "Sex", "Ethnicity", 
+                       "dmStatus")) %>%
   mason::polish_renaming(rename_gee_kidney)
 
 # GEE table ----------------------------------------------------------
 
-gee_baseline %>% 
-  dplyr::filter(!term == "(Intercept)") %>%
-  dplyr::mutate(p = round(p.value, 2),
-    p = ifelse(p == "0", "<0.001", p),
-    estCI = paste0(round(estimate, 2), " (",
-                               round(conf.low, 2), ", ",
-                               round(conf.high, 2), ")")) %>% 
-  dplyr::select(Yterms, Xterms, term, estCI, p) %>% 
-  # tidyr::spread(Yterms, estCI) %>%
+gee_kidney_baseline %>% 
+  gee_results_table() %>% 
   pander::pander()
 
 # Plot ---------------------------------------------------------------
 
-plot_gee_results_kidney(gee_baseline,
-                 yvars = c("uAlbumin:creatinine (mg/mmol)", 
+ds %>% 
+  prep_mason_data_kidney() %>% 
+  mason_geeplot(y = c("ACR", "eGFR"),
+            x = "udbpCrBase",
+            covars = c("MonthsFromBaseline", "ageBase", "Sex", 
+                       "Ethnicity", "dmStatus")) %>% 
+  mason::polish_renaming(rename_gee_kidney) %>% 
+  plot_gee_results_kidney(gee_kidney_baseline,
+                 yvars = c("ACR (mg/mmol)", 
                            "eGFR (ml/min/1.73m^2)"))
 ```
 
@@ -501,30 +502,29 @@ GEE where predictor is UDBP over time
 ```{r gee}
 # Predictor is UDBP at all time points ------------------------------
 
-gee <- ds %>% 
+gee_kidney <- ds %>% 
   prep_mason_data_kidney() %>% 
   mason_gee(y = c("ACR", "eGFR"),
-              x = "UDBP",
-              covars = c("MonthsFromBaseline", "ageBase", "Sex", "Ethnicity", "fPreDM", "fDysglycemia")) %>%
-  dplyr::filter(!term == "(Intercept)") %>%
-  dplyr::select(Yterms, Xterms, term, estimate, p.value, conf.low, conf.high, std.error)
+            x = "udbpCrRatio",
+            covars = c("MonthsFromBaseline", "ageBase", "Sex", "Ethnicity", "dmStatus")) %>%
+  mason::polish_renaming(rename_gee_kidney)
 
 # GEE table ----------------------------------------------------------
 
-gee %>% 
-  dplyr::mutate(p = round(p.value, 2),
-    p = ifelse(p == "0", "<0.001", p),
-    estCI = paste0(round(estimate, 2), " (",
-                               round(conf.low, 2), ", ",
-                               round(conf.high, 2), ")")) %>% 
-  dplyr::select(Yterms, Xterms, term, estCI, p) %>% 
-  # tidyr::spread(Yterms, estCI) %>%
+gee_kidney %>% 
+  gee_results_table() %>% 
   pander::pander()
 
 # Plot ---------------------------------------------------------------
 
-plot_gee_results_kidney(gee,
-                 yvars = c("uAlbumin:creatinine (mg/mmol)", 
+ds %>% 
+  prep_mason_data_kidney() %>% 
+  mason_geeplot(y = c("ACR", "eGFR"),
+            x = "udbpCrRatio",
+            covars = c("MonthsFromBaseline", "ageBase", "Sex", 
+                       "Ethnicity", "dmStatus")) %>% 
+  mason::polish_renaming(rename_gee_kidney) %>% 
+  plot_gee_results_kidney(yvars = c("ACR (mg/mmol)", 
                            "eGFR (ml/min/1.73m^2)"))
 ```
 
