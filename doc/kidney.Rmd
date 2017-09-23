@@ -242,7 +242,7 @@ dsBase %>%
   prep_mason_data() %>% 
   mason_glm(y = "ACR",
             x = "udbpCrRatio",
-            covars = c("Age", "Sex", "Ethnicity", "fDM", "fMedsBP")
+            covars = c("Age", "Sex", "Ethnicity", "dmStatus")
             ) %>% 
   gee_results_table() %>% 
   pander::pander()
@@ -299,8 +299,9 @@ dsBase %>%
   prep_mason_data() %>% 
   mason_glm(y = "eGFR",
             x = "udbpCrRatio",
-            covars = c("ageBase", "Sex", "Ethnicity", "fDM", "fMedsBP")
-            )
+            covars = c("Age", "Sex", "Ethnicity", "dmStatus")
+            ) %>% 
+  gee_results_table(table = FALSE)
   
 ```
 
