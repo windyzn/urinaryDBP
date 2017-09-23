@@ -30,8 +30,17 @@ plot_progress_by <- function(data,
 }
 
 
-
-
+#' Plot progression of UDBP over time (visit number) with no grouping variable
+#'
+#' @param data
+#' @param xvar
+#' @param yvar
+#' @param ylab
+#' @param groupby
+#'
+#' @return
+#'
+#' @examples
 plot_progress <- function(data = project_data,
                                xvar = "fVN", yvar,
                                ylab,
