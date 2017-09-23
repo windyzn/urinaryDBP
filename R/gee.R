@@ -19,7 +19,8 @@ prep_mason_data <- function(data) {
       fDM = relevel(as.factor(DM), "notDM"),
       fDysglycemia = ifelse(!(dmStatus == "NGT"), "Dysglycemia", "notDysglycemia"),
       Ethnicity = ifelse(Ethnicity == "European", Ethnicity, "Other"),
-      Ethnicity = relevel(as.factor(Ethnicity), "Other")
+      Ethnicity = relevel(as.factor(Ethnicity), "Other"),
+      dmStatus = factor(dmStatus, ordered = FALSE)
     ) %>%
     dplyr::arrange(SID, fVN) %>%
     dplyr::group_by(SID) %>%
@@ -46,7 +47,8 @@ prep_mason_data_kidney <- function(data) {
       fDysglycemia = ifelse(!(dmStatus == "NGT"), "Dysglycemia", "notDysglycemia"),
       Ethnicity = ifelse(Ethnicity == "European", Ethnicity, "Other"),
       Ethnicity = relevel(as.factor(Ethnicity), "Other"),
-      fDysglycemia = relevel(as.factor(fDysglycemia), "notDysglycemia")
+      fDysglycemia = relevel(as.factor(fDysglycemia), "notDysglycemia"),
+      dmStatus = factor(dmStatus, ordered = FALSE)
     ) %>%
     dplyr::filter(!(fVN == "Baseline" &
                       acrStatus == "Macroalbuminuria")) %>%
