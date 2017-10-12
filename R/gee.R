@@ -91,7 +91,8 @@ prep_mason_data_vitd <- function(data) {
       Ethnicity = relevel(as.factor(Ethnicity), "Other"),
       dmStatus = factor(dmStatus, ordered = FALSE)
     ) %>%
-    dplyr::filter(!(fVN == "Baseline" & vitdStatus == "Deficient")) %>%
+
+    # dplyr::filter(!(fVN == "Baseline" & vitdStatus == "Deficient")) %>%
     dplyr::filter(!(fVN == "Baseline" & dmStatus == "DM")) %>%
 
     dplyr::mutate_each(dplyr::funs(as.numeric(scale(.))),
@@ -293,7 +294,7 @@ plot_gee_results_vitd <- function(results, yvars,
                                   levels = yvars,
                                   ordered = TRUE),
                   Xterms = factor(Xterms,
-                                  levels = rev(c("Baseline uVDBP (ug/mL)",
+                                  levels = rev(c("uVDBP:cr (ug/mmol)",
                                                  "Follow-up Duration (months)",
                                                  "Baseline Age (years)",
                                                  "SexMale",
@@ -303,8 +304,8 @@ plot_gee_results_vitd <- function(results, yvars,
                                                  "dmStatusPreDiabetes",
                                                  "dmStatusDiabetes",
                                                  "SeasonWinter",
-                                                 "Baseline uVDBP (ug/mL):SeasonWinter")),
-                                  labels = rev(c("Baseline uVDBP (ug/mL)",
+                                                 "uVDBP:cr (ug/mmol):SeasonWinter")),
+                                  labels = rev(c("Baseline uVDBP:cr (ug/mL)",
                                                  "Follow-up Duration (months)",
                                                  "Baseline Age (years)",
                                                  "Sex (male)",
@@ -314,7 +315,7 @@ plot_gee_results_vitd <- function(results, yvars,
                                                  "Prediabetes",
                                                  "Diabetes",
                                                  "Seasonality (winter)",
-                                                 "Season:Baseline uVDBP interaction")),
+                                                 "Season:Baseline uVDBP:cr interaction")),
                                   ordered = TRUE)) %>%
     arrange(Xterms) %>%
     gee_plot(xlab = xlab)
