@@ -13,7 +13,7 @@ prep_mason_data <- function(data) {
   data %>%
     dplyr::mutate(
       UDBP = UDBP/1000, # udbp units to ug/mL
-      udbpCrBase = ifelse(fVN == "Baseline", udbpCrRatio, NA),
+      udbpCrBase = ifelse(fVN == "Baseline", udbpCr, NA),
       ageBase = ifelse(fVN == "Baseline", Age, NA),
       DM = ifelse(DM == 1, "DM", "notDM"),
       fDM = relevel(as.factor(DM), "notDM"),
@@ -25,6 +25,7 @@ prep_mason_data <- function(data) {
     dplyr::arrange(SID, fVN) %>%
     dplyr::group_by(SID) %>%
     tidyr::fill(udbpCrBase, ageBase) %>%
+    # dplyr::mutate_at(dplyr::vars(-SID, -fVN), dplyr::funs(as.numeric(scale(.)))) %>%
     dplyr::ungroup() %>%
     dplyr::arrange(SID, VN)
 }
@@ -39,26 +40,33 @@ prep_mason_data_kidney <- function(data) {
   data %>%
     dplyr::mutate(
       UDBP = UDBP/1000, # udbp units to ug/mL
-      udbpCrBase = ifelse(fVN == "Baseline", udbpCrRatio, NA),
+      udbpCrBase = ifelse(fVN == "Baseline", udbpCr, NA),
+
       ageBase = ifelse(fVN == "Baseline", Age, NA),
-      DM = ifelse(DM == 1, "diabetes", "non_dia"),
+      # DM = ifelse(DM == 1, "diabetes", "non_dia"),
       fDM = relevel(as.factor(DM), "non_dia"),
-      fPreDM = ifelse(dmStatus == "PreDM", "PreDM", "notPreDM"),
-      fDysglycemia = ifelse(!(dmStatus == "NGT"), "Dysglycemia", "notDysglycemia"),
+      dmStatus = factor(dmStatus, ordered = FALSE),
+      # fPreDM = ifelse(dmStatus == "PreDM", "PreDM", "notPreDM"),
+      # fDysglycemia = ifelse(!(dmStatus == "NGT"), "Dysglycemia", "notDysglycemia"),
+      # fDysglycemia = relevel(as.factor(fDysglycemia), "notDysglycemia"),
       Ethnicity = ifelse(Ethnicity == "European", Ethnicity, "Other"),
-      Ethnicity = relevel(as.factor(Ethnicity), "Other"),
-      fDysglycemia = relevel(as.factor(fDysglycemia), "notDysglycemia"),
-      dmStatus = factor(dmStatus, ordered = FALSE)
+      Ethnicity = relevel(as.factor(Ethnicity), "Other")
     ) %>%
+
     dplyr::filter(!(fVN == "Baseline" &
                       acrStatus == "Macroalbuminuria")) %>%
     dplyr::filter(!(fVN == "Baseline" & eGFRStatus == "Moderate")) %>%
     dplyr::filter(!(fVN == "Baseline" & dmStatus == "DM")) %>%
+
     dplyr::arrange(SID, fVN) %>%
     dplyr::group_by(SID) %>%
     tidyr::fill(udbpCrBase, ageBase) %>%
+    # dplyr::mutate_each(dplyr::funs(as.numeric(scale(.))),
+    #                    udbpCrBase,
+    #                    udbpCr,
+    #                    ageBase) %>%
     dplyr::ungroup() %>%
-    dplyr::arrange(SID, VN)
+    dplyr::arrange(SID, fVN)
 }
 
 
@@ -73,8 +81,8 @@ prep_mason_data_kidney <- function(data) {
 prep_mason_data_vitd <- function(data) {
   data %>%
     dplyr::mutate(
-      UDBP = UDBP/1000, # udbp units to ug/mL
-      udbpCrBase = ifelse(fVN == "Baseline", udbpCrRatio, NA),
+      # UDBP = UDBP/1000, # udbp units to ug/mL
+      udbpCrBase = ifelse(fVN == "Baseline", udbpCr, NA),
       ageBase = ifelse(fVN == "Baseline", Age, NA),
       DM = ifelse(DM == 1, "DM", "notDM"),
       fDM = relevel(as.factor(DM), "notDM"),
@@ -84,6 +92,15 @@ prep_mason_data_vitd <- function(data) {
     ) %>%
     dplyr::filter(!(fVN == "Baseline" & vitdStatus == "Deficient")) %>%
     dplyr::filter(!(fVN == "Baseline" & dmStatus == "DM")) %>%
+
+    dplyr::mutate_each(dplyr::funs(as.numeric(scale(.))),
+                       udbpCr,
+                       udbpCrBase,
+                       MonthsFromBaseline,
+                       ageBase,
+                       MET,
+                       BMI) %>%
+
     dplyr::arrange(SID, fVN) %>%
     dplyr::group_by(SID) %>%
     tidyr::fill(udbpCrBase, ageBase) %>%
@@ -136,6 +153,9 @@ mason_gee <- function(data = project_data,
       }
     } %>%
     mason::scrub()
+    # mason::polish_transform_estimates(function(x)
+    #   (exp(x) - 1) * 100) <- only if log transformed y var (so you can
+    #   intepret them as % increase)
 }
 
 
@@ -174,6 +194,8 @@ mason_geeplot <- function(data = project_data,
     } %>%
     mason::construct() %>%
     mason::scrub()
+    # mason::polish_transform_estimates(function(x)
+    #   (exp(x) - 1) * 100)
 }
 
 
