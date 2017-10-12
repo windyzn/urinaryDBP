@@ -51,8 +51,8 @@ rename_gee_kidney <- function(x) {
     gsub("MonthsFromBaseline", "Follow-up Duration (months)", .) %>%
     gsub('Age', 'Age (years)', .) %>%
     gsub("ageBase", "Baseline Age (years)", .) %>%
-    gsub('eGFR', 'eGFR (ml/min/1.73m^2)', .) %>%
-    gsub('ACR', 'ACR (mg/mmol)', .) %>%
+    gsub('leGFR', 'eGFR (ml/min/1.73m^2)', .) %>%
+    gsub('lACR', 'ACR (mg/mmol)', .) %>%
     gsub('UDBP', 'Urinary VDBP (ng/mL)', .) %>%
     gsub("udbpCrBase", "Baseline uVDBP:cr (ug/mmol)", .) %>%
     gsub('udbpCrRatio', 'uVDBP:creatinine (ug/mmol)', .) %>%
@@ -87,6 +87,7 @@ rename_gee_vitd <- function(x) {
     gsub('DM', 'Diabetes', .) %>%
     gsub('NGT', 'Normal Glucose Tolerance', .) %>%
     gsub("fDysglycemiaDysglycemia", "Dysglycemia", .) %>%
-    gsub("PTH", "PTH (pmol/L)", .) %>%
-    gsub("MET", "MET (kcal/kg/h)", .)
+    gsub("MET", "MET (kcal/kg/h)", .) %>%
+    gsub("lVitD", "Serum 25(OH)D (nmol/L)", .) %>%
+    gsub("lPTH", "PTH (pmol/L)", .)
 }
