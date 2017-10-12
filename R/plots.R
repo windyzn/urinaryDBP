@@ -347,7 +347,7 @@ gee_plot = function(gee_results, xlab = "") {
 
 # Interaction -------------------------------------------------------------
 
-#' Plot interaction terms
+#' Plot interaction terms (check out lsmeans)
 #'
 #' @param data
 #' @param xvar
