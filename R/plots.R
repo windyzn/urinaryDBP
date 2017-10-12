@@ -47,7 +47,7 @@ box_plot <- function(data=project_data, xvar, yvar, xlab="", ylab="", facet = FA
     ggplot2::xlab(xlab) +
     ggplot2::ylab(ylab)
 
-  if(facet == TRUE) {
+  if(facet) {
     myboxplot +
       ggplot2::facet_grid(~fVN, switch = "x")
   } else {
@@ -95,7 +95,7 @@ box_plot_slides <- function(data=project_data, xvar, yvar, xlab="", ylab="", fac
     ggplot2::xlab(xlab) +
     ggplot2::ylab(ylab)
 
-  if(facet == TRUE) {
+  if(facet) {
     myboxplot +
       ggplot2::facet_grid(~fVN, switch = "x")
   } else {
@@ -144,7 +144,7 @@ box_plot_poster <- function(data=project_data, xvar, yvar, xlab="", ylab="", fac
     ggplot2::xlab(xlab) +
     ggplot2::ylab(ylab)
 
-  if(facet == TRUE) {
+  if(facet) {
     myboxplot +
       ggplot2::facet_grid(~fVN, switch = "x")
   } else {
@@ -179,7 +179,7 @@ scatter_plot = function(data=project_data,
     ggplot2::theme(panel.grid.major.x = ggplot2::element_blank(),
                    panel.grid.minor.x = ggplot2::element_blank(),
                    axis.line.y = ggplot2::element_blank(),
-                   text = ggplot2::element_text(size = 11, family = "Open Sans"), #family = "Open Sans"
+                   text = ggplot2::element_text(size = 11), #family = "Open Sans"
                    axis.text.y = ggplot2::element_text(colour = "grey30"), #"grey" normally
                    axis.ticks.y = ggplot2::element_line(colour = "grey"),
                    axis.text.x = ggplot2::element_text(colour = "grey30")) + #angle = 45
@@ -347,7 +347,7 @@ gee_plot = function(gee_results, xlab = "") {
 
 # Interaction -------------------------------------------------------------
 
-#' Plot interaction terms
+#' Plot interaction terms (check out lsmeans)
 #'
 #' @param data
 #' @param xvar
