@@ -70,7 +70,7 @@ subchar_vitd_base <- tableone::CreateTableOne(
            "UrineMicroalbumin",
            "UrinaryCalcium",
            "UDBP",
-           "udbpCrRatio",
+           "udbpCr",
            "VitaminD",
            "PTH",
            "MET",
@@ -81,11 +81,10 @@ subchar_vitd_base <- tableone::CreateTableOne(
            "diet_cal",
            "diet_supp_cal",
            "diet_supp_vitd",
-           "OralContraceptive",
            "dmStatus"),
   strata = c("vitdStatus"),
   data = dsBase,
-  factorVars = c("Sex", "Ethnicity", "OralContraceptive", "dmStatus")
+  factorVars = c("Sex", "Ethnicity", "dmStatus")
 ) %>% 
   print(nonnormal = c("UDBP",
                       "ACR",
@@ -101,6 +100,10 @@ subchar_vitd_base <- tableone::CreateTableOne(
 
 tab_nums("subchar_vitd", "Subject characteristics across visit numbers")
 
+# for sensitivity analysis
+m <- ds %>% 
+  dplyr::filter(fVN != "6Year")
+
 subchar_vitd_base <- tableone::CreateTableOne(
   vars = c("Age",
            "Sex",
@@ -111,18 +114,17 @@ subchar_vitd_base <- tableone::CreateTableOne(
            "VitaminD",
            "PTH",
            "UDBP",
-           "udbpCrRatio",
+           "udbpCr",
            "Systolic",
            "Diastolic",
            "MeanArtPressure",
-           "OralContraceptive",
            "dmStatus"),
-  strata = c("fVN"),
-  data = ds,
-  factorVars = c("Sex", "Ethnicity", "OralContraceptive", "dmStatus")
+  strata = c("VN"),
+  data = m,
+  factorVars = c("Sex", "Ethnicity", "dmStatus")
 ) %>% 
   print(nonnormal = c("UDBP",
-                      "udbpCrRatio"),
+                      "udbpCr"),
         quote = FALSE,
         noSpaces = TRUE) %>% 
   knitr::kable()
@@ -141,20 +143,20 @@ ds %>%
 # Clean data
 vitd <- ds %>% 
   filter(fVN == "Baseline") %>% 
-  select(vitdStatus, udbpCrRatio) %>%
+  select(vitdStatus, udbpCr) %>%
   na.omit()
 
 # Box plot of uVDBP in different albuminuria categories
 vitd %>% 
-  box_plot("vitdStatus", "log(udbpCrRatio)", 
+  box_plot("vitdStatus", "log(udbpCr)", 
             "Vitamin D Status",
             "log uVDBP:Creatinine (μg/mmol)")
 
 # value
 vitd %>%
   dplyr::group_by(vitdStatus) %>% 
-  dplyr::summarise(Median = median(log(udbpCrRatio)), 
-                   IQR = IQR(log(udbpCrRatio))
+  dplyr::summarise(Median = median(log(udbpCr)), 
+                   IQR = IQR(log(udbpCr))
                    )
 
 # n
@@ -163,7 +165,7 @@ vitd %>%
   summarise(n = n())
 
 # ANOVA
-anova <- aov(formula = log(udbpCrRatio)~vitdStatus, data = vitd)
+anova <- aov(formula = log(udbpCr)~vitdStatus, data = vitd)
 summary(anova)
 TukeyHSD(anova)
 rm(anova)
@@ -175,21 +177,21 @@ rm(anova)
 # Scatterplot of ACR and uVDBP ----------------------------------
 
 dsBase %>% 
-  scatter_plot("log(udbpCrRatio)", "VitaminD", 
+  scatter_plot("log(udbpCr)", "VitaminD", 
                "log UDBP:Creatinine",
                "Serum 25(OH)D")
 
 # Spearman Correlation ------------------------------------------
 
 dsBase %>% 
-  cor.test(formula = ~ VitaminD + udbpCrRatio, data = ., method = "spearman")
+  cor.test(formula = ~ VitaminD + udbpCr, data = ., method = "spearman")
 
 # Linear Regression ---------------------------------------------
 
 dsBase %>% 
   prep_mason_data() %>% 
   mason_glm(y = "VitaminD",
-            x = "logudbpCrRatio",
+            x = "logudbpCr",
             covars = c("ageBase", "Sex", "Ethnicity", "BMI", "MET", "fDM")
             ) %>% 
   dplyr::filter(!term == "(Intercept)") %>%
@@ -282,11 +284,20 @@ rm(anova)
 
 # Predictor is baseline UDBP ----------------------------------------
 
+# gee_vitd_baseline <- ds %>% 
+#   prep_mason_data_vitd() %>% 
+#   mason_gee(y = c("VitaminD", "PTH"),
+#             x = "udbpCrBase",
+#             covars = c("MonthsFromBaseline", "ageBase", "Sex", "Ethnicity", "MET", "BMI", "dmStatus", "Season"),
+#             intvar = "Season") %>% 
+#   mason::polish_renaming(rename_gee_vitd)
+
 gee_vitd_baseline <- ds %>% 
   prep_mason_data_vitd() %>% 
-  mason_gee(y = c("VitaminD", "PTH"),
-            x = "udbpBase",
-            covars = c("MonthsFromBaseline", "ageBase", "Sex", "Ethnicity", "MET", "BMI", "dmStatus", "Season"),
+  mason_geeplot(y = c("lVitD", "lPTH"),
+            x = "udbpCrBase",
+            covars = c("MonthsFromBaseline", "ageBase", "Sex", 
+                       "Ethnicity", "MET", "BMI", "dmStatus", "Season"),
             intvar = "Season") %>% 
   mason::polish_renaming(rename_gee_vitd)
 
@@ -301,27 +312,18 @@ gee_vitd_baseline %>%
 
 # Plot ---------------------------------------------------------------
 
-gee_vitd_baseline <- ds %>% 
-  prep_mason_data_vitd() %>% 
-  mason_geeplot(y = c("VitaminD", "PTH"),
-            x = "udbpBase",
-            covars = c("MonthsFromBaseline", "ageBase", "Sex", 
-                       "Ethnicity", "MET", "BMI", "dmStatus", "Season"),
-            intvar = "Season") %>% 
-  mason::polish_renaming(rename_gee_vitd)
-
 plot_gee_results_vitd(gee_vitd_baseline,
                  yvars = c("Serum 25(OH)D (nmol/L)",
                            "PTH (pmol/L)"))
 
 # Plot interaction ---------------------------------------------------
 
-dsBase %>% 
-  interac_plot(yvar = "PTH",
-               intvar = "Season",
-               ylab = "Parathyroid Hormone (pmol/L)") #Serum 25(OH)D (nmol/L) #Parathyroid Hormone (pmol/L)
-
-rms::ols(VitaminD ~ udbpCrRatio * Season, data = dsBase)
+# dsBase %>% 
+#   interac_plot(yvar = "PTH",
+#                intvar = "Season",
+#                ylab = "Parathyroid Hormone (pmol/L)") #Serum 25(OH)D (nmol/L) #Parathyroid Hormone (pmol/L)
+# 
+# rms::ols(VitaminD ~ udbpCr * Season, data = dsBase)
 ```
 
 
@@ -329,10 +331,18 @@ rms::ols(VitaminD ~ udbpCrRatio * Season, data = dsBase)
 
 # Predictor is UDBP ----------------------------------------
 
+# gee_vitd <- ds %>% 
+#   prep_mason_data_vitd() %>% 
+#   mason_gee(y = c("lVitD", "lPTH"),
+#             x = "udbpCr",
+#             covars = c("MonthsFromBaseline", "ageBase", "Sex", "Ethnicity", "MET", "BMI", "dmStatus", "Season"),
+#             intvar = "Season") %>% 
+#   mason::polish_renaming(rename_gee_vitd)
+
 gee_vitd <- ds %>% 
   prep_mason_data_vitd() %>% 
-  mason_gee(y = c("VitaminD", "PTH"),
-            x = "UDBP",
+  mason_geeplot(y = c("lVitD", "lPTH"),
+            x = "udbpCr",
             covars = c("MonthsFromBaseline", "ageBase", "Sex", "Ethnicity", "MET", "BMI", "dmStatus", "Season"),
             intvar = "Season") %>% 
   mason::polish_renaming(rename_gee_vitd)
@@ -340,25 +350,11 @@ gee_vitd <- ds %>%
 # GEE table ----------------------------------------------------------
 
 gee_vitd %>% 
-  dplyr::filter(!term == "(Intercept)") %>% 
-  dplyr::mutate(p = round(p.value, 2),
-    p = ifelse(p == "0", "<0.001", p),
-    estCI = paste0(round(estimate, 2), " (",
-                               round(conf.low, 2), ", ",
-                               round(conf.high, 2), ")")) %>% 
-  dplyr::select(Yterms, Xterms, term, estCI, p) %>% 
+  gee_results_table() %>% 
   # tidyr::spread(Yterms, estCI) %>%
   pander::pander()
 
 # Plot ---------------------------------------------------------------
-
-gee_vitd <- ds %>% 
-  prep_mason_data_vitd() %>% 
-  mason_geeplot(y = c("VitaminD", "PTH"),
-            x = "UDBP",
-            covars = c("MonthsFromBaseline", "ageBase", "Sex", "Ethnicity", "MET", "BMI", "dmStatus", "Season"),
-            intvar = "Season") %>% 
-  mason::polish_renaming(rename_gee_vitd)
 
 plot_gee_results_vitd(gee_vitd,
                  yvars = c("Serum 25(OH)D (nmol/L)",
@@ -366,11 +362,11 @@ plot_gee_results_vitd(gee_vitd,
 
 # Plot interaction ---------------------------------------------------
 
-ds %>% 
-  interac_plot(yvar = "VitaminD",
-               intvar = "Season",
-               ylab = "Serum 25(OH)D (nmol/L)")
-
-rms::ols(VitaminD ~ udbpCrRatio * Season, data = ds)
+# ds %>% 
+#   interac_plot(yvar = "VitaminD",
+#                intvar = "Season",
+#                ylab = "Serum 25(OH)D (nmol/L)")
+# 
+# rms::ols(VitaminD ~ udbpCr * Season, data = ds)
 ```
 
