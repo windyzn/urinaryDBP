@@ -39,18 +39,16 @@ prep_mason_data <- function(data) {
 prep_mason_data_kidney <- function(data) {
   data %>%
     dplyr::mutate(
-      UDBP = UDBP/1000, # udbp units to ug/mL
       udbpCrBase = ifelse(fVN == "Baseline", udbpCr, NA),
-
       ageBase = ifelse(fVN == "Baseline", Age, NA),
-      # DM = ifelse(DM == 1, "diabetes", "non_dia"),
-      fDM = relevel(as.factor(DM), "non_dia"),
+      DM = ifelse(DM == 1, "DM", "notDM"),
+      fDM = relevel(as.factor(DM), "notDM"),
       dmStatus = factor(dmStatus, ordered = FALSE),
-      # fPreDM = ifelse(dmStatus == "PreDM", "PreDM", "notPreDM"),
-      # fDysglycemia = ifelse(!(dmStatus == "NGT"), "Dysglycemia", "notDysglycemia"),
-      # fDysglycemia = relevel(as.factor(fDysglycemia), "notDysglycemia"),
       Ethnicity = ifelse(Ethnicity == "European", Ethnicity, "Other"),
-      Ethnicity = relevel(as.factor(Ethnicity), "Other")
+      Ethnicity = relevel(as.factor(Ethnicity), "Other"),
+
+      lACR = log(ACR),
+      leGFR = log(eGFR)
     ) %>%
 
     dplyr::filter(!(fVN == "Baseline" &
@@ -58,13 +56,15 @@ prep_mason_data_kidney <- function(data) {
     dplyr::filter(!(fVN == "Baseline" & eGFRStatus == "Moderate")) %>%
     dplyr::filter(!(fVN == "Baseline" & dmStatus == "DM")) %>%
 
+    dplyr::mutate_each(dplyr::funs(as.numeric(scale(.))),
+                       udbpCr,
+                       udbpCrBase,
+                       MonthsFromBaseline,
+                       ageBase) %>%
+
     dplyr::arrange(SID, fVN) %>%
     dplyr::group_by(SID) %>%
     tidyr::fill(udbpCrBase, ageBase) %>%
-    # dplyr::mutate_each(dplyr::funs(as.numeric(scale(.))),
-    #                    udbpCrBase,
-    #                    udbpCr,
-    #                    ageBase) %>%
     dplyr::ungroup() %>%
     dplyr::arrange(SID, fVN)
 }
@@ -89,7 +89,10 @@ prep_mason_data_vitd <- function(data) {
       fDM = relevel(as.factor(DM), "notDM"),
       Ethnicity = ifelse(Ethnicity == "European", Ethnicity, "Other"),
       Ethnicity = relevel(as.factor(Ethnicity), "Other"),
-      dmStatus = factor(dmStatus, ordered = FALSE)
+      dmStatus = factor(dmStatus, ordered = FALSE),
+
+      lVitD = log(VitaminD),
+      lPTH = log(PTH)
     ) %>%
 
     # dplyr::filter(!(fVN == "Baseline" & vitdStatus == "Deficient")) %>%
@@ -206,8 +209,8 @@ mason_geeplot <- function(data = project_data,
       }
     } %>%
     mason::construct() %>%
-    mason::scrub()
-    # mason::polish_transform_estimates(function(x) (exp(x) - 1) * 100)
+    mason::scrub() %>%
+    mason::polish_transform_estimates(function(x) (exp(x) - 1) * 100)
 }
 
 
@@ -241,16 +244,16 @@ gee_results_table <- function(results, table = TRUE) {
 #'
 #' @examples
 plot_gee_results_kidney <- function(results, yvars,
-                     xlab = "Unit difference with 95% CI in outcome for
-                     every unit increase in uVDBP and covariates",
-                     terms = c("Baseline uVDBP (ug/mL)",
+                     xlab = "Percent difference with 95% CI in the outcomes
+                     for each SD increase in uVDBP and covariates",
+                     terms = c("uVDBP:cr (ug/mmol)",
                                "Follow-up Duration (months)",
                                "Baseline Age (years)",
                                "SexMale",
                                "EthnicityEuropean",
                                "dmStatusPreDiabetes",
                                "dmStatusDiabetes"),
-                     labels = c("Baseline uVDBP (ug/mL)",
+                     labels = c("uVDBP:cr (ug/mL)",
                                 "Follow-up Duration (Months)",
                                 "Baseline Age (Years)",
                                 "Sex (male)",
@@ -286,7 +289,8 @@ plot_gee_results_kidney <- function(results, yvars,
 #'
 #' @examples
 plot_gee_results_vitd <- function(results, yvars,
-                                    xlab = "Unit difference with 95% CI in the outcomes for each SD increase in uVDBP and covariates") {
+                                    xlab = "Percent difference with 95% CI in the outcomes for\n
+                                  each SD increase in uVDBP and covariates") {
   results %>%
     dplyr::mutate(Xterms = term) %>%
     dplyr::filter(!term == "(Intercept)") %>%
@@ -305,7 +309,7 @@ plot_gee_results_vitd <- function(results, yvars,
                                                  "dmStatusDiabetes",
                                                  "SeasonWinter",
                                                  "uVDBP:cr (ug/mmol):SeasonWinter")),
-                                  labels = rev(c("Baseline uVDBP:cr (ug/mL)",
+                                  labels = rev(c("uVDBP:cr (ug/mL)",
                                                  "Follow-up Duration (months)",
                                                  "Baseline Age (years)",
                                                  "Sex (male)",

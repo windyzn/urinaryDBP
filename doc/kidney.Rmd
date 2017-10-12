@@ -54,7 +54,7 @@ PAPER 1: KIDNEY DYSFUNCTION RESULTS
 
 ```{r subchar udbp tertile}
 
-tab_nums(kidney_subchar_baseline, "Subject characteristics across uVDBP tertiles at baseline")
+# tab_nums(kidney_subchar_baseline, "Subject characteristics across uVDBP tertiles at baseline")
 
 dsBaseNoBPMeds <- dsBase %>% 
   dplyr::filter(fMedsBP == "No")
@@ -71,7 +71,7 @@ subchar_table_tert <- tableone::CreateTableOne(
            "UrineMicroalbumin",
            "UrinaryCalcium",
            "UDBP",
-           "udbpCrRatio",
+           "udbpCr",
            "Systolic",
            "Diastolic",
            "MeanArtPressure",
@@ -89,14 +89,14 @@ subchar_table_tert <- tableone::CreateTableOne(
 # explore non-linear variables (delete later)
 
 dsBase %>% 
-  scatter_plot("udbpCrRatio", "BMI",
+  scatter_plot("udbpCr", "BMI",
                "uVDBP:cr", "BMI")
 
 ```
 
 TABLE 2: Subject characteristics across UDBP:cR tertiles
 
-```{r subchar udbpCrRatio tertile}
+```{r subchar udbpCr tertile}
 
 subchar_table_tert <- tableone::CreateTableOne(
   vars = c("Age",
@@ -110,7 +110,7 @@ subchar_table_tert <- tableone::CreateTableOne(
            "UrineMicroalbumin",
            "UrinaryCalcium",
            "UDBP",
-           "udbpCrRatio",
+           "udbpCr",
            "Systolic",
            "Diastolic",
            "MeanArtPressure",
@@ -141,7 +141,7 @@ subchar_table_time <- tableone::CreateTableOne(
            "UrineCreatinine",
            "UrineMicroalbumin",
            "UDBP",
-           "udbpCrRatio",
+           "udbpCr",
            "Systolic",
            "Diastolic",
            "MeanArtPressure",
@@ -151,7 +151,7 @@ subchar_table_time <- tableone::CreateTableOne(
   factorVars = c("Sex", "Ethnicity", "dmStatus")
 ) %>% 
   print(nonnormal = c("UDBP",
-                      "udbpCrRatio",
+                      "udbpCr",
                       "ACR",
                       "UrineMicroalbumin"),
         quote = FALSE,
@@ -173,7 +173,7 @@ subchar_table_time <- tableone::CreateTableOne(
            "UrineCreatinine",
            "UrineMicroalbumin",
            "UDBP",
-           "udbpCrRatio",
+           "udbpCr",
            "Systolic",
            "Diastolic",
            "MeanArtPressure",
@@ -183,7 +183,7 @@ subchar_table_time <- tableone::CreateTableOne(
   factorVars = c("Sex", "Ethnicity", "dmStatus")
 ) %>% 
   print(nonnormal = c("UDBP",
-                      "udbpCrRatio",
+                      "udbpCr",
                       "ACR",
                       "UrineMicroalbumin"),
         quote = FALSE,
@@ -199,12 +199,12 @@ subchar_table_time <- tableone::CreateTableOne(
 # Clean data
 acr <- ds %>% 
   filter(fVN == "Baseline") %>% 
-  select(acrStatus, udbpCrRatio) %>%
+  select(acrStatus, udbpCr) %>%
   na.omit()
 
 # Box plot of uVDBP in different albuminuria categories
 acr %>% 
-  box_plot("acrStatus", "log(udbpCrRatio)", 
+  box_plot("acrStatus", "log(udbpCr)", 
             "Albuminuria",
             "log uVDBP:Creatinine")
 
@@ -214,7 +214,7 @@ acr %>%
   summarise(n = n())
 
 # ANOVA
-anova <- aov(formula = log(udbpCrRatio)~acrStatus, data = acr)
+anova <- aov(formula = log(udbpCr)~acrStatus, data = acr)
 summary(anova)
 TukeyHSD(anova)
 rm(anova)
@@ -226,7 +226,7 @@ rm(anova)
 # Scatterplot of ACR and uVDBP ----------------------------------
 
 dsBase %>% 
-  scatter_plot("log(ACR)", "log(udbpCrRatio)",
+  scatter_plot("log(ACR)", "log(udbpCr)",
                "log Albumin:Creatinine Ratio",
                "log UDBP:Creatinine")
 
@@ -234,14 +234,14 @@ dsBase %>%
 
 ds %>% 
   filter(fVN == "Baseline") %>% 
-  cor.test(formula = ~ ACR + udbpCrRatio, data = ., method = "spearman")
+  cor.test(formula = ~ ACR + udbpCr, data = ., method = "spearman")
 
 # Linear Regression ---------------------------------------------
 
 dsBase %>% 
   prep_mason_data() %>% 
   mason_glm(y = "ACR",
-            x = "udbpCrRatio",
+            x = "udbpCr",
             covars = c("Age", "Sex", "Ethnicity", "dmStatus")
             ) %>% 
   gee_results_table() %>% 
@@ -256,12 +256,12 @@ dsBase %>%
 # Clean data
 eGFR <- ds %>% 
   filter(fVN == "Baseline") %>% 
-  select(eGFRStatus, udbpCrRatio) %>%
+  select(eGFRStatus, udbpCr) %>%
   na.omit()
 
 # Box plot of uVDBP in different eGFR categories
 eGFR %>% 
-  box_plot("eGFRStatus", "log(udbpCrRatio)", 
+  box_plot("eGFRStatus", "log(udbpCr)", 
             "Kidney Status",
             "log uVDBP:Creatinine")
 
@@ -271,7 +271,7 @@ eGFR %>%
   summarise(n = n())
 
 # ANOVA
-anova <- aov(formula = log(udbpCrRatio)~eGFRStatus, data = eGFR)
+anova <- aov(formula = log(udbpCr)~eGFRStatus, data = eGFR)
 summary(anova)
 TukeyHSD(anova)
 rm(anova)
@@ -283,7 +283,7 @@ rm(anova)
 
 ds %>% 
   filter(fVN == "Baseline") %>% 
-  scatter_plot("log(eGFR)", "log(udbpCrRatio)",
+  scatter_plot("log(eGFR)", "log(udbpCr)",
                "log Estimated Glomerular Filtration Rate",
                "log UDBP:Creatinine")
 
@@ -291,14 +291,14 @@ ds %>%
 
 ds %>% 
   filter(fVN == "Baseline") %>% 
-  cor.test(formula = ~ eGFR + udbpCrRatio, data = ., method = "spearman")
+  cor.test(formula = ~ eGFR + udbpCr, data = ., method = "spearman")
 
 # Linear Regression ---------------------------------------------
 
 dsBase %>% 
   prep_mason_data() %>% 
   mason_glm(y = "eGFR",
-            x = "udbpCrRatio",
+            x = "udbpCr",
             covars = c("Age", "Sex", "Ethnicity", "dmStatus")
             ) %>% 
   gee_results_table(table = FALSE)
@@ -309,7 +309,7 @@ dsBase %>%
 ds %>% 
   prep_mason_data() %>% 
   mason_glm(y = "eGFR",
-            x = "udbpCrRatio"
+            x = "udbpCr"
             # covars = "ageBase"
             )
 ```
@@ -331,135 +331,135 @@ ds_med <- ds %>%
 
 ### Progression
 
-ACR
+<!-- ACR -->
 
-```{r acr progression}
+<!-- ```{r acr progression} -->
 
-ds %>% 
-  plot_progress(yvar = "log(ACR)",
-                ylab = "log(ACR)")
+<!-- ds %>%  -->
+<!--   plot_progress(yvar = "log(ACR)", -->
+<!--                 ylab = "log(ACR)") -->
 
-# Complete data
+<!-- # Complete data -->
 
-dsComplete %>% 
-  plot_progress(yvar = "log(ACR)",
-                ylab = "log(ACR)")
+<!-- dsComplete %>%  -->
+<!--   plot_progress(yvar = "log(ACR)", -->
+<!--                 ylab = "log(ACR)") -->
 
-# Boxplot ----------------------------------------------------------
+<!-- # Boxplot ---------------------------------------------------------- -->
 
-ds %>% 
-  plot_progress_boxplot(yvar = "log(ACR)")
+<!-- ds %>%  -->
+<!--   plot_progress_boxplot(yvar = "log(ACR)") -->
 
-# Complete data
+<!-- # Complete data -->
 
-dsComplete %>% 
-  plot_progress_boxplot(yvar = "log(ACR)",
-                        ylab = "log(ACR)")
+<!-- dsComplete %>%  -->
+<!--   plot_progress_boxplot(yvar = "log(ACR)", -->
+<!--                         ylab = "log(ACR)") -->
 
-# ANOVA ------------------------------------------------------------
+<!-- # ANOVA ------------------------------------------------------------ -->
 
-anova <- aov(formula = log(ACR)~fVN, data = ds)
-summary(anova)
-TukeyHSD(anova)
-rm(anova)
-```
+<!-- anova <- aov(formula = log(ACR)~fVN, data = ds) -->
+<!-- summary(anova) -->
+<!-- TukeyHSD(anova) -->
+<!-- rm(anova) -->
+<!-- ``` -->
 
-eGFR
+<!-- eGFR -->
 
-```{r eGFR progression}
+<!-- ```{r eGFR progression} -->
 
-ds %>% 
-  plot_progress_boxplot(yvar = "log(eGFR)")
+<!-- ds %>%  -->
+<!--   plot_progress_boxplot(yvar = "log(eGFR)") -->
 
-# Complete data
+<!-- # Complete data -->
 
-dsComplete %>% 
-  plot_progress_boxplot(yvar = "log(eGFR)")
+<!-- dsComplete %>%  -->
+<!--   plot_progress_boxplot(yvar = "log(eGFR)") -->
 
-# ANOVA
+<!-- # ANOVA -->
 
-anova <- aov(formula = log(eGFR)~fVN, data = dsComplete)
-summary(anova)
-TukeyHSD(anova)
-rm(anova)
-```
+<!-- anova <- aov(formula = log(eGFR)~fVN, data = dsComplete) -->
+<!-- summary(anova) -->
+<!-- TukeyHSD(anova) -->
+<!-- rm(anova) -->
+<!-- ``` -->
 
-UDBP
+<!-- UDBP -->
 
-```{r udbp progression}
+<!-- ```{r udbp progression} -->
 
-ds %>% 
-  plot_progress_boxplot(yvar = "log(udbpCrRatio)",
-                ylab = "log(UDBP:cr)")
+<!-- ds %>%  -->
+<!--   plot_progress_boxplot(yvar = "log(udbpCr)", -->
+<!--                 ylab = "log(UDBP:cr)") -->
 
-# Complete data
+<!-- # Complete data -->
 
-dsComplete %>% 
-  plot_progress_boxplot(yvar = "log(udbpCrRatio)",
-                ylab = "log(UDBP:cr)")
+<!-- dsComplete %>%  -->
+<!--   plot_progress_boxplot(yvar = "log(udbpCr)", -->
+<!--                 ylab = "log(UDBP:cr)") -->
 
-# ANOVA
+<!-- # ANOVA -->
 
-anova <- aov(formula = log(udbpCrRatio)~fVN, data = dsComplete)
-summary(anova)
-TukeyHSD(anova)
-rm(anova)
-```
+<!-- anova <- aov(formula = log(udbpCr)~fVN, data = dsComplete) -->
+<!-- summary(anova) -->
+<!-- TukeyHSD(anova) -->
+<!-- rm(anova) -->
+<!-- ``` -->
 
 
-```{r udbp_time}
+<!-- ```{r udbp_time} -->
 
-# Transformed using log
-ds %>% 
-  dplyr::select(udbpCrRatio, UDBP, fVN) %>% 
-  box_plot("fVN", "log(udbpCrRatio)",
-           "Visit Number", "log UDBP:Creatinine")
+<!-- # Transformed using log -->
+<!-- ds %>%  -->
+<!--   dplyr::select(udbpCr, UDBP, fVN) %>%  -->
+<!--   box_plot("fVN", "log(udbpCr)", -->
+<!--            "Visit Number", "log UDBP:Creatinine") -->
 
-# ANOVA Transformed
-anova <- aov(formula = log(udbpCrRatio)~fVN, data = ds)
-summary(anova)
-TukeyHSD(anova)
-rm(anova)
+<!-- # ANOVA Transformed -->
+<!-- anova <- aov(formula = log(udbpCr)~fVN, data = ds) -->
+<!-- summary(anova) -->
+<!-- TukeyHSD(anova) -->
+<!-- rm(anova) -->
 
-# Untransformed
-ds %>% 
-  dplyr::select(udbpCrRatio, UDBP, fVN) %>% 
-  box_plot("fVN", "udbpCrRatio",
-           "Visit Number", "UDBP:Creatinine")
+<!-- # Untransformed -->
+<!-- ds %>%  -->
+<!--   dplyr::select(udbpCr, UDBP, fVN) %>%  -->
+<!--   box_plot("fVN", "udbpCr", -->
+<!--            "Visit Number", "UDBP:Creatinine") -->
 
-# ANOVA Untransformed
-anova <- aov(formula = udbpCrRatio~fVN, data = ds)
-summary(anova)
-TukeyHSD(anova)
-rm(anova)
+<!-- # ANOVA Untransformed -->
+<!-- anova <- aov(formula = udbpCr~fVN, data = ds) -->
+<!-- summary(anova) -->
+<!-- TukeyHSD(anova) -->
+<!-- rm(anova) -->
 
-# n
-ds %>% 
-  group_by(fMedsBP) %>% 
-  summarise(n = n())
+<!-- # n -->
+<!-- ds %>%  -->
+<!--   group_by(fMedsBP) %>%  -->
+<!--   summarise(n = n()) -->
 
-# LOESS curve
-ds %>% 
-  scatter_plot("VN", "log(UDBP)", 
-               "Visit Number", "log(UDBP)")
+<!-- # LOESS curve -->
+<!-- ds %>%  -->
+<!--   scatter_plot("VN", "log(UDBP)",  -->
+<!--                "Visit Number", "log(UDBP)") -->
 
-# Plot individual progression with mean
-plot_progress_by(ds, byvar = "Sex")
+<!-- # Plot individual progression with mean -->
+<!-- plot_progress_by(ds, byvar = "Sex") -->
 
-# Plot subset of individual progression with mean
-ds %>% 
-  dplyr::filter(Hypertension == 0) %>% 
-  plot_progress_data(byvar = "fMedsBP")
+<!-- # Plot subset of individual progression with mean -->
+<!-- ds %>%  -->
+<!--   dplyr::filter(Hypertension == 0) %>%  -->
+<!--   plot_progress_data(byvar = "fMedsBP") -->
 
-# Interaction between BP medication and hypertension
-ds %>% 
-  prep_mason_data() %>% 
-  mason_gee(y = c("UDBP"),
-              x = "MedsBloodPressure",
-              covars = c("VN", "ageBase", "Sex", "Ethnicity", "BMI", "fDM", "Hypertension"),
-            intvar = "Hypertension") %>% 
-  dplyr::select(Yterms, Xterms, term, p.value, conf.low, conf.high, sample.total)
-```
+<!-- # Interaction between BP medication and hypertension -->
+<!-- ds %>%  -->
+<!--   prep_mason_data() %>%  -->
+<!--   mason_gee(y = c("UDBP"), -->
+<!--               x = "MedsBloodPressure", -->
+<!--               covars = c("VN", "ageBase", "Sex", "Ethnicity", "BMI", "fDM", "Hypertension"), -->
+<!--             intvar = "Hypertension") %>%  -->
+<!--   dplyr::select(Yterms, Xterms, term, p.value, conf.low, conf.high, sample.total) -->
+<!-- ``` -->
 
 ### Generalized Estimating Equations
 
@@ -471,7 +471,7 @@ GEE where predictor is baseline UDBP
 
 gee_kidney_baseline <- ds %>% 
   prep_mason_data_kidney() %>% 
-  mason_gee(y = c("ACR", "eGFR"),
+  mason_geeplot(y = c("lACR", "leGFR"),
             x = "udbpCrBase",
             covars = c("MonthsFromBaseline", "ageBase", "Sex", "Ethnicity", 
                        "dmStatus")) %>%
@@ -485,14 +485,7 @@ gee_kidney_baseline %>%
 
 # Plot ---------------------------------------------------------------
 
-ds %>% 
-  prep_mason_data_kidney() %>% 
-  mason_geeplot(y = c("ACR", "eGFR"),
-            x = "udbpCrBase",
-            covars = c("MonthsFromBaseline", "ageBase", "Sex", 
-                       "Ethnicity", "dmStatus")) %>% 
-  mason::polish_renaming(rename_gee_kidney) %>% 
-  plot_gee_results_kidney(gee_kidney_baseline,
+plot_gee_results_kidney(gee_kidney_baseline,
                  yvars = c("ACR (mg/mmol)", 
                            "eGFR (ml/min/1.73m^2)"))
 ```
@@ -504,9 +497,10 @@ GEE where predictor is UDBP over time
 
 gee_kidney <- ds %>% 
   prep_mason_data_kidney() %>% 
-  mason_gee(y = c("ACR", "eGFR"),
-            x = "udbpCrRatio",
-            covars = c("MonthsFromBaseline", "ageBase", "Sex", "Ethnicity", "dmStatus")) %>%
+  mason_geeplot(y = c("lACR", "leGFR"),
+            x = "udbpCr",
+            covars = c("MonthsFromBaseline", "ageBase", "Sex", "Ethnicity", 
+                       "dmStatus")) %>%
   mason::polish_renaming(rename_gee_kidney)
 
 # GEE table ----------------------------------------------------------
@@ -517,55 +511,49 @@ gee_kidney %>%
 
 # Plot ---------------------------------------------------------------
 
-ds %>% 
-  prep_mason_data_kidney() %>% 
-  mason_geeplot(y = c("ACR", "eGFR"),
-            x = "udbpCrRatio",
-            covars = c("MonthsFromBaseline", "ageBase", "Sex", 
-                       "Ethnicity", "dmStatus")) %>% 
-  mason::polish_renaming(rename_gee_kidney) %>% 
-  plot_gee_results_kidney(yvars = c("ACR (mg/mmol)", 
+plot_gee_results_kidney(gee_kidney,
+                 yvars = c("ACR (mg/mmol)", 
                            "eGFR (ml/min/1.73m^2)"))
 ```
 
 
-### Interaction with Time
+<!-- ### Interaction with Time -->
 
-```{r interaction_vn}
+<!-- ```{r interaction_vn} -->
 
-# Unadjusted interaction with visit number
-ds %>% 
-  prep_mason_data() %>% 
-  mason_gee(y = c("ACR", "eGFR"),
-              x = "UDBP",
-              covars = c("VN"),
-              intvar = "VN") %>% 
-  dplyr::select(Yterms, Xterms, term, p.value, conf.low, conf.high, sample.total)
+<!-- # Unadjusted interaction with visit number -->
+<!-- ds %>%  -->
+<!--   prep_mason_data() %>%  -->
+<!--   mason_gee(y = c("ACR", "eGFR"), -->
+<!--               x = "UDBP", -->
+<!--               covars = c("VN"), -->
+<!--               intvar = "VN") %>%  -->
+<!--   dplyr::select(Yterms, Xterms, term, p.value, conf.low, conf.high, sample.total) -->
 
-# Adjusted interaction with visit number
-ds %>% 
-  prep_gee_data() %>% 
-  analyze_gee(y = c("ACR", "eGFR"),
-              x = "UDBP",
-              covars = c("VN", "ageBase", "Sex", "Ethnicity", "BMI", "fDM"),
-              intvar = "VN") %>% 
-  dplyr::select(Yterms, Xterms, term, p.value, conf.low, conf.high, sample.total)
+<!-- # Adjusted interaction with visit number -->
+<!-- ds %>%  -->
+<!--   prep_gee_data() %>%  -->
+<!--   analyze_gee(y = c("ACR", "eGFR"), -->
+<!--               x = "UDBP", -->
+<!--               covars = c("VN", "ageBase", "Sex", "Ethnicity", "BMI", "fDM"), -->
+<!--               intvar = "VN") %>%  -->
+<!--   dplyr::select(Yterms, Xterms, term, p.value, conf.low, conf.high, sample.total) -->
 
-# Unadjusted interaction with months from baseline
-ds %>% 
-  prep_mason_data() %>% 
-  mason_gee(y = c("ACR", "eGFR"),
-              x = "UDBP",
-              covars = c("MonthsFromBaseline"),
-              intvar = "MonthsFromBaseline") %>% 
-  dplyr::select(Yterms, Xterms, term, p.value, conf.low, conf.high, sample.total)
+<!-- # Unadjusted interaction with months from baseline -->
+<!-- ds %>%  -->
+<!--   prep_mason_data() %>%  -->
+<!--   mason_gee(y = c("ACR", "eGFR"), -->
+<!--               x = "UDBP", -->
+<!--               covars = c("MonthsFromBaseline"), -->
+<!--               intvar = "MonthsFromBaseline") %>%  -->
+<!--   dplyr::select(Yterms, Xterms, term, p.value, conf.low, conf.high, sample.total) -->
 
-# Adjusted interaction with months from baseline
-ds %>% 
-  prep_mason_data() %>% 
-  mason_gee(y = c("ACR", "eGFR"),
-              x = "UDBP",
-              covars = c("MonthsFromBaseline", "ageBase", "Sex", "Ethnicity", "BMI", "fDM"),
-              intvar = "MonthsFromBaseline") %>% 
-  dplyr::select(Yterms, Xterms, term, p.value, conf.low, conf.high, sample.total)
-```
+<!-- # Adjusted interaction with months from baseline -->
+<!-- ds %>%  -->
+<!--   prep_mason_data() %>%  -->
+<!--   mason_gee(y = c("ACR", "eGFR"), -->
+<!--               x = "UDBP", -->
+<!--               covars = c("MonthsFromBaseline", "ageBase", "Sex", "Ethnicity", "BMI", "fDM"), -->
+<!--               intvar = "MonthsFromBaseline") %>%  -->
+<!--   dplyr::select(Yterms, Xterms, term, p.value, conf.low, conf.high, sample.total) -->
+<!-- ``` -->
