@@ -75,6 +75,7 @@ fetch_data <- function() {
                        breaks = c(0, 1.23, 60, Inf),
                        labels = c("Trace", "Normal", "High"),
                        ordered_result = TRUE),
+      udbpTertile = ntile(UDBP, 3),
       udbpCr = UDBP / UrineCreatinine,
       logudbpCr = log(udbpCr),
       udbpCrTertile = ntile(udbpCr, 3),
