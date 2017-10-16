@@ -46,7 +46,7 @@ rename_variables <- function(x) {
 #' @examples
 rename_gee_kidney <- function(x) {
   x %>%
-    gsub("<-Xterm", "uVDBP:cr (ug/mmol)", .) %>%
+    gsub("<-Xterm", "Baseline uVDBP (ug/mmol)", .) %>%
     gsub("VN", "Follow-up Duration (years)", .) %>%
     gsub("MonthsFromBaseline", "Follow-up Duration (months)", .) %>%
     gsub('Age', 'Age (years)', .) %>%
@@ -55,7 +55,7 @@ rename_gee_kidney <- function(x) {
     gsub('lACR', 'ACR (mg/mmol)', .) %>%
     gsub('UDBP', 'Urinary VDBP (ng/mL)', .) %>%
     gsub("udbpCrBase", "Baseline uVDBP:cr (ug/mmol)", .) %>%
-    gsub('udbpCrRatio', 'uVDBP:creatinine (ug/mmol)', .) %>%
+    gsub('udbpCrRatio', 'uVDBP:cr (ug/mmol)', .) %>%
     gsub("fPreDMPreDM", "Prediabetes", .) %>%
     gsub('DM', 'Diabetes', .) %>%
     gsub('NGT', 'Normal Glucose Tolerance', .) %>%
@@ -73,7 +73,7 @@ rename_gee_kidney <- function(x) {
 #' @examples
 rename_gee_vitd <- function(x) {
   x %>%
-    gsub("<-Xterm", "uVDBP:cr (ug/mmol)", .) %>%
+    gsub("<-Xterm", "uVDBP (ug/mmol)", .) %>%
     gsub("VitaminD", "Serum 25(OH)D (nmol/L)", .) %>%
     gsub("VN", "Follow-up Duration (years)", .) %>%
     gsub("MonthsFromBaseline", "Follow-up Duration (months)", .) %>%

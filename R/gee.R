@@ -39,6 +39,7 @@ prep_mason_data <- function(data) {
 prep_mason_data_kidney <- function(data) {
   data %>%
     dplyr::mutate(
+      udbpBase = ifelse(fVN == "Baseline", UDBP, NA),
       udbpCrBase = ifelse(fVN == "Baseline", udbpCr, NA),
       ageBase = ifelse(fVN == "Baseline", Age, NA),
       DM = ifelse(DM == 1, "DM", "notDM"),
@@ -57,6 +58,8 @@ prep_mason_data_kidney <- function(data) {
     dplyr::filter(!(fVN == "Baseline" & dmStatus == "DM")) %>%
 
     dplyr::mutate_each(dplyr::funs(as.numeric(scale(.))),
+                       UDBP,
+                       udbpBase,
                        udbpCr,
                        udbpCrBase,
                        MonthsFromBaseline,
@@ -64,7 +67,7 @@ prep_mason_data_kidney <- function(data) {
 
     dplyr::arrange(SID, fVN) %>%
     dplyr::group_by(SID) %>%
-    tidyr::fill(udbpCrBase, ageBase) %>%
+    tidyr::fill(udbpBase, ageBase) %>%
     dplyr::ungroup() %>%
     dplyr::arrange(SID, fVN)
 }
@@ -83,6 +86,7 @@ prep_mason_data_vitd <- function(data) {
   data %>%
     dplyr::mutate(
       # UDBP = UDBP/1000, # udbp units to ug/mL
+      udbpBase = ifelse(fVN == "Baseline", UDBP, NA),
       udbpCrBase = ifelse(fVN == "Baseline", udbpCr, NA),
       ageBase = ifelse(fVN == "Baseline", Age, NA),
       DM = ifelse(DM == 1, "DM", "notDM"),
@@ -99,6 +103,8 @@ prep_mason_data_vitd <- function(data) {
     dplyr::filter(!(fVN == "Baseline" & dmStatus == "DM")) %>%
 
     dplyr::mutate_each(dplyr::funs(as.numeric(scale(.))),
+                       UDBP,
+                       udbpBase,
                        udbpCr,
                        udbpCrBase,
                        MonthsFromBaseline,
@@ -108,7 +114,7 @@ prep_mason_data_vitd <- function(data) {
 
     dplyr::arrange(SID, fVN) %>%
     dplyr::group_by(SID) %>%
-    tidyr::fill(udbpCrBase, ageBase) %>%
+    tidyr::fill(udbpBase, ageBase) %>%
     dplyr::ungroup() %>%
     dplyr::arrange(SID, fVN)
 }
@@ -246,14 +252,14 @@ gee_results_table <- function(results, table = TRUE) {
 plot_gee_results_kidney <- function(results, yvars,
                      xlab = "Percent difference with 95% CI in the outcomes
                      for each SD increase in uVDBP and covariates",
-                     terms = c("uVDBP:cr (ug/mmol)",
+                     terms = c("Baseline uVDBP (ug/mmol)",
                                "Follow-up Duration (months)",
                                "Baseline Age (years)",
                                "SexMale",
                                "EthnicityEuropean",
                                "dmStatusPreDiabetes",
                                "dmStatusDiabetes"),
-                     labels = c("uVDBP:cr (ug/mL)",
+                     labels = c("Baseline uVDBP (ug/mL)",
                                 "Follow-up Duration (Months)",
                                 "Baseline Age (Years)",
                                 "Sex (male)",

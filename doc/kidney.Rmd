@@ -472,7 +472,7 @@ GEE where predictor is baseline UDBP
 gee_kidney_baseline <- ds %>% 
   prep_mason_data_kidney() %>% 
   mason_geeplot(y = c("lACR", "leGFR"),
-            x = "udbpCrBase",
+            x = "udbpBase",
             covars = c("MonthsFromBaseline", "ageBase", "Sex", "Ethnicity", 
                        "dmStatus")) %>%
   mason::polish_renaming(rename_gee_kidney)
@@ -498,7 +498,7 @@ GEE where predictor is UDBP over time
 gee_kidney <- ds %>% 
   prep_mason_data_kidney() %>% 
   mason_geeplot(y = c("lACR", "leGFR"),
-            x = "udbpCr",
+            x = "UDBP",
             covars = c("MonthsFromBaseline", "ageBase", "Sex", "Ethnicity", 
                        "dmStatus")) %>%
   mason::polish_renaming(rename_gee_kidney)
