@@ -92,6 +92,11 @@ dsBase %>%
   scatter_plot("udbpCr", "BMI",
                "uVDBP:cr", "BMI")
 
+# explore (delete later)
+
+dsBase %>% 
+  summarise(n = n())
+
 ```
 
 TABLE 2: Subject characteristics across UDBP:cR tertiles
@@ -115,7 +120,7 @@ subchar_table_tert <- tableone::CreateTableOne(
            "Diastolic",
            "MeanArtPressure",
            "dmStatus"),
-  strata = c("udbpCrTertile"),
+  # strata = c("udbpCrTertile"),
   data = dsBase,
   factorVars = c("Sex", "Ethnicity", "dmStatus")
 ) %>% 
