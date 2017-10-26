@@ -203,23 +203,31 @@ subchar_table_time <- tableone::CreateTableOne(
 
 # Clean data
 acr <- ds %>% 
-  filter(fVN == "Baseline") %>% 
-  select(acrStatus, udbpCr) %>%
+  dplyr::filter(fVN == "Baseline") %>% 
+  dplyr::mutate(acrStatus2 = ifelse(acrStatus == "Normoalbuminuria", "Normoalbuminuria",
+                                    "Albuminuria"),
+                acrStatus2 = factor(acrStatus2,
+                                    levels = c("Normoalbuminuria", "Albuminuria"),
+                                    ordered = TRUE)) %>% 
+  dplyr::select(acrStatus, acrStatus2, udbpCr, udbpCr) %>%
   na.omit()
 
 # Box plot of uVDBP in different albuminuria categories
 acr %>% 
-  box_plot("acrStatus", "log(udbpCr)", 
+  box_plot("acrStatus2", "log(udbpCr)", 
             "Albuminuria",
             "log uVDBP:Creatinine")
 
-# n
+# n and values
 acr %>% 
-  group_by(acrStatus) %>% 
-  summarise(n = n())
+  group_by(acrStatus2) %>% 
+  summarise(n = n(),
+            median = median(log(udbpCr)),
+            lower = quantile(log(udbpCr), probs=0.25),
+            higher = quantile(log(udbpCr), probs=0.75))
 
 # ANOVA
-anova <- aov(formula = log(udbpCr)~acrStatus, data = acr)
+anova <- aov(formula = log(udbpCr)~acrStatus2, data = acr)
 summary(anova)
 TukeyHSD(anova)
 rm(anova)
