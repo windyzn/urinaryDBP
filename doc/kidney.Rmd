@@ -330,6 +330,56 @@ ds %>%
             )
 ```
 
+### uVDBP vs uVDBP:cr
+
+```{r}
+
+# Scatterplot of uVDBP and uVDBP:cr -----------------------------
+
+ds %>% 
+  scatter_plot("log(UDBP)", "log(udbpCr)",
+               "log uVDBP",
+               "log uVDBP:cr", facet = TRUE)
+
+# Spearman Correlation ------------------------------------------
+
+ds %>% 
+  filter(fVN == "Baseline") %>% 
+  cor.test(formula = ~ udbpCr + UDBP, data = ., method = "spearman")
+
+```
+
+```{r}
+
+# Scatterplot of eGFR and uVDBP:cr -----------------------------
+
+ds %>% 
+  dplyr::filter(fVN == "Baseline") %>% 
+  scatter_plot("log(eGFR)", "log(UDBP)",
+               "log eGFR",
+               "log uVDBP")
+
+# Spearman Correlation ------------------------------------------
+
+ds %>% 
+  filter(fVN == "Baseline") %>% 
+  cor.test(formula = ~ UDBP + eGFR, data = ., method = "spearman")
+
+# Scatterplot of eGFR and uCr -----------------------------
+
+ds %>% 
+  dplyr::filter(fVN == "6Year") %>% 
+  scatter_plot("log(eGFR)", "log(UrineCreatinine)",
+               "log eGFR",
+               "log creatinine")
+
+# Spearman Correlation ------------------------------------------
+
+ds %>% 
+  filter(fVN == "6Year") %>% 
+  cor.test(formula = ~ UrineCreatinine + eGFR, data = ., method = "spearman")
+
+```
 
 ### Medication
 
