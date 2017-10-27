@@ -278,10 +278,13 @@ eGFR %>%
             "Kidney Status",
             "log uVDBP:Creatinine")
 
-# n
+# n and values
 eGFR %>% 
   group_by(eGFRStatus) %>% 
-  summarise(n = n())
+  summarise(n = n(),
+            median = median(log(udbpCr)),
+            lower = quantile(log(udbpCr), probs=0.25),
+            higher = quantile(log(udbpCr), probs=0.75))
 
 # ANOVA
 anova <- aov(formula = log(udbpCr)~eGFRStatus, data = eGFR)
