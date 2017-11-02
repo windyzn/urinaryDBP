@@ -95,8 +95,8 @@ prep_mason_data_vitd <- function(data) {
       Ethnicity = relevel(as.factor(Ethnicity), "Other"),
       dmStatus = factor(dmStatus, ordered = FALSE),
 
-      lVitD = log(VitaminD),
-      lPTH = log(PTH)
+      lVitD = log(VitaminD)
+      # lPTH = log(PTH)
     ) %>%
 
     # dplyr::filter(!(fVN == "Baseline" & vitdStatus == "Deficient")) %>%

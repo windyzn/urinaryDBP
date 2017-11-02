@@ -294,7 +294,7 @@ rm(anova)
 
 gee_vitd_baseline <- ds %>% 
   prep_mason_data_vitd() %>% 
-  mason_geeplot(y = c("lVitD", "lPTH"),
+  mason_geeplot(y = "lVitD",
             x = "udbpCrBase",
             covars = c("MonthsFromBaseline", "ageBase", "Sex", 
                        "Ethnicity", "MET", "BMI", "dmStatus", "Season"),
