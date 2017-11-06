@@ -148,7 +148,7 @@ vitd <- ds %>%
 
 # Box plot of uVDBP in different albuminuria categories
 vitd %>% 
-  box_plot("vitdStatus", "log(udbpCr)", 
+  box_plot_slides("vitdStatus", "log(udbpCr)", 
             "Vitamin D Status",
             "log uVDBP:Creatinine (μg/mmol)")
 
@@ -177,7 +177,7 @@ rm(anova)
 # Scatterplot of ACR and uVDBP ----------------------------------
 
 dsBase %>% 
-  scatter_plot("log(udbpCr)", "VitaminD", 
+  scatter_plot_slides("log(udbpCr)", "VitaminD", 
                "log UDBP:Creatinine",
                "Serum 25(OH)D")
 

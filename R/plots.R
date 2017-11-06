@@ -81,17 +81,16 @@ box_plot_slides <- function(data=project_data, xvar, yvar, xlab="", ylab="", fac
                          alpha = 0.3,
                          size = 1,
                          colour = "grey30") +
-    ggplot2::theme_minimal() +
-    ggplot2::scale_color_manual(values = c("#0db7c4", "#f24745", "#a9d039")) +
-    ggplot2::scale_fill_manual(values = c("#0db7c4", "#f24745", "#a9d039")) +
+    ggplot2::scale_color_manual(values = c("#2b3443", "#adc9b7", "#ffd91e")) +
+    ggplot2::scale_fill_manual(values = c("#2b3443", "#adc9b7", "#ffd91e")) +
     ggplot2::theme(legend.position = "none",
+                   panel.background = ggplot2::element_rect(fill = "#f5f3ef", colour = "#f5f3ef"),
                    panel.grid.major.x = ggplot2::element_blank(),
                    axis.line.y = ggplot2::element_blank(),
-                   text = ggplot2::element_text(size = 14, family = "Open Sans"),
-                   axis.text.y = ggplot2::element_text(colour = "grey30"),
+                   text = ggplot2::element_text(size = 14, colour = "#2b3443"),
+                   axis.text.y = ggplot2::element_text(colour = "#2b3443"),
                    axis.ticks.y = ggplot2::element_line(colour = "grey"),
-                   axis.text.x = ggplot2::element_text(colour = "grey30"),
-                   axis.title = ggplot2::element_text(family = "Dosis")) + #angle = 45
+                   axis.text.x = ggplot2::element_text(colour = "#2b3443")) +
     ggplot2::xlab(xlab) +
     ggplot2::ylab(ylab)
 
@@ -136,7 +135,7 @@ box_plot_poster <- function(data=project_data, xvar, yvar, xlab="", ylab="", fac
                    panel.grid.major.x = ggplot2::element_blank(),
                    axis.line.y = ggplot2::element_blank(),
                    plot.background = ggplot2::element_rect(colour = "grey60"),
-                   text = ggplot2::element_text(size = 14, family = "Calibri Light"),
+                   # text = ggplot2::element_text(size = 14, family = "Open Sans"),
                    axis.text.y = ggplot2::element_text(colour = "grey30"),
                    axis.ticks.y = ggplot2::element_line(colour = "grey"),
                    axis.text.x = ggplot2::element_text(colour = "grey30"),
@@ -201,6 +200,50 @@ scatter_plot = function(data=project_data,
     myplot
   }
 }
+
+
+#' Scatterplot where the colour theme matches my slides
+#'
+#' @param data Clearned data
+#' @param xvar Variable on x-axis
+#' @param yvar Variable on y-axis
+#' @param xlab x-axis label
+#' @param ylab y-axis label
+#' @param line Line of best fit
+#' @param facet Split the plot by visit number
+#'
+#' @return Plot
+#'
+#' @examples
+scatter_plot_slides = function(data=project_data,
+                               xvar, yvar, xlab='', ylab='', line = TRUE, facet = FALSE) {
+  myplot <- ggplot2::ggplot(data, ggplot2::aes_string(x=xvar, y=yvar)) +
+    ggplot2::geom_point(colour = "#2b3443", size = 1) +
+    ggplot2::theme(panel.grid.major.x = ggplot2::element_blank(),
+                   panel.grid.minor.x = ggplot2::element_blank(),
+                   panel.background = ggplot2::element_rect(fill = "#f5f3ef", colour = "#f5f3ef"),
+                   axis.line.y = ggplot2::element_blank(),
+                   text = ggplot2::element_text(size = 14, colour = "#2b3443"),
+                   axis.text.y = ggplot2::element_text(colour = "#2b3443"),
+                   axis.ticks.y = ggplot2::element_line(colour = "grey"),
+                   axis.text.x = ggplot2::element_text(colour = "#2b3443")) +
+    ggplot2::xlab(xlab) +
+    ggplot2::ylab(ylab)
+  if(line == TRUE & facet == FALSE) {
+    myplot +
+      ggplot2::geom_smooth(method = lm, colour = "#ffd91e", fill = "#ffd91e")
+  } else if(line == TRUE & facet == TRUE) {
+    myplot +
+      ggplot2::geom_smooth(method = lm, colour = "#ffd91e", fill = "#ffd91e") +
+      ggplot2::facet_grid(~fVN, switch = "x")
+  } else if(line == FALSE & facet == TRUE) {
+    myplot +
+      ggplot2::facet_grid(~fVN, switch = "x")
+  } else {
+    myplot
+  }
+}
+
 
 #' Scatterplot where the colour theme matches ada poster
 #'
