@@ -73,7 +73,6 @@ rename_gee_kidney <- function(x) {
 #' @examples
 rename_gee_vitd <- function(x) {
   x %>%
-    gsub("<-Xterm", "uVDBP (ug/mmol)", .) %>%
     gsub("VitaminD", "Serum 25(OH)D (nmol/L)", .) %>%
     gsub("VN", "Follow-up Duration (years)", .) %>%
     gsub("MonthsFromBaseline", "Follow-up Duration (months)", .) %>%

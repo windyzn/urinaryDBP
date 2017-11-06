@@ -284,14 +284,6 @@ rm(anova)
 
 # Predictor is baseline UDBP ----------------------------------------
 
-# gee_vitd_baseline <- ds %>% 
-#   prep_mason_data_vitd() %>% 
-#   mason_gee(y = c("VitaminD", "PTH"),
-#             x = "udbpCrBase",
-#             covars = c("MonthsFromBaseline", "ageBase", "Sex", "Ethnicity", "MET", "BMI", "dmStatus", "Season"),
-#             intvar = "Season") %>% 
-#   mason::polish_renaming(rename_gee_vitd)
-
 gee_vitd_baseline <- ds %>% 
   prep_mason_data_vitd() %>% 
   mason_geeplot(y = "lVitD",
@@ -313,8 +305,7 @@ gee_vitd_baseline %>%
 # Plot ---------------------------------------------------------------
 
 plot_gee_results_vitd(gee_vitd_baseline,
-                 yvars = c("Serum 25(OH)D (nmol/L)",
-                           "PTH (pmol/L)"))
+                 yvars = "Serum 25(OH)D (nmol/L)")
 
 # Plot interaction ---------------------------------------------------
 
@@ -331,17 +322,9 @@ plot_gee_results_vitd(gee_vitd_baseline,
 
 # Predictor is UDBP ----------------------------------------
 
-# gee_vitd <- ds %>% 
-#   prep_mason_data_vitd() %>% 
-#   mason_gee(y = c("lVitD", "lPTH"),
-#             x = "udbpCr",
-#             covars = c("MonthsFromBaseline", "ageBase", "Sex", "Ethnicity", "MET", "BMI", "dmStatus", "Season"),
-#             intvar = "Season") %>% 
-#   mason::polish_renaming(rename_gee_vitd)
-
 gee_vitd <- ds %>% 
   prep_mason_data_vitd() %>% 
-  mason_geeplot(y = c("lVitD", "lPTH"),
+  mason_geeplot(y = "lVitD",
             x = "udbpCr",
             covars = c("MonthsFromBaseline", "ageBase", "Sex", "Ethnicity", "MET", "BMI", "dmStatus", "Season"),
             intvar = "Season") %>% 
