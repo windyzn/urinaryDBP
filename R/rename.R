@@ -46,7 +46,6 @@ rename_variables <- function(x) {
 #' @examples
 rename_gee_kidney <- function(x) {
   x %>%
-    gsub("<-Xterm", "Baseline uVDBP (ug/mmol)", .) %>%
     gsub("VN", "Follow-up Duration (years)", .) %>%
     gsub("MonthsFromBaseline", "Follow-up Duration (months)", .) %>%
     gsub('Age', 'Age (years)', .) %>%
