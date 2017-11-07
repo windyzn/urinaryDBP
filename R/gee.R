@@ -54,7 +54,7 @@ prep_mason_data_kidney <- function(data) {
 
     dplyr::filter(!(fVN == "Baseline" &
                       acrStatus == "Macroalbuminuria")) %>%
-    dplyr::filter(!(fVN == "Baseline" & eGFRStatus == "Moderate")) %>%
+    dplyr::filter(!(fVN == "Baseline" & eGFR < 60)) %>%
     dplyr::filter(!(fVN == "Baseline" & dmStatus == "DM")) %>%
 
     dplyr::mutate_each(dplyr::funs(as.numeric(scale(.))),
