@@ -209,12 +209,12 @@ acr <- ds %>%
                 acrStatus2 = factor(acrStatus2,
                                     levels = c("Normoalbuminuria", "Albuminuria"),
                                     ordered = TRUE)) %>% 
-  dplyr::select(acrStatus, acrStatus2, udbpCr, udbpCr) %>%
+  dplyr::select(acrStatus, acrStatus2, UDBP, udbpCr) %>%
   na.omit()
 
 # Box plot of uVDBP in different albuminuria categories
 acr %>% 
-  box_plot_slides("acrStatus", "log(udbpCr)", 
+  box_plot("acrStatus", "log(UDBP)", 
             "Albuminuria",
             "log uVDBP:Creatinine")
 
@@ -239,7 +239,7 @@ rm(anova)
 # Scatterplot of ACR and uVDBP ----------------------------------
 
 dsBase %>% 
-  scatter_plot_slides("log(ACR)", "log(udbpCr)",
+  scatter_plot("log(ACR)", "log(udbpCr)",
                "log Albumin:Creatinine Ratio",
                "log UDBP:Creatinine")
 
@@ -269,12 +269,12 @@ dsBase %>%
 # Clean data
 eGFR <- ds %>% 
   filter(fVN == "Baseline") %>% 
-  select(eGFRStatus, udbpCr) %>%
+  select(eGFRStatus, udbpCr, UDBP) %>%
   na.omit()
 
 # Box plot of uVDBP in different eGFR categories
 eGFR %>% 
-  box_plot_slides("eGFRStatus", "log(udbpCr)", 
+  box_plot("eGFRStatus", "log(UDBP)", 
             "Kidney Status",
             "log uVDBP:Creatinine")
 
@@ -287,7 +287,7 @@ eGFR %>%
             higher = quantile(log(udbpCr), probs=0.75))
 
 # ANOVA
-anova <- aov(formula = log(udbpCr)~eGFRStatus, data = eGFR)
+anova <- aov(formula = log(UDBP)~eGFRStatus, data = eGFR)
 summary(anova)
 TukeyHSD(anova)
 rm(anova)
@@ -299,7 +299,7 @@ rm(anova)
 
 ds %>% 
   filter(fVN == "Baseline") %>% 
-  scatter_plot_slides("log(eGFR)", "log(udbpCr)",
+  scatter_plot("log(eGFR)", "log(UDBP)",
                "log Estimated Glomerular Filtration Rate",
                "log UDBP:Creatinine")
 
@@ -314,7 +314,7 @@ ds %>%
 dsBase %>% 
   prep_mason_data() %>% 
   mason_glm(y = "eGFR",
-            x = "udbpCr",
+            x = "UDBP",
             covars = c("Age", "Sex", "Ethnicity", "dmStatus")
             ) %>% 
   gee_results_table(table = FALSE)
@@ -340,6 +340,11 @@ ds %>%
   scatter_plot("log(UDBP)", "log(udbpCr)",
                "log uVDBP",
                "log uVDBP:cr", facet = TRUE)
+
+ds %>% 
+  scatter_plot("log(UDBP)", "log(UrineCreatinine)",
+               "log uVDBP",
+               "log uCreatinine", facet = TRUE)
 
 # Spearman Correlation ------------------------------------------
 
@@ -529,6 +534,43 @@ ds_med <- ds %>%
 
 ### Generalized Estimating Equations
 
+```{r}
+prep_mason_data_kidney <- ds %>%
+    dplyr::mutate(
+      udbpBase = ifelse(fVN == "Baseline", UDBP, NA),
+      udbpCrBase = ifelse(fVN == "Baseline", udbpCr, NA),
+      ageBase = ifelse(fVN == "Baseline", Age, NA),
+      DM = ifelse(DM == 1, "DM", "notDM"),
+      fDM = relevel(as.factor(DM), "notDM"),
+      dmStatus = factor(dmStatus, ordered = FALSE),
+      Ethnicity = ifelse(Ethnicity == "European", Ethnicity, "Other"),
+      Ethnicity = relevel(as.factor(Ethnicity), "Other"),
+
+      lACR = log(ACR),
+      leGFR = log(eGFR)
+    ) %>%
+
+    dplyr::filter(!(fVN == "Baseline" &
+                      acrStatus == "Macroalbuminuria")) %>%
+    dplyr::filter(!(fVN == "Baseline" & eGFR < 60)) %>%
+    dplyr::filter(!(fVN == "Baseline" & dmStatus == "DM")) %>%
+
+    dplyr::mutate_each(dplyr::funs(as.numeric(scale(.))),
+                       UDBP,
+                       udbpBase,
+                       udbpCr,
+                       udbpCrBase,
+                       MonthsFromBaseline,
+                       ageBase) %>%
+
+    dplyr::arrange(SID, fVN) %>%
+    dplyr::group_by(SID) %>%
+    tidyr::fill(udbpBase, udbpCrBase, ageBase) %>%
+    dplyr::ungroup() %>%
+    dplyr::arrange(SID, fVN)
+```
+
+
 GEE where predictor is baseline UDBP
 
 ```{r gee_baseline}
@@ -538,8 +580,16 @@ GEE where predictor is baseline UDBP
 gee_kidney_baseline <- ds %>% 
   prep_mason_data_kidney() %>% 
   mason_geeplot(y = c("lACR", "leGFR"),
-            x = "udbpCrBase",
-            covars = c("MonthsFromBaseline", "ageBase", "Sex", "Ethnicity", 
+            x = "udbpBase",
+            covars = c("YearsFromBaseline", "ageBase", "Sex", "Ethnicity", 
+                       "dmStatus")) %>%
+  mason::polish_renaming(rename_gee_kidney)
+
+gee_kidney_baseline <- ds %>% 
+  prep_mason_data_kidney() %>% 
+  mason_geeplot(y = c("lACR", "leGFR"),
+            x = "acrBase",
+            covars = c("YearsFromBaseline", "ageBase", "Sex", "Ethnicity", 
                        "dmStatus")) %>%
   mason::polish_renaming(rename_gee_kidney)
 
@@ -551,7 +601,7 @@ gee_kidney_baseline %>%
 
 # Plot ---------------------------------------------------------------
 
-plot_gee_results_kidney(gee_kidney_baseline,
+plot_gee_results_kidney_base(gee_kidney_baseline,
                  yvars = c("ACR (mg/mmol)", 
                            "eGFR (ml/min/1.73m^2)"))
 ```
@@ -564,8 +614,8 @@ GEE where predictor is UDBP over time
 gee_kidney <- ds %>% 
   prep_mason_data_kidney() %>% 
   mason_geeplot(y = c("lACR", "leGFR"),
-            x = "udbpCr",
-            covars = c("MonthsFromBaseline", "ageBase", "Sex", "Ethnicity", 
+            x = "UDBP",
+            covars = c("YearsFromBaseline", "ageBase", "Sex", "Ethnicity", 
                        "dmStatus")) %>%
   mason::polish_renaming(rename_gee_kidney)
 

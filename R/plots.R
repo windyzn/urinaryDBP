@@ -34,11 +34,11 @@ box_plot <- function(data=project_data, xvar, yvar, xlab="", ylab="", facet = FA
                          alpha = 0.3,
                          size = 1,
                          colour = "grey30") +
-    ggplot2::theme_minimal() +
-    ggplot2::scale_fill_brewer(palette = "Dark2") +
-    ggplot2::scale_color_brewer(palette = "Dark2") +
+    ggplot2::scale_color_manual(values = c("#2b3443", "#adc9b7", "#ffd91e")) +
+    ggplot2::scale_fill_manual(values = c("#2b3443", "#adc9b7", "#ffd91e")) +
     ggplot2::theme(legend.position = "none",
                    panel.grid.major.x = ggplot2::element_blank(),
+                   panel.background = ggplot2::element_rect(fill = "#f5f3ef", colour = "#f5f3ef"),
                    axis.line.y = ggplot2::element_blank(),
                    axis.text.y = ggplot2::element_text(colour = "grey"),
                    axis.ticks.y = ggplot2::element_line(colour = "grey"),
@@ -168,30 +168,25 @@ box_plot_poster <- function(data=project_data, xvar, yvar, xlab="", ylab="", fac
 #'
 #' @examples
 scatter_plot = function(data=project_data,
-                        xvar, yvar, xlab='', ylab='', line = TRUE, facet = FALSE) {
-
+                               xvar, yvar, xlab='', ylab='', line = TRUE, facet = FALSE) {
   myplot <- ggplot2::ggplot(data, ggplot2::aes_string(x=xvar, y=yvar)) +
-    ggplot2::geom_point(size = 1.5, alpha = 0.8) + #mapping=aes(color=mcr_status), #0db7c4
-    ggplot2::scale_fill_brewer(palette = "Dark2") +
-    ggplot2::scale_color_brewer(palette = "Dark2") +
-    ggplot2::theme_minimal() +
+    ggplot2::geom_point(colour = "#2b3443", size = 1) +
     ggplot2::theme(panel.grid.major.x = ggplot2::element_blank(),
                    panel.grid.minor.x = ggplot2::element_blank(),
+                   panel.background = ggplot2::element_rect(fill = "#f5f3ef", colour = "#f5f3ef"),
                    axis.line.y = ggplot2::element_blank(),
-                   text = ggplot2::element_text(size = 11), #family = "Open Sans"
-                   axis.text.y = ggplot2::element_text(colour = "grey30"), #"grey" normally
+                   text = ggplot2::element_text(colour = "#2b3443"),
+                   axis.text.y = ggplot2::element_text(colour = "#2b3443"),
                    axis.ticks.y = ggplot2::element_line(colour = "grey"),
-                   axis.text.x = ggplot2::element_text(colour = "grey30")) + #angle = 45
-                   # axis.title = ggplot2::element_text(family = "Dosis")) + #size = 10 normally
+                   axis.text.x = ggplot2::element_text(colour = "#2b3443")) +
     ggplot2::xlab(xlab) +
     ggplot2::ylab(ylab)
-
   if(line == TRUE & facet == FALSE) {
     myplot +
-      ggplot2::geom_smooth(method = lm, colour = "grey50")
+      ggplot2::geom_smooth(method = lm, colour = "#ffd91e", fill = "#ffd91e")
   } else if(line == TRUE & facet == TRUE) {
     myplot +
-      ggplot2::geom_smooth(method = lm, colour = "grey50") +
+      ggplot2::geom_smooth(method = lm, colour = "#ffd91e", fill = "#ffd91e") +
       ggplot2::facet_grid(~fVN, switch = "x")
   } else if(line == FALSE & facet == TRUE) {
     myplot +
@@ -370,6 +365,7 @@ line_plot = function(data=project_data, xvar, yvar, byvar, xlab='', ylab='') {
 #' @examples
 gee_plot = function(gee_results, xlab = "") {
   seer::view_main_effect(gee_results, "dot.size", group.label.switch = 'y') +
+    ggplot2::facet_grid(~Yterms, scales = "free_x") +
     ggplot2::theme_grey() +
     ggplot2::theme(legend.position = 'right',
                    panel.grid.major.x = ggplot2::element_blank(),

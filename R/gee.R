@@ -15,9 +15,6 @@ prep_mason_data <- function(data) {
       UDBP = UDBP/1000, # udbp units to ug/mL
       udbpCrBase = ifelse(fVN == "Baseline", udbpCr, NA),
       ageBase = ifelse(fVN == "Baseline", Age, NA),
-      DM = ifelse(DM == 1, "DM", "notDM"),
-      fDM = relevel(as.factor(DM), "notDM"),
-      fDysglycemia = ifelse(!(dmStatus == "NGT"), "Dysglycemia", "notDysglycemia"),
       Ethnicity = ifelse(Ethnicity == "European", Ethnicity, "Other"),
       Ethnicity = relevel(as.factor(Ethnicity), "Other"),
       dmStatus = factor(dmStatus, ordered = FALSE)
@@ -25,7 +22,6 @@ prep_mason_data <- function(data) {
     dplyr::arrange(SID, fVN) %>%
     dplyr::group_by(SID) %>%
     tidyr::fill(udbpCrBase, ageBase) %>%
-    # dplyr::mutate_at(dplyr::vars(-SID, -fVN), dplyr::funs(as.numeric(scale(.)))) %>%
     dplyr::ungroup() %>%
     dplyr::arrange(SID, VN)
 }
@@ -42,8 +38,9 @@ prep_mason_data_kidney <- function(data) {
       udbpBase = ifelse(fVN == "Baseline", UDBP, NA),
       udbpCrBase = ifelse(fVN == "Baseline", udbpCr, NA),
       ageBase = ifelse(fVN == "Baseline", Age, NA),
-      DM = ifelse(DM == 1, "DM", "notDM"),
-      fDM = relevel(as.factor(DM), "notDM"),
+      acrBase = ifelse(fVN == "Baseline", ACR, NA),
+      scUDBP = UDBP/1000, # udbp units to ug/mL,
+      scudbpCr = scUDBP/UrineCreatinine,
       dmStatus = factor(dmStatus, ordered = FALSE),
       Ethnicity = ifelse(Ethnicity == "European", Ethnicity, "Other"),
       Ethnicity = relevel(as.factor(Ethnicity), "Other"),
@@ -59,15 +56,15 @@ prep_mason_data_kidney <- function(data) {
 
     dplyr::mutate_each(dplyr::funs(as.numeric(scale(.))),
                        UDBP,
-                       udbpBase,
                        udbpCr,
+                       udbpBase,
                        udbpCrBase,
-                       MonthsFromBaseline,
+                       acrBase,
                        ageBase) %>%
 
     dplyr::arrange(SID, fVN) %>%
     dplyr::group_by(SID) %>%
-    tidyr::fill(udbpBase, udbpCrBase, ageBase) %>%
+    tidyr::fill(udbpBase, udbpCrBase, ageBase, acrBase) %>%
     dplyr::ungroup() %>%
     dplyr::arrange(SID, fVN)
 }
@@ -107,7 +104,6 @@ prep_mason_data_vitd <- function(data) {
                        udbpBase,
                        udbpCr,
                        udbpCrBase,
-                       MonthsFromBaseline,
                        ageBase,
                        MET,
                        BMI) %>%
@@ -249,18 +245,18 @@ gee_results_table <- function(results, table = TRUE) {
 #' @export
 #'
 #' @examples
-plot_gee_results_kidney <- function(results, yvars,
+plot_gee_results_kidney_base <- function(results, yvars,
                      xlab = "Percent difference with 95% CI in the outcomes
-                     for each SD increase in uVDBP and covariates",
+                     for each SD increase in ACR and covariates",
                      terms = c("<-Xterm",
-                               "Follow-up Duration (months)",
+                               "Follow-up Duration (years)",
                                "Baseline Age (years)",
                                "SexMale",
                                "EthnicityEuropean",
                                "dmStatusPreDiabetes",
                                "dmStatusDiabetes"),
-                     labels = c("uVDBP:cr (ug/mL)",
-                                "Follow-up Duration (Months)",
+                     labels = c("Baseline ACR",
+                                "Follow-up Duration (Years)",
                                 "Baseline Age (Years)",
                                 "Sex (male)",
                                 "Ethnicity (European)",
@@ -281,7 +277,36 @@ plot_gee_results_kidney <- function(results, yvars,
 }
 
 
-
+plot_gee_results_kidney <- function(results, yvars,
+                                         xlab = "Percent difference with 95% CI in the outcomes
+                                         for each SD increase in uVDBP and covariates",
+                                         terms = c("<-Xterm",
+                                                   "Follow-up Duration (years)",
+                                                   "Baseline Age (years)",
+                                                   "SexMale",
+                                                   "EthnicityEuropean",
+                                                   "dmStatusPreDiabetes",
+                                                   "dmStatusDiabetes"),
+                                         labels = c("uVDBP:cr (ug/mL)",
+                                                    "Follow-up Duration (Years)",
+                                                    "Baseline Age (Years)",
+                                                    "Sex (male)",
+                                                    "Ethnicity (European)",
+                                                    "Prediabetes",
+                                                    "Diabetes")) {
+  results %>%
+    dplyr::mutate(Xterms = term) %>%
+    dplyr::filter(!term == "(Intercept)") %>%
+    dplyr::mutate(Yterms = factor(Yterms,
+                                  levels = yvars,
+                                  ordered = TRUE),
+                  Xterms = factor(Xterms,
+                                  levels = rev(terms),
+                                  labels = rev(labels),
+                                  ordered = TRUE)) %>%
+    arrange(Xterms) %>%
+    gee_plot(xlab = xlab)
+}
 
 
 #' Plot vitamin D GEE results in a forest plot-style
@@ -294,8 +319,46 @@ plot_gee_results_kidney <- function(results, yvars,
 #' @export
 #'
 #' @examples
-plot_gee_results_vitd <- function(results, yvars,
+plot_gee_results_vitd_base <- function(results, yvars,
                                     xlab = "Percent difference with 95% CI in the outcomes for\n
+                                  each SD increase in uVDBP and covariates") {
+  results %>%
+    dplyr::mutate(Xterms = term) %>%
+    dplyr::filter(!term == "(Intercept)") %>%
+    dplyr::mutate(Yterms = factor(Yterms,
+                                  levels = yvars,
+                                  ordered = TRUE),
+                  Xterms = factor(Xterms,
+                                  levels = rev(c("<-Xterm",
+                                                 "Follow-up Duration (months)",
+                                                 "Baseline Age (years)",
+                                                 "SexMale",
+                                                 "EthnicityEuropean",
+                                                 "MET (kcal/kg/h)",
+                                                 "BMI (kg/m^2)",
+                                                 "dmStatusPreDiabetes",
+                                                 "dmStatusDiabetes",
+                                                 "SeasonWinter",
+                                                 "<-Xterm:SeasonWinter")),
+                                  labels = rev(c("Baseline uVDBP:cr (ug/mL)",
+                                                 "Follow-up Duration (months)",
+                                                 "Baseline Age (years)",
+                                                 "Sex (male)",
+                                                 "Ethnicity (European)",
+                                                 "MET (kcal/kg/h)",
+                                                 "BMI (kg/m^2)",
+                                                 "Prediabetes",
+                                                 "Diabetes",
+                                                 "Seasonality (winter)",
+                                                 "Season:uVDBP:cr interaction")),
+                                  ordered = TRUE)) %>%
+    arrange(Xterms) %>%
+    gee_plot(xlab = xlab)
+}
+
+
+plot_gee_results_vitd <- function(results, yvars,
+                                  xlab = "Percent difference with 95% CI in the outcomes for\n
                                   each SD increase in uVDBP and covariates") {
   results %>%
     dplyr::mutate(Xterms = term) %>%
@@ -329,4 +392,4 @@ plot_gee_results_vitd <- function(results, yvars,
                                   ordered = TRUE)) %>%
     arrange(Xterms) %>%
     gee_plot(xlab = xlab)
-}
+  }

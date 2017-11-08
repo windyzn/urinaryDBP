@@ -48,6 +48,7 @@ rename_gee_kidney <- function(x) {
   x %>%
     gsub("VN", "Follow-up Duration (years)", .) %>%
     gsub("MonthsFromBaseline", "Follow-up Duration (months)", .) %>%
+    gsub("YearsFromBaseline", "Follow-up Duration (years)", .) %>%
     gsub('Age', 'Age (years)', .) %>%
     gsub("ageBase", "Baseline Age (years)", .) %>%
     gsub('leGFR', 'eGFR (ml/min/1.73m^2)', .) %>%

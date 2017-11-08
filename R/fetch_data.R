@@ -32,6 +32,7 @@ fetch_data <- function() {
         labels = c("Baseline", "3Year", "6Year"),
         ordered = TRUE
       ),
+      YearsFromBaseline = MonthsFromBaseline/12,
       fMedsBP = factor(
         MedsBloodPressure,
         levels = c(0, 1),
@@ -95,6 +96,7 @@ fetch_data <- function() {
       VN,
       fVN,
       MonthsFromBaseline,
+      YearsFromBaseline,
       VisitDate,
       BMI,
       Waist,

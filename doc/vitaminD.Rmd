@@ -143,14 +143,14 @@ ds %>%
 # Clean data
 vitd <- ds %>% 
   filter(fVN == "Baseline") %>% 
-  select(vitdStatus, udbpCr) %>%
+  select(vitdStatus, udbpCr, UDBP) %>%
   na.omit()
 
 # Box plot of uVDBP in different albuminuria categories
 vitd %>% 
-  box_plot_slides("vitdStatus", "log(udbpCr)", 
+  box_plot("vitdStatus", "log(UDBP)", 
             "Vitamin D Status",
-            "log uVDBP:Creatinine (μg/mmol)")
+            "log uVDBP (μg/mmol)")
 
 # value
 vitd %>%
