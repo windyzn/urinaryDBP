@@ -148,9 +148,9 @@ vitd <- ds %>%
 
 # Box plot of uVDBP in different albuminuria categories
 vitd %>% 
-  box_plot("vitdStatus", "log(UDBP)", 
+  box_plot("vitdStatus", "log(udbpCr)", 
             "Vitamin D Status",
-            "log uVDBP (μg/mmol)")
+            "log uVDBP:cr (μg/mmol)")
 
 # value
 vitd %>%
@@ -177,7 +177,7 @@ rm(anova)
 # Scatterplot of ACR and uVDBP ----------------------------------
 
 dsBase %>% 
-  scatter_plot_slides("log(udbpCr)", "VitaminD", 
+  scatter_plot("log(udbpCr)", "VitaminD", 
                "log UDBP:Creatinine",
                "Serum 25(OH)D")
 
@@ -304,7 +304,7 @@ gee_vitd_baseline %>%
 
 # Plot ---------------------------------------------------------------
 
-plot_gee_results_vitd(gee_vitd_baseline,
+plot_gee_results_vitd_base(gee_vitd_baseline,
                  yvars = "Serum 25(OH)D (nmol/L)")
 
 # Plot interaction ---------------------------------------------------
@@ -340,8 +340,7 @@ gee_vitd %>%
 # Plot ---------------------------------------------------------------
 
 plot_gee_results_vitd(gee_vitd,
-                 yvars = c("Serum 25(OH)D (nmol/L)",
-                           "PTH (pmol/L)"))
+                 yvars = "Serum 25(OH)D (nmol/L)")
 
 # Plot interaction ---------------------------------------------------
 
