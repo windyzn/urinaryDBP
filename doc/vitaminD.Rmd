@@ -177,31 +177,25 @@ rm(anova)
 # Scatterplot of ACR and uVDBP ----------------------------------
 
 dsBase %>% 
-  scatter_plot("log(udbpCr)", "VitaminD", 
-               "log UDBP:Creatinine",
-               "Serum 25(OH)D")
+  scatter_plot("log(VitaminD)", "log(udbpCr)", 
+               "log serum 25(OH)D",
+               "log UDBP:Creatinine")
 
 # Spearman Correlation ------------------------------------------
 
 dsBase %>% 
-  cor.test(formula = ~ VitaminD + udbpCr, data = ., method = "spearman")
+  cor.test(formula = ~ log(udbpCr) + log(VitaminD), data = ., method = "spearman")
 
 # Linear Regression ---------------------------------------------
 
 dsBase %>% 
+  dplyr::mutate(lVitD = log(VitaminD)) %>% 
   prep_mason_data() %>% 
-  mason_glm(y = "VitaminD",
-            x = "logudbpCr",
-            covars = c("ageBase", "Sex", "Ethnicity", "BMI", "MET", "fDM")
+  mason_glm(y = "logudbpCr",
+            x = "lVitD",
+            covars = c("ageBase", "Sex", "Ethnicity", "BMI", "MET", "Season", "dmStatus")
             ) %>% 
-  dplyr::filter(!term == "(Intercept)") %>%
-  dplyr::mutate(p = round(p.value, 2),
-    p = ifelse(p == "0", "<0.001", p),
-    estCI = paste0(round(estimate, 2), " (",
-                               round(conf.low, 2), ", ",
-                               round(conf.high, 2), ")")) %>% 
-  dplyr::select(Yterms, Xterms, term, estCI, p) %>% 
-  # tidyr::spread(Yterms, estCI) %>%
+  gee_results_table() %>% 
   pander::pander()
   
 ```
