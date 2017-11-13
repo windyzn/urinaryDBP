@@ -577,7 +577,15 @@ GEE where predictor is baseline UDBP
 
 # Predictor is baseline UDBP ----------------------------------------
 
-gee_kidney_baseline <- ds %>% 
+gee_kidney_baseline1 <- ds %>% 
+  prep_mason_data_kidney() %>% 
+  mason_geeplot(y = c("lACR", "leGFR"),
+            x = "udbpCrBase",
+            covars = c("YearsFromBaseline", "ageBase", "Ethnicity", 
+                       "dmStatus")) %>%
+  mason::polish_renaming(rename_gee_kidney)
+
+gee_kidney_baseline2 <- ds %>% 
   prep_mason_data_kidney() %>% 
   mason_geeplot(y = c("lACR", "leGFR"),
             x = "udbpCrBase",
@@ -585,23 +593,15 @@ gee_kidney_baseline <- ds %>%
                        "dmStatus")) %>%
   mason::polish_renaming(rename_gee_kidney)
 
-gee_kidney_baseline <- ds %>% 
-  prep_mason_data_kidney() %>% 
-  mason_geeplot(y = c("lACR", "leGFR"),
-            x = "acrBase",
-            covars = c("YearsFromBaseline", "ageBase", "Sex", "Ethnicity", 
-                       "dmStatus")) %>%
-  mason::polish_renaming(rename_gee_kidney)
-
 # GEE table ----------------------------------------------------------
 
-gee_kidney_baseline %>% 
+gee_kidney_baseline2 %>% 
   gee_results_table() %>% 
   pander::pander()
 
 # Plot ---------------------------------------------------------------
 
-plot_gee_results_kidney_base(gee_kidney_baseline,
+plot_gee_results_kidney_base(gee_kidney_baseline1,
                  yvars = c("ACR (mg/mmol)", 
                            "eGFR (ml/min/1.73m^2)"))
 ```
@@ -611,7 +611,15 @@ GEE where predictor is UDBP over time
 ```{r gee}
 # Predictor is UDBP at all time points ------------------------------
 
-gee_kidney <- ds %>% 
+gee_kidney1 <- ds %>% 
+  prep_mason_data_kidney() %>% 
+  mason_geeplot(y = c("lACR", "leGFR"),
+            x = "udbpCr",
+            covars = c("YearsFromBaseline", "ageBase", "Ethnicity", 
+                       "dmStatus")) %>%
+  mason::polish_renaming(rename_gee_kidney)
+
+gee_kidney2 <- ds %>% 
   prep_mason_data_kidney() %>% 
   mason_geeplot(y = c("lACR", "leGFR"),
             x = "udbpCr",
@@ -621,13 +629,13 @@ gee_kidney <- ds %>%
 
 # GEE table ----------------------------------------------------------
 
-gee_kidney %>% 
+gee_kidney2 %>% 
   gee_results_table() %>% 
   pander::pander()
 
 # Plot ---------------------------------------------------------------
 
-plot_gee_results_kidney(gee_kidney,
+plot_gee_results_kidney(gee_kidney1,
                  yvars = c("ACR (mg/mmol)", 
                            "eGFR (ml/min/1.73m^2)"))
 ```
