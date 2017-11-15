@@ -1,0 +1,77 @@
+---
+title: "Sensitivity Analysis for Oral Contraceptives and Vitamin D"
+author: "Windy Wang"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, collapse=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+
+# Only set if the Rmd file is not in the parent directory (ie. 'projectname/')
+knitr::opts_knit$set(root.dir = '../')
+
+knitr::opts_chunk$set(collapse = TRUE, echo = FALSE, message = FALSE, warning = FALSE)
+library(tidyverse)
+devtools::load_all()
+load_data(update = TRUE)
+set_options()
+
+ds <- project_data
+```
+
+Purpose: Assess if subjects taking oral contraceptives (OC) are influencing the vitamin D results
+
+## Number of people on OC (n=16)
+
+```{r}
+ds_oc <- ds %>% 
+  dplyr::filter(OralContraceptive == 1)
+
+# Women who still have periods n = 223
+ds_period <- ds %>% 
+  dplyr::filter(PeriodsStopped == 2)
+```
+
+## Vitamin D status
+
+```{r}
+
+# On OC
+subchar_table_tert <- tableone::CreateTableOne(
+  vars = c("Age",
+           "VitaminD",
+           "eGFR",
+           "ACR",
+           "UDBP",
+           "udbpCr",
+           "dmStatus"),
+  data = ds_oc,
+  factorVars = c("dmStatus")
+) %>% 
+  print(nonnormal = c("UDBP",
+                      "ACR"),
+        quote = FALSE,
+        noSpaces = TRUE)
+
+# Period but not on OC
+subchar_table_tert <- tableone::CreateTableOne(
+  vars = c("Age",
+           "VitaminD",
+           "eGFR",
+           "ACR",
+           "UDBP",
+           "udbpCr",
+           "dmStatus"),
+  data = ds_period,
+  factorVars = c("dmStatus")
+) %>% 
+  print(nonnormal = c("UDBP",
+                      "ACR"),
+        quote = FALSE,
+        noSpaces = TRUE)
+```
+
