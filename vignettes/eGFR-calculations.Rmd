@@ -1,0 +1,46 @@
+---
+title: "Methods of Calculating eGFR"
+author: "Windy Wang"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, collapse=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+
+# Only set if the Rmd file is not in the parent directory (ie. 'projectname/')
+knitr::opts_knit$set(root.dir = '../')
+
+knitr::opts_chunk$set(collapse = TRUE, echo = FALSE, message = FALSE, warning = FALSE)
+library(tidyverse)
+devtools::load_all()
+load_data(update = TRUE)
+set_options()
+
+ds <- project_data
+```
+
+Purpose: assess if there are any differences in the MDRD and CKD-Epi eGFR calculation equations
+
+## Correlation between different eGFR calculation methods
+
+```{r}
+project_data %>% 
+  scatter_plot("eGFR_mdrd", "eGFR",
+               "eGFR MDRD", "eGFR CKDEpi")
+```
+
+## Serum and Urine Creatinine
+
+Serum and urine creatinine are measured using the same assay. Since serum creatinine is used to estimate eGFR, we need to assess if there are any correlations between serum and urine creatinine.
+
+```{r}
+ds %>% 
+  scatter_plot("Creatinine", "UrineCreatinine",
+               "Serum creatinine", "Urine Creatinine",
+               facet = TRUE)
+```
+
