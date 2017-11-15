@@ -66,6 +66,8 @@ fetch_data <- function() {
       creat.mgdl = Creatinine * 0.011312,
       eGFR = nephro::CKDEpi.creat(creat.mgdl, as.numeric(Sex) -
                                     1, Age, isAfrican),
+      eGFR_mdrd = nephro::MDRD4(creat.mgdl, as.numeric(Sex) - 1,
+                                Age, isAfrican),
       eGFRStatus = cut(eGFR,
                        breaks = c(-Inf, 60, 90, Inf),
                        labels = c("Moderate", "Mild", "Normal")),
@@ -90,6 +92,7 @@ fetch_data <- function() {
     ) %>%
     dplyr::filter(UDBP < 10000) %>%
     dplyr::filter(eGFR < 200) %>%
+    dplyr::filter(eGFR_mdrd < 300) %>%
     dplyr::filter(Creatinine < 200) %>%
     dplyr::select(
       SID,
@@ -115,6 +118,7 @@ fetch_data <- function() {
       udbpTertile,
       udbpCrTertile,
       eGFR,
+      eGFR_mdrd,
       ACR,
       UrineMicroalbumin,
       UrineCreatinine,
