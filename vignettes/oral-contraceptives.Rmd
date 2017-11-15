@@ -23,7 +23,7 @@ set_options()
 ds <- project_data
 ```
 
-Purpose: Assess if subjects taking oral contraceptives (OC) are influencing the vitamin D results
+Purpose: Assess if subjects taking oral contraceptives (OC) are influencing the vitamin D results. OC use has been found to increase 25(OH)D levels.
 
 ## Number of people on OC (n=16)
 
