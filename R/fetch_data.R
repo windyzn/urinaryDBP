@@ -94,6 +94,7 @@ fetch_data <- function() {
     dplyr::filter(eGFR < 200) %>%
     dplyr::filter(eGFR_mdrd < 300) %>%
     dplyr::filter(Creatinine < 200) %>%
+    dplyr::filter(OralContraceptive == 1) %>%
     dplyr::select(
       SID,
       VN,
