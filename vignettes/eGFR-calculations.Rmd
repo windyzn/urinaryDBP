@@ -23,11 +23,20 @@ set_options()
 ds <- project_data
 ```
 
-Purpose: assess if there are any differences in the MDRD and CKD-Epi eGFR calculation equations
+Purpose: assess if there are any differences in the MDRD and CKD-Epi eGFR calculation equations. Calculations were done using the nephro package. Both formulas use serum creatinine as a surrogate measure of GFR.
 
 ## Correlation between different eGFR calculation methods
 
-```{r}
+There appears to be a strong correlation between eGFR calculated using the CKD-Epi formula (eGFR Epi) and eGFR calculated using MDRD (eGFR MDRD) as assessed using Spearman's rank correlation (r=0.91, p<0.001). However, a scatter plot of the association found three subjects with extremely high eGFR MDRD (eGFR > 300 ml/min). These subjects were removed from future analysis.
+
+```{r echo=FALSE}
+
+ds %>% 
+  cor.test(formula = ~ eGFR + eGFR_mdrd, data = ., method = "spearman")
+```
+
+```{r echo=FALSE}
+
 project_data %>% 
   scatter_plot("eGFR_mdrd", "eGFR",
                "eGFR MDRD", "eGFR CKDEpi")
