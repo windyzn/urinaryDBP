@@ -27,7 +27,7 @@ Purpose: assess if there are any differences in the MDRD and CKD-Epi eGFR calcul
 
 ## Correlation between different eGFR calculation methods
 
-There appears to be a strong correlation between eGFR calculated using the CKD-Epi formula (eGFR Epi) and eGFR calculated using MDRD (eGFR MDRD) as assessed using Spearman's rank correlation (r=0.91, p<0.001). However, a scatter plot of the association found three subjects with extremely high eGFR MDRD (eGFR > 300 ml/min). These subjects were removed from future analysis.
+There appears to be a strong correlation between eGFR calculated using the CKD-Epi formula (eGFR Epi) and eGFR calculated using MDRD (eGFR MDRD) as assessed using Spearman's rank correlation (r=0.95, p<0.001). However, a scatter plot of the association found three subjects with extremely high eGFR MDRD (eGFR > 300 ml/min). These subjects were removed from future analysis.
 
 ```{r echo=FALSE}
 
@@ -44,9 +44,16 @@ project_data %>%
 
 ## Serum and Urine Creatinine
 
-Serum and urine creatinine are measured using the same assay. Since serum creatinine is used to estimate eGFR, we need to assess if there are any correlations between serum and urine creatinine.
+Serum and urine creatinine are measured using the same assay. Since serum creatinine is used to estimate eGFR, we need to assess if there are any correlations between serum and urine creatinine. There was no significant associations between serum and urine creatinine at baseline (r=0.20, p=0.003), 3-year follow-up (r=), or 6-year follow-up () assessed using Pearson's correlation.
 
-```{r}
+```{r echo=FALSE}
+
+ds %>% 
+  dplyr::filter(VN == 3) %>% 
+  cor.test(formula = ~ Creatinine + UrineCreatinine, data = ., method = "pearson")
+```
+
+```{r echo=FALSE}
 ds %>% 
   scatter_plot("Creatinine", "UrineCreatinine",
                "Serum creatinine", "Urine Creatinine",

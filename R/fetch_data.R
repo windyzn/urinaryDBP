@@ -94,7 +94,8 @@ fetch_data <- function() {
     dplyr::filter(eGFR < 200) %>%
     dplyr::filter(eGFR_mdrd < 300) %>%
     dplyr::filter(Creatinine < 200) %>%
-    dplyr::filter(OralContraceptive == 1) %>%
+    dplyr::filter(OralContraceptive == 0) | (is.na(OralContraceptive)) %>%
+    # dplyr::filter(is.na(OralContraceptive)) %>%
     dplyr::select(
       SID,
       VN,
@@ -158,7 +159,7 @@ fetch_data <- function() {
       # dplyr::matches("meds")
     )
 
-  # Final dataset object
+   # Final dataset object
   project_data <- ds.prep
 
   # Save the dataset to the data/ folder.
