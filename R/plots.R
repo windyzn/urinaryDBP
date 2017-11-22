@@ -69,6 +69,11 @@ box_plot <- function(data=project_data, xvar, yvar, xlab="", ylab="", facet = FA
 #'
 #' @examples
 box_plot_slides <- function(data=project_data, xvar, yvar, xlab="", ylab="", facet = FALSE) {
+
+  give.n <- function(x){
+    return(c(y = mean(x), label = length(x)))
+  }
+
   myboxplot <- ggplot2::ggplot(data, ggplot2::aes_string(x = xvar, y = yvar)) +
     ggplot2::geom_boxplot(ggplot2::aes_string(colour = xvar, fill = xvar),
                           outlier.shape = NA) +
@@ -76,6 +81,7 @@ box_plot_slides <- function(data=project_data, xvar, yvar, xlab="", ylab="", fac
                           fun.data = function(x){
                             return(c(y = median(x), ymin = median(x), ymax = median(x)))
                           }) +
+    ggplot2::stat_summary(fun.data = give.n, geom = "text") +
     ggplot2::geom_jitter(ggplot2::aes_string(),
                          position = ggplot2::position_jitter(width = 0.15, height = 0),
                          alpha = 0.3,
