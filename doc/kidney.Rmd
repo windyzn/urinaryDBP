@@ -214,7 +214,7 @@ acr <- ds %>%
 
 # Box plot of uVDBP in different albuminuria categories
 acr %>% 
-  box_plot("acrStatus", "log(udbpCr)", 
+  box_plot_slides("acrStatus", "log(udbpCr)", 
             "Albuminuria",
             "log uVDBP:cr")
 
@@ -225,6 +225,10 @@ acr %>%
             median = median(log(udbpCr)),
             lower = quantile(log(udbpCr), probs=0.25),
             higher = quantile(log(udbpCr), probs=0.75))
+
+
+give.n <- function(x){ return(c(ymin = median, label = length(x))) }
+boxplot = boxplot + stat_summary(fun.data = give.n, geom = "text", fun.y = median)
 
 # ANOVA
 anova <- aov(formula = log(udbpCr)~acrStatus2, data = acr)
@@ -274,7 +278,7 @@ eGFR <- ds %>%
 
 # Box plot of uVDBP in different eGFR categories
 eGFR %>% 
-  box_plot("eGFRStatus", "log(UDBP)", 
+  box_plot_slides("eGFRStatus", "log(UDBP)", 
             "Kidney Status",
             "log uVDBP")
 
