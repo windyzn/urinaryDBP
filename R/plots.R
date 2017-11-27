@@ -84,8 +84,8 @@ box_plot_slides <- function(data=project_data, xvar, yvar, xlab="", ylab="", fac
     ggplot2::stat_summary(fun.data = give.n, geom = "text", size = 4, colour = "grey") +
     ggplot2::geom_jitter(ggplot2::aes_string(),
                          position = ggplot2::position_jitter(width = 0.15, height = 0),
-                         alpha = 0.3,
-                         size = 1,
+                         alpha = 0.1,
+                         size = 2,
                          colour = "grey30") +
     ggplot2::scale_color_manual(values = c("#2b3443", "#adc9b7", "#ffd91e")) +
     ggplot2::scale_fill_manual(values = c("#2b3443", "#adc9b7", "#ffd91e")) +
@@ -218,8 +218,9 @@ scatter_plot = function(data=project_data,
 #' @examples
 scatter_plot_slides = function(data=project_data,
                                xvar, yvar, xlab='', ylab='', line = TRUE, facet = FALSE) {
+
   myplot <- ggplot2::ggplot(data, ggplot2::aes_string(x=xvar, y=yvar)) +
-    ggplot2::geom_point(colour = "#2b3443", size = 1) +
+    ggplot2::geom_point(colour = "#2b3443", shape = 16, size = 3, alpha = 0.15, show.legend = FALSE) +
     ggplot2::theme(panel.grid.major.x = ggplot2::element_blank(),
                    panel.grid.minor.x = ggplot2::element_blank(),
                    panel.background = ggplot2::element_rect(fill = "#f5f3ef", colour = "#f5f3ef"),
@@ -228,14 +229,15 @@ scatter_plot_slides = function(data=project_data,
                    axis.text.y = ggplot2::element_text(colour = "#2b3443"),
                    axis.ticks.y = ggplot2::element_line(colour = "grey"),
                    axis.text.x = ggplot2::element_text(colour = "#2b3443")) +
+    # ggplot2::scale_color_gradient(low = "#0091ff", high = "#f0650e") +
     ggplot2::xlab(xlab) +
     ggplot2::ylab(ylab)
   if(line == TRUE & facet == FALSE) {
     myplot +
-      ggplot2::geom_smooth(method = lm, colour = "#ffd91e", fill = "#ffd91e")
+      ggplot2::geom_smooth(method = lm, colour = "#ffd91e", fill = "#ffd91e", alpha = 0.25)
   } else if(line == TRUE & facet == TRUE) {
     myplot +
-      ggplot2::geom_smooth(method = lm, colour = "#ffd91e", fill = "#ffd91e") +
+      ggplot2::geom_smooth(method = lm, colour = "#ffd91e", fill = "#ffd91e", alpha = 0.25) +
       ggplot2::facet_grid(~fVN, switch = "x")
   } else if(line == FALSE & facet == TRUE) {
     myplot +
@@ -378,13 +380,13 @@ gee_plot = function(gee_results, xlab = "") {
                    panel.grid.minor.x = ggplot2::element_blank(),
                    panel.spacing = ggplot2::unit(2, "lines"),
                    strip.background = ggplot2::element_rect(colour = "#adc9b7", fill = "#adc9b7"),
-                   strip.text.x = ggplot2::element_text(colour = "white", face = "bold"),
-                   # text = ggplot2::element_text(family = "Montserrat"),
+                   strip.text.x = ggplot2::element_text(colour = "white", face = "bold", size = 11),
+                   # text = ggplot2::element_text(size = 14, colour = "#2b3443"),
                    axis.line.y = ggplot2::element_blank(),
-                   axis.text.y = ggplot2::element_text(colour = "grey"),
+                   axis.text.y = ggplot2::element_text(size = 11, colour = "grey"),
                    axis.ticks.y = ggplot2::element_line(colour = "grey"),
                    axis.text.x = ggplot2::element_text(colour = "grey40"),
-                   axis.title = ggplot2::element_text(size = 10)) + #family = "Montserrat"
+                   axis.title = ggplot2::element_text(size = 13, colour = "#2b3443")) + #family = "Montserrat"
     ggplot2::ylab('') +
     ggplot2::xlab(xlab)
 }
