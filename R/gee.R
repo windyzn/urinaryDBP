@@ -320,7 +320,7 @@ plot_gee_results_kidney <- function(results, yvars,
 #'
 #' @examples
 plot_gee_results_vitd_base <- function(results, yvars,
-                                    xlab = "Percent difference with 95% CI in the outcomes for\n
+                                    xlab = "Percent difference with 95% CI in the outcomes for
                                   each SD increase in uVDBP and covariates") {
   results %>%
     dplyr::mutate(Xterms = term) %>%
@@ -335,7 +335,6 @@ plot_gee_results_vitd_base <- function(results, yvars,
                                                  "SexMale",
                                                  "EthnicityEuropean",
                                                  "MET (kcal/kg/h)",
-                                                 "BMI (kg/m^2)",
                                                  "dmStatusPreDiabetes",
                                                  "dmStatusDiabetes",
                                                  "SeasonWinter",
@@ -346,7 +345,6 @@ plot_gee_results_vitd_base <- function(results, yvars,
                                                  "Sex (male)",
                                                  "Ethnicity (European)",
                                                  "MET (kcal/kg/h)",
-                                                 "BMI (kg/m^2)",
                                                  "Prediabetes",
                                                  "Diabetes",
                                                  "Seasonality (winter)",
@@ -358,7 +356,7 @@ plot_gee_results_vitd_base <- function(results, yvars,
 
 
 plot_gee_results_vitd <- function(results, yvars,
-                                  xlab = "Percent difference with 95% CI in the outcomes for\n
+                                  xlab = "Percent difference with 95% CI in the outcomes for
                                   each SD increase in uVDBP and covariates") {
   results %>%
     dplyr::mutate(Xterms = term) %>%
@@ -373,7 +371,6 @@ plot_gee_results_vitd <- function(results, yvars,
                                                  "SexMale",
                                                  "EthnicityEuropean",
                                                  "MET (kcal/kg/h)",
-                                                 "BMI (kg/m^2)",
                                                  "dmStatusPreDiabetes",
                                                  "dmStatusDiabetes",
                                                  "SeasonWinter",
@@ -384,7 +381,6 @@ plot_gee_results_vitd <- function(results, yvars,
                                                  "Sex (male)",
                                                  "Ethnicity (European)",
                                                  "MET (kcal/kg/h)",
-                                                 "BMI (kg/m^2)",
                                                  "Prediabetes",
                                                  "Diabetes",
                                                  "Seasonality (winter)",
