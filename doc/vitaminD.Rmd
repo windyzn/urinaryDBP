@@ -148,7 +148,7 @@ vitd <- ds %>%
 
 # Box plot of uVDBP in different albuminuria categories
 vitd %>% 
-  box_plot("vitdStatus", "log(udbpCr)", 
+  box_plot_slides("vitdStatus", "log(udbpCr)", 
             "Vitamin D Status",
             "log uVDBP:cr (μg/mmol)")
 
@@ -177,9 +177,9 @@ rm(anova)
 # Scatterplot of ACR and uVDBP ----------------------------------
 
 dsBase %>% 
-  scatter_plot("log(VitaminD)", "log(udbpCr)", 
+  scatter_plot_slides("log(VitaminD)", "log(udbpCr)", 
                "log serum 25(OH)D",
-               "log UDBP:Creatinine")
+               "log uVDBP:cr (μg/mmol)")
 
 # Spearman Correlation ------------------------------------------
 
@@ -193,7 +193,7 @@ dsBase %>%
   prep_mason_data() %>% 
   mason_glm(y = "logudbpCr",
             x = "lVitD",
-            covars = c("ageBase", "Sex", "Ethnicity", "BMI", "MET", "Season", "dmStatus")
+            covars = c("ageBase", "Sex", "Ethnicity", "MET", "Season", "dmStatus")
             ) %>% 
   gee_results_table() %>% 
   pander::pander()
@@ -283,7 +283,7 @@ gee_vitd_baseline <- ds %>%
   mason_geeplot(y = "lVitD",
             x = "udbpCrBase",
             covars = c("MonthsFromBaseline", "ageBase", "Sex", 
-                       "Ethnicity", "MET", "BMI", "dmStatus", "Season"),
+                       "Ethnicity", "MET", "dmStatus", "Season"),
             intvar = "Season") %>% 
   mason::polish_renaming(rename_gee_vitd)
 
@@ -320,7 +320,7 @@ gee_vitd <- ds %>%
   prep_mason_data_vitd() %>% 
   mason_geeplot(y = "lVitD",
             x = "udbpCr",
-            covars = c("MonthsFromBaseline", "ageBase", "Sex", "Ethnicity", "MET", "BMI", "dmStatus", "Season"),
+            covars = c("MonthsFromBaseline", "ageBase", "Sex", "Ethnicity", "MET", "dmStatus", "Season"),
             intvar = "Season") %>% 
   mason::polish_renaming(rename_gee_vitd)
 
