@@ -1,0 +1,50 @@
+---
+title: "Glycemic Status"
+author: "Windy Wang"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, collapse=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+
+# Only set if the Rmd file is not in the parent directory (ie. 'projectname/')
+knitr::opts_knit$set(root.dir = '../')
+
+knitr::opts_chunk$set(collapse = TRUE, echo = FALSE, message = FALSE, warning = FALSE)
+library(tidyverse)
+devtools::load_all()
+load_data(update = TRUE)
+set_options()
+
+ds <- project_data
+
+# dm status
+ds <- project_data %>% 
+  dplyr::mutate(dmStatus = ifelse(DM == 1, "DM",
+                                  ifelse(IFG == 1, "IFG",
+                                         ifelse(IGT == 1, "IGT",
+                                                "NGT"))),
+                # dmStatus = ifelse(is.na(dmStatus), "NGT", dmStatus),
+                dmStatus = factor(dmStatus,
+                                  levels = c("NGT", "IFG", "IGT", "DM"),
+                                  ordered = TRUE))
+```
+
+
+```{r echo=FALSE, results="hide"}
+
+subchar_dm <- tableone::CreateTableOne(
+  vars = c("dmStatus"),
+  data = ds,
+  strata = "fVN",
+  factorVars = c("dmStatus")) %>% 
+  print()
+```
+
+```{r echo=FALSE}
+knitr::kable(subchar_dm)
+```
