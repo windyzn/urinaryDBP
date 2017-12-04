@@ -110,6 +110,7 @@ fetch_data <- function() {
       Ethnicity,
       Glucose0_OGTT,
       Glucose120_OGTT,
+      Dysgly,
       DM,
       IFG,
       IGT,

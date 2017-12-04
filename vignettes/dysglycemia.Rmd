@@ -53,7 +53,7 @@ There are 43 missing measurements for glycemic status
 
 ```{r}
 ds %>% 
-  dplyr::select(SID, VN, dmStatus, Glucose0_OGTT, Glucose120_OGTT) %>% 
+  dplyr::select(SID, VN, dmStatus, Dysgly, Glucose0_OGTT, Glucose120_OGTT) %>% 
   dplyr::filter(is.na(dmStatus)) %>% 
   knitr::kable()
 ```
