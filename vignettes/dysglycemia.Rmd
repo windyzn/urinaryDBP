@@ -22,8 +22,10 @@ set_options()
 
 ds <- project_data
 
+ds_original <- PROMISE::PROMISE
+
 # dm status
-ds <- project_data %>% 
+ds_dm <- PROMISE::PROMISE %>% 
   dplyr::mutate(dmStatus = ifelse(DM == 1, "DM",
                                   ifelse(IFG == 1, "IFG",
                                          ifelse(IGT == 1, "IGT",
@@ -31,7 +33,12 @@ ds <- project_data %>%
                 # dmStatus = ifelse(is.na(dmStatus), "NGT", dmStatus),
                 dmStatus = factor(dmStatus,
                                   levels = c("NGT", "IFG", "IGT", "DM"),
-                                  ordered = TRUE))
+                                  ordered = TRUE),
+                fVN = factor(
+                  VN,
+                  levels = c(1, 3, 6),
+                  labels = c("Baseline", "3Year", "6Year"),
+                  ordered = TRUE))
 ```
 
 
@@ -39,7 +46,7 @@ ds <- project_data %>%
 
 subchar_dm <- tableone::CreateTableOne(
   vars = c("dmStatus"),
-  data = ds,
+  data = ds_dm,
   strata = "fVN",
   factorVars = c("dmStatus")) %>% 
   print()
@@ -52,9 +59,10 @@ knitr::kable(subchar_dm)
 There are 43 missing measurements for glycemic status
 
 ```{r}
-ds %>% 
-  dplyr::select(SID, VN, dmStatus, Dysgly, Glucose0_OGTT, Glucose120_OGTT) %>% 
+ds_dm %>% 
+  dplyr::select(SID, fVN, dmStatus, Glucose0_OGTT, Glucose120_OGTT) %>% 
   dplyr::filter(is.na(dmStatus)) %>% 
   knitr::kable()
 ```
+
 
