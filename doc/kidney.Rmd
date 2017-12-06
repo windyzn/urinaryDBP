@@ -216,7 +216,7 @@ acr <- ds %>%
 acr %>% 
   box_plot_slides("acrStatus", "log(udbpCr)", 
             "Albuminuria",
-            "log uVDBP:cr")
+            "log uVDBP:cr (μg/mmol)")
 
 # n and values
 acr %>% 
@@ -244,8 +244,8 @@ rm(anova)
 
 dsBase %>% 
   scatter_plot_slides("log(ACR)", "log(udbpCr)",
-               "log Albumin:cr Ratio",
-               "log uVDBP:cr")
+               "log albumin:cr ratio (mg/mmol)",
+               "log uVDBP:cr (μg/mmol)")
 
 # Spearman Correlation ------------------------------------------
 
@@ -280,7 +280,7 @@ eGFR <- ds %>%
 eGFR %>% 
   box_plot_slides("eGFRStatus", "log(udbpCr)", 
             "Kidney Status",
-            "log uVDBP:cr")
+            "log uVDBP:cr (μg/mmol)")
 
 # n and values
 eGFR %>% 
@@ -304,8 +304,8 @@ rm(anova)
 ds %>% 
   filter(fVN == "Baseline") %>% 
   scatter_plot_slides("log(eGFR)", "log(udbpCr)",
-               "log Estimated Glomerular Filtration Rate",
-               "log uVDBP:cr")
+               "log eGFR (ml/min/1.73m^2)",
+               "log uVDBP:cr (μg/mmol)")
 
 # Spearman Correlation ------------------------------------------
 

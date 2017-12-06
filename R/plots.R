@@ -93,10 +93,10 @@ box_plot_slides <- function(data=project_data, xvar, yvar, xlab="", ylab="", fac
                    panel.background = ggplot2::element_rect(fill = "#f5f3ef", colour = "#f5f3ef"),
                    panel.grid.major.x = ggplot2::element_blank(),
                    axis.line.y = ggplot2::element_blank(),
-                   text = ggplot2::element_text(size = 14, colour = "#2b3443"),
-                   axis.text.y = ggplot2::element_text(colour = "#2b3443"),
-                   axis.ticks.y = ggplot2::element_line(colour = "grey"),
-                   axis.text.x = ggplot2::element_text(colour = "#2b3443")) +
+                   text = ggplot2::element_text(size = 14, colour = "grey30"),
+                   axis.text.y = ggplot2::element_text(colour = "grey50"),
+                   axis.ticks.y = ggplot2::element_line(colour = "grey70"),
+                   axis.text.x = ggplot2::element_text(colour = "grey50")) +
     ggplot2::xlab(xlab) +
     ggplot2::ylab(ylab)
 
@@ -225,10 +225,10 @@ scatter_plot_slides = function(data=project_data,
                    panel.grid.minor.x = ggplot2::element_blank(),
                    panel.background = ggplot2::element_rect(fill = "#f5f3ef", colour = "#f5f3ef"),
                    axis.line.y = ggplot2::element_blank(),
-                   text = ggplot2::element_text(size = 14, colour = "#2b3443"),
-                   axis.text.y = ggplot2::element_text(colour = "#2b3443"),
-                   axis.ticks.y = ggplot2::element_line(colour = "grey"),
-                   axis.text.x = ggplot2::element_text(colour = "#2b3443")) +
+                   text = ggplot2::element_text(size = 14, colour = "grey30"),
+                   axis.text.y = ggplot2::element_text(colour = "grey50"),
+                   axis.ticks.y = ggplot2::element_line(colour = "grey70"),
+                   axis.text.x = ggplot2::element_text(colour = "grey50")) +
     # ggplot2::scale_color_gradient(low = "#0091ff", high = "#f0650e") +
     ggplot2::xlab(xlab) +
     ggplot2::ylab(ylab)
@@ -383,10 +383,10 @@ gee_plot = function(gee_results, xlab = "") {
                    strip.text.x = ggplot2::element_text(colour = "white", face = "bold", size = 11),
                    # text = ggplot2::element_text(size = 14, colour = "#2b3443"),
                    axis.line.y = ggplot2::element_blank(),
-                   axis.text.y = ggplot2::element_text(size = 11, colour = "grey"),
+                   axis.text.y = ggplot2::element_text(size = 12, colour = "grey50"),
                    axis.ticks.y = ggplot2::element_line(colour = "grey"),
                    axis.text.x = ggplot2::element_text(colour = "grey40"),
-                   axis.title = ggplot2::element_text(size = 13, colour = "#2b3443")) + #family = "Montserrat"
+                   axis.title = ggplot2::element_text(size = 14, colour = "#2b3443")) + #family = "Montserrat"
     ggplot2::ylab('') +
     ggplot2::xlab(xlab)
 }

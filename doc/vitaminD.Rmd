@@ -178,7 +178,7 @@ rm(anova)
 
 dsBase %>% 
   scatter_plot_slides("log(VitaminD)", "log(udbpCr)", 
-               "log serum 25(OH)D",
+               "log serum 25(OH)D (nmol/L)",
                "log uVDBP:cr (μg/mmol)")
 
 # Spearman Correlation ------------------------------------------

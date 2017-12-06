@@ -246,8 +246,7 @@ gee_results_table <- function(results, table = TRUE) {
 #'
 #' @examples
 plot_gee_results_kidney_base <- function(results, yvars,
-                     xlab = "Percent difference with 95% CI in the outcomes
-                     for each SD increase in ACR and covariates",
+                     xlab = "Percent difference with 95% CI in the outcomes for \neach SD increase in ACR and covariates",
                      terms = c("<-Xterm",
                                "Follow-up Duration (years)",
                                "Baseline Age (years)",
@@ -255,7 +254,7 @@ plot_gee_results_kidney_base <- function(results, yvars,
                                "EthnicityEuropean",
                                "dmStatusPreDiabetes",
                                "dmStatusDiabetes"),
-                     labels = c("Baseline UDBP:cr",
+                     labels = c("Baseline uVDBP:cr",
                                 "Follow-up Duration (Years)",
                                 "Baseline Age (Years)",
                                 "Sex (male)",
@@ -278,8 +277,7 @@ plot_gee_results_kidney_base <- function(results, yvars,
 
 
 plot_gee_results_kidney <- function(results, yvars,
-                                         xlab = "Percent difference with 95% CI in the outcomes
-                                         for each SD increase in uVDBP and covariates",
+                                         xlab = "Percent difference with 95% CI in the outcomes for \neach SD increase in uVDBP and covariates",
                                          terms = c("<-Xterm",
                                                    "Follow-up Duration (years)",
                                                    "Baseline Age (years)",
@@ -320,8 +318,7 @@ plot_gee_results_kidney <- function(results, yvars,
 #'
 #' @examples
 plot_gee_results_vitd_base <- function(results, yvars,
-                                    xlab = "Percent difference with 95% CI in the outcomes for
-                                  each SD increase in uVDBP and covariates") {
+                                    xlab = "Percent difference with 95% CI in the outcomes for \neach SD increase in uVDBP and covariates") {
   results %>%
     dplyr::mutate(Xterms = term) %>%
     dplyr::filter(!term == "(Intercept)") %>%
@@ -356,8 +353,7 @@ plot_gee_results_vitd_base <- function(results, yvars,
 
 
 plot_gee_results_vitd <- function(results, yvars,
-                                  xlab = "Percent difference with 95% CI in the outcomes for
-                                  each SD increase in uVDBP and covariates") {
+                                  xlab = "Percent difference with 95% CI in the outcomes for \neach SD increase in uVDBP and covariates") {
   results %>%
     dplyr::mutate(Xterms = term) %>%
     dplyr::filter(!term == "(Intercept)") %>%
