@@ -195,6 +195,20 @@ subchar_table_time <- tableone::CreateTableOne(
         noSpaces = TRUE)
 ```
 
+#### Incidence
+
+```{r}
+
+# desc_incidence() works for 0, 1 variables, not factors
+
+ds %>% 
+  dplyr::mutate(microalbumin = ifelse(acrStatus == "Microalbuminuria", 1, 0),
+                macroalbumin = ifelse(acrStatus == "Macroalbuminuria", 1, 0)) %>% 
+  dplyr::select(SID, VN, DM, microalbumin, macroalbumin) %>% 
+  PROMISE.desc::desc_incidence("microalbumin")
+```
+
+
 ### Cross-sectional
 
 #### ACR
