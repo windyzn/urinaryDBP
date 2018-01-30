@@ -1,0 +1,46 @@
+---
+title: "Statin in PROMISE"
+author: "Windy Wang"
+date: "January 30, 2018"
+output: html_document
+---
+
+```{r setup, collapse=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+
+# Only set if the Rmd file is not in the parent directory (ie. 'projectname/')
+knitr::opts_knit$set(root.dir = '../')
+
+knitr::opts_chunk$set(collapse = TRUE, echo = FALSE, message = FALSE, warning = FALSE)
+library(tidyverse)
+devtools::load_all()
+load_data(update = TRUE)
+set_options()
+# extrafont::loadfonts(device="win")
+```
+
+```{r loadData, message=FALSE}
+
+dsMed <- read.csv("../promise/data-raw/all-db-form121med.csv")
+```
+
+Number of subjects n = 746
+```{r}
+
+dsMed %>% 
+  dplyr::group_by(SID) %>%
+  dplyr::summarise(n = n())
+```
+
+Use of statins
+```{r}
+
+statins <- c("Pravastatin", "Pravachol", "Selektine",
+             "Rosuvastatin", "Crestor", "Rosulip", "Zuvamor",
+             "Atorvastatin", "Lipitor", "Atorva")
+
+dsMed %>% 
+  dplyr::group_by(MedName) %>% 
+  dplyr::filter(MedName %in% statins) %>%
+  dplyr::summarise(n = n())
+```
+
