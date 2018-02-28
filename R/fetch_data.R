@@ -12,7 +12,7 @@
 #'
 fetch_data <- function() {
   # Load the master dataset,
-  ds.prep <- PROMISE::PROMISE %>%
+  ds.prep <- PROMISE.data::PROMISE %>%
 
   # Data wrangling commands
     dplyr::mutate(
