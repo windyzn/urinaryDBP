@@ -11,8 +11,9 @@ knitr::opts_knit$set(root.dir = '../')
 
 knitr::opts_chunk$set(collapse = TRUE, echo = FALSE, message = FALSE, warning = FALSE)
 library(tidyverse)
+library(PROMISE.data)
 devtools::load_all()
-load_data(update = TRUE)
+# load_data(update = TRUE)
 set_options()
 # extrafont::loadfonts(device="win")
 ```
@@ -619,7 +620,7 @@ gee_kidney_baseline2 %>%
 
 # Plot ---------------------------------------------------------------
 
-plot_gee_results_kidney_base(gee_kidney_baseline1,
+plot_gee_results_kidney_base(gee_kidney_baseline2,
                  yvars = c("ACR (mg/mmol)", 
                            "eGFR (ml/min/1.73m^2)"))
 ```
@@ -653,7 +654,7 @@ gee_kidney2 %>%
 
 # Plot ---------------------------------------------------------------
 
-plot_gee_results_kidney(gee_kidney1,
+plot_gee_results_kidney(gee_kidney2,
                  yvars = c("ACR (mg/mmol)", 
                            "eGFR (ml/min/1.73m^2)"))
 ```
