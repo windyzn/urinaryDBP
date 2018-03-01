@@ -381,12 +381,12 @@ gee_plot = function(gee_results, xlab = "") {
                    panel.spacing = ggplot2::unit(2, "lines"),
                    strip.background = ggplot2::element_rect(colour = "#adc9b7", fill = "#adc9b7"),
                    strip.text.x = ggplot2::element_text(colour = "white", face = "bold", size = 11),
-                   # text = ggplot2::element_text(size = 14, colour = "#2b3443"),
+                   text = ggplot2::element_text(size = 11, colour = "#2b3443"),
                    axis.line.y = ggplot2::element_blank(),
-                   axis.text.y = ggplot2::element_text(size = 12, colour = "grey50"),
+                   axis.text.y = ggplot2::element_text(size = 10, colour = "grey50"),
                    axis.ticks.y = ggplot2::element_line(colour = "grey"),
-                   axis.text.x = ggplot2::element_text(colour = "grey40"),
-                   axis.title = ggplot2::element_text(size = 14, colour = "#2b3443")) + #family = "Montserrat"
+                   axis.text.x = ggplot2::element_text(size = 11, colour = "grey40"),
+                   axis.title = ggplot2::element_text(size = 11, colour = "#2b3443")) + #family = "Montserrat"
     ggplot2::ylab('') +
     ggplot2::xlab(xlab)
 }
