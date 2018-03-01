@@ -14,6 +14,9 @@ fetch_data <- function() {
   # Load the master dataset,
   ds.prep <- PROMISE.data::PROMISE %>%
 
+  # Merge data sets
+    PROMISE.data::combine_datasets(meds, bloodwork, ogtt, misc) %>%
+
   # Data wrangling commands
     dplyr::mutate(
       UDBP = ifelse(UDBP == 0.01, NA, UDBP),
@@ -38,9 +41,8 @@ fetch_data <- function() {
         levels = c(0, 1),
         labels = c("No", "Yes")
       ),
-      Hypertension = ifelse(!(is.na(MedHistHypertenAge)), 1,
-                            ifelse(Systolic > 140 | Diastolic > 90, 1,
-                                   0)),
+      Hypertension = ifelse(Systolic > 140 | Diastolic > 90, 1,
+                                   0),
       Hypertension = factor(Hypertension,
                             levels = c(0, 1),
                             labels = c("No", "Yes")),
@@ -86,7 +88,6 @@ fetch_data <- function() {
                        breaks = c(-Inf, 50, 75, Inf),
                        labels = c("Deficient", "Insufficient", "Sufficient"),
                        ordered = TRUE),
-      OralContraceptive = ifelse(BirthControl == "2", 1, 0),
       Season = ifelse(lubridate::month(VisitDate) %in% c("5", "6", "7", "8", "9", "10"),
                       "Summer", "Winter")
     ) %>%
@@ -145,11 +146,6 @@ fetch_data <- function() {
       SmokeCigs,
       CRP,
       Canoe,
-      BirthControl,
-      OralContraceptive,
-      PeriodsStopped,
-      PeriodsStoppedAge,
-      MedHistHypertenAge,
       MedsBloodPressure,
       MedsDxDM,
       diet_milk,
