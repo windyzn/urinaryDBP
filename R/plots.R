@@ -267,7 +267,7 @@ scatter_plot_poster = function(data=project_data,
     ggplot2::geom_point(colour = "#adc9b7", size = 1) +
     ggplot2::theme(panel.grid.major.x = ggplot2::element_blank(),
                    panel.grid.minor.x = ggplot2::element_blank(),
-                   panel.background = ggplot2::element_rect(colour = "grey60"),
+                   # panel.background = ggplot2::element_rect(colour = "grey60"),
                    axis.line.y = ggplot2::element_blank(),
                    text = ggplot2::element_text(size = 14, family = "Montserrat Light"),
                    axis.text.y = ggplot2::element_text(colour = "grey30"),
@@ -278,10 +278,10 @@ scatter_plot_poster = function(data=project_data,
     ggplot2::ylab(ylab)
   if(line == TRUE & facet == FALSE) {
     myplot +
-      ggplot2::geom_smooth(method = loess, colour = "grey50")
+      ggplot2::geom_smooth(method = lm, colour = "grey50")
   } else if(line == TRUE & facet == TRUE) {
     myplot +
-      ggplot2::geom_smooth(method = loess, colour = "grey50") +
+      ggplot2::geom_smooth(method = lm, colour = "grey50") +
       ggplot2::facet_grid(~fVN, switch = "x")
   } else if(line == FALSE & facet == TRUE) {
     myplot +
