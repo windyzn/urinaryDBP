@@ -11,7 +11,7 @@ output: word_document:
 # poster size: print at 63" x 31.5"
 
 knitr::opts_chunk$set(collapse = TRUE, echo = FALSE, message = FALSE, warning = FALSE)
-library(dplyr)
+library(tidyverse)
 devtools::load_all()
 load_data(update = TRUE)
 set_options()
@@ -92,7 +92,7 @@ ds %>%
   filter(fVN == "Baseline") %>% 
   select(acrStatus, udbpCrRatio) %>%
   na.omit() %>%
-  box_plot_poster("acrStatus", "log(udbpCrRatio)", 
+  box_plot_poster("acrStatus", "log(udbpCr)", 
             "Albuminuria",
             "log uVDBP:Creatinine")
 
@@ -109,7 +109,7 @@ rm(anova)
 
 ds %>% 
   filter(fVN == "Baseline") %>% 
-  scatter_plot_poster("log(ACR)", "log(udbpCrRatio)",
+  scatter_plot_poster("log(ACR)", "log(udbpCr)",
                "log Albumin:Creatinine Ratio",
                "log UDBP:Creatinine")
 
@@ -117,7 +117,7 @@ ds %>%
 
 ds %>% 
   filter(fVN == "Baseline") %>% 
-  cor.test(formula = ~ ACR + udbpCrRatio, data = ., method = "spearman")
+  cor.test(formula = ~ ACR + udbpCr, data = ., method = "spearman")
 ```
 
 
@@ -149,15 +149,15 @@ rm(anova)
 
 ds %>% 
   dplyr::filter(fVN == "Baseline") %>% 
-  scatter_plot_poster("eGFR", "log(udbpCrRatio)",
+  scatter_plot_poster("eGFR", "log(udbpCr)",
                "Estimated Glomerular Filtration Rate (ml/min/1.73m^2)",
                "log UDBP:Creatinine")
 
 # Spearman Correlation ------------------------------------------
 
 ds %>% 
-  filter(!(acr_status == "Macroalbuminuria")) %>% 
-  cor.test(formula = ~ eGFR + udbpCrRatio, data = ., method = "spearman")
+  filter(!(acrStatus == "Macroalbuminuria")) %>% 
+  cor.test(formula = ~ eGFR + udbpCr, data = ., method = "spearman")
 ```
 
 ```{r hyperfiltration}
