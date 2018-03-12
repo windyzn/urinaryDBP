@@ -277,7 +277,7 @@ plot_gee_results_kidney_base <- function(results, yvars,
 
 
 plot_gee_results_kidney <- function(results, yvars,
-                                         xlab = "Percent difference with 95% CI in the outcomes for \neach SD increase in uVDBP and covariates",
+                                         xlab = "Percent difference with 95% CI in the outcomes for each SD increase in uVDBP and covariates",
                                          terms = c("<-Xterm",
                                                    "Follow-up Duration (years)",
                                                    "Baseline Age (years)",
