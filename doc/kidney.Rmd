@@ -553,42 +553,6 @@ ds_med <- ds %>%
 
 ### Generalized Estimating Equations
 
-```{r}
-prep_mason_data_kidney <- ds %>%
-    dplyr::mutate(
-      udbpBase = ifelse(fVN == "Baseline", UDBP, NA),
-      udbpCrBase = ifelse(fVN == "Baseline", udbpCr, NA),
-      ageBase = ifelse(fVN == "Baseline", Age, NA),
-      DM = ifelse(DM == 1, "DM", "notDM"),
-      fDM = relevel(as.factor(DM), "notDM"),
-      dmStatus = factor(dmStatus, ordered = FALSE),
-      Ethnicity = ifelse(Ethnicity == "European", Ethnicity, "Other"),
-      Ethnicity = relevel(as.factor(Ethnicity), "Other"),
-
-      lACR = log(ACR),
-      leGFR = log(eGFR)
-    ) %>%
-
-    dplyr::filter(!(fVN == "Baseline" &
-                      acrStatus == "Macroalbuminuria")) %>%
-    dplyr::filter(!(fVN == "Baseline" & eGFR < 60)) %>%
-    dplyr::filter(!(fVN == "Baseline" & dmStatus == "DM")) %>%
-
-    dplyr::mutate_each(dplyr::funs(as.numeric(scale(.))),
-                       UDBP,
-                       udbpBase,
-                       udbpCr,
-                       udbpCrBase,
-                       MonthsFromBaseline,
-                       ageBase) %>%
-
-    dplyr::arrange(SID, fVN) %>%
-    dplyr::group_by(SID) %>%
-    tidyr::fill(udbpBase, udbpCrBase, ageBase) %>%
-    dplyr::ungroup() %>%
-    dplyr::arrange(SID, fVN)
-```
-
 
 GEE where predictor is baseline UDBP
 
@@ -596,15 +560,7 @@ GEE where predictor is baseline UDBP
 
 # Predictor is baseline UDBP ----------------------------------------
 
-gee_kidney_baseline1 <- ds %>% 
-  prep_mason_data_kidney() %>% 
-  mason_geeplot(y = c("lACR", "leGFR"),
-            x = "udbpCrBase",
-            covars = c("YearsFromBaseline", "ageBase", "Ethnicity", 
-                       "dmStatus")) %>%
-  mason::polish_renaming(rename_gee_kidney)
-
-gee_kidney_baseline2 <- ds %>% 
+gee_kidney_baseline <- ds %>% 
   prep_mason_data_kidney() %>% 
   mason_geeplot(y = c("lACR", "leGFR"),
             x = "udbpCrBase",
@@ -614,13 +570,13 @@ gee_kidney_baseline2 <- ds %>%
 
 # GEE table ----------------------------------------------------------
 
-gee_kidney_baseline2 %>% 
+gee_kidney_baseline %>% 
   gee_results_table() %>% 
   pander::pander()
 
 # Plot ---------------------------------------------------------------
 
-plot_gee_results_kidney_base(gee_kidney_baseline2,
+plot_gee_results_kidney_base(gee_kidney_baseline,
                  yvars = c("ACR (mg/mmol)", 
                            "eGFR (ml/min/1.73m^2)"))
 ```
@@ -630,15 +586,7 @@ GEE where predictor is UDBP over time
 ```{r gee}
 # Predictor is UDBP at all time points ------------------------------
 
-gee_kidney1 <- ds %>% 
-  prep_mason_data_kidney() %>% 
-  mason_geeplot(y = c("lACR", "leGFR"),
-            x = "udbpCr",
-            covars = c("YearsFromBaseline", "ageBase", "Ethnicity", 
-                       "dmStatus")) %>%
-  mason::polish_renaming(rename_gee_kidney)
-
-gee_kidney2 <- ds %>% 
+gee_kidney <- ds %>% 
   prep_mason_data_kidney() %>% 
   mason_geeplot(y = c("lACR", "leGFR"),
             x = "udbpCr",
@@ -648,13 +596,13 @@ gee_kidney2 <- ds %>%
 
 # GEE table ----------------------------------------------------------
 
-gee_kidney2 %>% 
+gee_kidney %>% 
   gee_results_table() %>% 
   pander::pander()
 
 # Plot ---------------------------------------------------------------
 
-plot_gee_results_kidney(gee_kidney2,
+plot_gee_results_kidney(gee_kidney,
                  yvars = c("ACR (mg/mmol)", 
                            "eGFR (ml/min/1.73m^2)"))
 ```
