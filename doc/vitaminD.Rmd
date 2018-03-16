@@ -12,7 +12,7 @@ knitr::opts_knit$set(root.dir = '../')
 knitr::opts_chunk$set(collapse = TRUE, echo = FALSE, message = FALSE, warning = FALSE)
 library(tidyverse)
 devtools::load_all()
-load_data(update = TRUE)
+# load_data(update = TRUE)
 set_options()
 # extrafont::loadfonts(device="win")
 ```
@@ -155,7 +155,10 @@ vitd %>%
 # value
 vitd %>%
   dplyr::group_by(vitdStatus) %>% 
-  dplyr::summarise(Median = median(log(udbpCr)), 
+  dplyr::summarise(n = n(),
+                   Median = median(log(udbpCr)), 
+                   lower = quantile(log(udbpCr), probs = 0.25),
+                   higher = quantile(log(udbpCr), probs = 0.75),
                    IQR = IQR(log(udbpCr))
                    )
 
@@ -282,14 +285,12 @@ gee_vitd_baseline <- ds %>%
   prep_mason_data_vitd() %>% 
   mason_geeplot(y = "lVitD",
             x = "udbpCrBase",
-            covars = c("MonthsFromBaseline", "ageBase", "Sex", 
-                       "Ethnicity", "MET", "dmStatus", "Season"),
-            intvar = "Season") %>% 
+            covars = c("YearsFromBaseline", "ageBase", "Sex", 
+                       "Ethnicity", "BMI", "MET", "dmStatus", "Season")) %>% 
+            # intvar = "Season") %>% 
   mason::polish_renaming(rename_gee_vitd)
 
 # GEE table ----------------------------------------------------------
-
-tab_nums(gee_vitd_baseline, "GEE results for uVDBP at baseline (predictor) with 25(OH)D and (outcomes), adjusted for follow-up duration (in months), baseline age, sex, ethnicity, physical activity (MET), BMI, diabetes status, and seasonality; subjects with deficient vitamin D status at baseline excluded (n = 713).")
 
 gee_vitd_baseline %>% 
   gee_results_table() %>% 
@@ -320,8 +321,9 @@ gee_vitd <- ds %>%
   prep_mason_data_vitd() %>% 
   mason_geeplot(y = "lVitD",
             x = "udbpCr",
-            covars = c("MonthsFromBaseline", "ageBase", "Sex", "Ethnicity", "MET", "dmStatus", "Season"),
-            intvar = "Season") %>% 
+            covars = c("YearsFromBaseline", "ageBase", "Sex", "Ethnicity", "BMI",
+                       "MET", "dmStatus", "Season")) %>% 
+            # intvar = "Season") %>% 
   mason::polish_renaming(rename_gee_vitd)
 
 # GEE table ----------------------------------------------------------
