@@ -8,8 +8,9 @@
 #' @examples
 rename_variables <- function(x) {
   x %>%
-    gsub("VN", "Follow-up Duration (years)", .) %>%
+    gsub("VN", "Visit Number", .) %>%
     gsub("MonthsFromBaseline", "Follow-up Duration (months)", .) %>%
+    gsub("YearsFromBaseline", "Follow-up Duration (years)", .) %>%
     gsub('Age', 'Age (years)', .) %>%
     gsub("ageBase", "Baseline Age (years)", .) %>%
     gsub("BMI", "BMI (kg/m^2)", .) %>%
@@ -76,6 +77,7 @@ rename_gee_vitd <- function(x) {
     gsub("VitaminD", "Serum 25(OH)D (nmol/L)", .) %>%
     gsub("VN", "Follow-up Duration (years)", .) %>%
     gsub("MonthsFromBaseline", "Follow-up Duration (months)", .) %>%
+    gsub("YearsFromBaseline", "Follow-up Duration (years)", .) %>%
     gsub('Age', 'Age (years)', .) %>%
     gsub("ageBase", "Baseline Age (years)", .) %>%
     gsub("BMI", "BMI (kg/m^2)", .) %>%
