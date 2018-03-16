@@ -52,7 +52,7 @@ prep_mason_data_kidney <- function(data) {
     dplyr::filter(!(fVN == "Baseline" &
                       acrStatus == "Macroalbuminuria")) %>%
     dplyr::filter(!(fVN == "Baseline" & eGFR < 60)) %>%
-    dplyr::filter(!(fVN == "Baseline" & dmStatus == "DM")) %>%
+    # dplyr::filter(!(fVN == "Baseline" & dmStatus == "DM")) %>%
 
     dplyr::mutate_each(dplyr::funs(as.numeric(scale(.))),
                        UDBP,
@@ -96,8 +96,8 @@ prep_mason_data_vitd <- function(data) {
       # lPTH = log(PTH)
     ) %>%
 
-    # dplyr::filter(!(fVN == "Baseline" & vitdStatus == "Deficient")) %>%
-    dplyr::filter(!(fVN == "Baseline" & dmStatus == "DM")) %>%
+    dplyr::filter(!(fVN == "Baseline" & vitdStatus == "Deficient")) %>%
+    # dplyr::filter(!(fVN == "Baseline" & dmStatus == "DM")) %>%
 
     dplyr::mutate_each(dplyr::funs(as.numeric(scale(.))),
                        UDBP,
@@ -318,7 +318,7 @@ plot_gee_results_kidney <- function(results, yvars,
 #'
 #' @examples
 plot_gee_results_vitd_base <- function(results, yvars,
-                                    xlab = "Percent difference with 95% CI in the outcomes for \neach SD increase in uVDBP and covariates") {
+                                    xlab = "Percent difference with 95% CI in the outcomes for each SD increase in uVDBP and covariates") {
   results %>%
     dplyr::mutate(Xterms = term) %>%
     dplyr::filter(!term == "(Intercept)") %>%
@@ -353,7 +353,7 @@ plot_gee_results_vitd_base <- function(results, yvars,
 
 
 plot_gee_results_vitd <- function(results, yvars,
-                                  xlab = "Percent difference with 95% CI in the outcomes for \neach SD increase in uVDBP and covariates") {
+                                  xlab = "Percent difference with 95% CI in the outcomes for each SD increase in uVDBP and covariates") {
   results %>%
     dplyr::mutate(Xterms = term) %>%
     dplyr::filter(!term == "(Intercept)") %>%
