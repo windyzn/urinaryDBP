@@ -98,6 +98,8 @@ prep_mason_data_vitd <- function(data) {
     ) %>%
 
     dplyr::filter(!(fVN == "Baseline" & vitdStatus == "Deficient")) %>%
+    # dplyr::filter(acrStatus != "Normoalbuminuria") %>%
+    # dplyr::filter(eGFRStatus != "Normal") %>%
     # dplyr::filter(!(fVN == "Baseline" & dmStatus == "DM")) %>%
 
     dplyr::mutate_each(dplyr::funs(as.numeric(scale(.))),

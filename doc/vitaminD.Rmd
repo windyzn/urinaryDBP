@@ -180,6 +180,7 @@ rm(anova)
 # Scatterplot of ACR and uVDBP ----------------------------------
 
 dsBase %>% 
+  # dplyr::filter(acrStatus != "Normoalbuminuria") %>% 
   scatter_plot_slides("log(VitaminD)", "log(udbpCr)", 
                "log serum 25(OH)D (nmol/L)",
                "log uVDBP:cr (μg/mmol)")
