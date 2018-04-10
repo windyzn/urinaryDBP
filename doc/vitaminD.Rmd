@@ -102,6 +102,7 @@ tab_nums("subchar_vitd", "Subject characteristics across visit numbers")
 
 # for sensitivity analysis
 m <- ds %>% 
+  # dplyr::mutate(followUp = )
   dplyr::filter(fVN != "6Year")
 
 subchar_vitd_base <- tableone::CreateTableOne(

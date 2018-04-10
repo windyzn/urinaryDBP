@@ -95,7 +95,9 @@ dsBase %>%
 
 # explore (delete later)
 
-dsBase %>% 
+ds %>% 
+  dplyr::select(VN, SID, UDBP) %>% 
+  dplyr::filter(UDBP < 1.23) %>% 
   summarise(n = n())
 
 ```
