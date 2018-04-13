@@ -114,6 +114,8 @@ subchar_vitd_base <- tableone::CreateTableOne(
            "MET",
            "VitaminD",
            "PTH",
+           "ACR",
+           "eGFR",
            "UDBP",
            "udbpCr",
            "Systolic",
@@ -121,11 +123,12 @@ subchar_vitd_base <- tableone::CreateTableOne(
            "MeanArtPressure",
            "dmStatus"),
   strata = c("VN"),
-  data = m,
+  data = ds,
   factorVars = c("Sex", "Ethnicity", "dmStatus")
 ) %>% 
   print(nonnormal = c("UDBP",
-                      "udbpCr"),
+                      "udbpCr",
+                      "ACR"),
         quote = FALSE,
         noSpaces = TRUE) %>% 
   knitr::kable()
