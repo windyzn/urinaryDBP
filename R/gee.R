@@ -39,8 +39,6 @@ prep_mason_data_kidney <- function(data) {
       udbpCrBase = ifelse(fVN == "Baseline", udbpCr, NA),
       ageBase = ifelse(fVN == "Baseline", Age, NA),
       acrBase = ifelse(fVN == "Baseline", ACR, NA),
-      scUDBP = UDBP/1000, # udbp units to ug/mL,
-      scudbpCr = scUDBP/UrineCreatinine,
       dmStatus = factor(dmStatus, ordered = FALSE),
       Ethnicity = ifelse(Ethnicity == "European", Ethnicity, "Other"),
       Ethnicity = relevel(as.factor(Ethnicity), "Other"),
@@ -55,6 +53,7 @@ prep_mason_data_kidney <- function(data) {
     # dplyr::filter(!(fVN == "Baseline" & dmStatus == "DM")) %>%
 
     dplyr::mutate_each(dplyr::funs(as.numeric(scale(.))),
+                       YearsFromBaseline,
                        UDBP,
                        udbpCr,
                        udbpBase,
