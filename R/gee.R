@@ -53,7 +53,7 @@ prep_mason_data_kidney <- function(data) {
     # dplyr::filter(!(fVN == "Baseline" & dmStatus == "DM")) %>%
 
     dplyr::mutate_each(dplyr::funs(as.numeric(scale(.))),
-                       YearsFromBaseline,
+                       # YearsFromBaseline,
                        UDBP,
                        udbpCr,
                        udbpBase,
@@ -248,7 +248,7 @@ gee_results_table <- function(results, table = TRUE) {
 #'
 #' @examples
 plot_gee_results_kidney_base <- function(results, yvars,
-                     xlab = "Percent difference with 95% CI in the outcomes for \neach SD increase in ACR and covariates",
+                     xlab = "Percent difference with 95% CI in the outcomes for each SD increase in ACR and covariates",
                      terms = c("<-Xterm",
                                "Follow-up Duration (years)",
                                "Baseline Age (years)",
