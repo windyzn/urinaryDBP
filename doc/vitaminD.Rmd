@@ -152,7 +152,7 @@ vitd <- ds %>%
 
 # Box plot of uVDBP in different albuminuria categories
 vitd %>% 
-  box_plot_slides("vitdStatus", "log(udbpCr)", 
+  box_plot("vitdStatus", "log(udbpCr)", 
             "Vitamin D Status",
             "log uVDBP:cr (μg/mmol)")
 
@@ -185,9 +185,9 @@ rm(anova)
 
 dsBase %>% 
   # dplyr::filter(acrStatus != "Normoalbuminuria") %>% 
-  scatter_plot_slides("log(VitaminD)", "log(udbpCr)", 
-               "log serum 25(OH)D (nmol/L)",
-               "log uVDBP:cr (μg/mmol)")
+  scatter_plot("log(udbpCr)", "log(VitaminD)", 
+                "log uVDBP:cr (μg/mmol)",
+               "log serum 25(OH)D (nmol/L)")
 
 # Spearman Correlation ------------------------------------------
 

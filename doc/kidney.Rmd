@@ -231,7 +231,7 @@ acr <- ds %>%
 
 # Box plot of uVDBP in different albuminuria categories
 acr %>% 
-  box_plot_slides("acrStatus", "log(udbpCr)", 
+  box_plot("acrStatus", "log(udbpCr)", 
             "Albuminuria",
             "log uVDBP:cr (μg/mmol)")
 
@@ -260,7 +260,7 @@ rm(anova)
 # Scatterplot of ACR and uVDBP ----------------------------------
 
 dsBase %>% 
-  scatter_plot_slides("log(ACR)", "log(udbpCr)",
+  scatter_plot("log(ACR)", "log(udbpCr)",
                "log albumin:cr ratio (mg/mmol)",
                "log uVDBP:cr (μg/mmol)")
 
@@ -295,7 +295,7 @@ eGFR <- ds %>%
 
 # Box plot of uVDBP in different eGFR categories
 eGFR %>% 
-  box_plot_slides("eGFRStatus", "log(udbpCr)", 
+  box_plot("eGFRStatus", "log(udbpCr)", 
             "Kidney Status",
             "log uVDBP:cr (μg/mmol)")
 
@@ -320,7 +320,7 @@ rm(anova)
 
 ds %>% 
   filter(fVN == "Baseline") %>% 
-  scatter_plot_slides("log(eGFR)", "log(udbpCr)",
+  scatter_plot("log(eGFR)", "log(udbpCr)",
                "log eGFR (ml/min/1.73m^2)",
                "log uVDBP:cr (μg/mmol)")
 
