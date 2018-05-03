@@ -248,6 +248,39 @@ scatter_plot_slides = function(data=project_data,
 }
 
 
+
+scatter_plot_transparent = function(data=project_data,
+                               xvar, yvar, xlab='', ylab='', line = TRUE, facet = FALSE) {
+
+  myplot <- ggplot2::ggplot(data, ggplot2::aes_string(x=xvar, y=yvar)) +
+    ggplot2::geom_point(colour = "#2b3443", shape = 16, size = 3, alpha = 0.15, show.legend = FALSE) +
+    ggplot2::theme(panel.grid.major.x = ggplot2::element_blank(),
+                   panel.grid.minor.x = ggplot2::element_blank(),
+                   panel.background = ggplot2::element_rect(fill = "transparent", colour = NA),
+                   plot.background = ggplot2::element_rect(fill = "transparent", colour = NA),
+                   axis.line.y = ggplot2::element_blank(),
+                   text = ggplot2::element_text(size = 14, colour = "grey30"),
+                   axis.text.y = ggplot2::element_text(colour = "grey50"),
+                   axis.ticks.y = ggplot2::element_line(colour = "grey70"),
+                   axis.text.x = ggplot2::element_text(colour = "grey50")) +
+    # ggplot2::scale_color_gradient(low = "#0091ff", high = "#f0650e") +
+    ggplot2::xlab(xlab) +
+    ggplot2::ylab(ylab)
+  if(line == TRUE & facet == FALSE) {
+    myplot +
+      ggplot2::geom_smooth(method = loess, colour = "#ffd91e", fill = "#ffd91e", alpha = 0.25)
+  } else if(line == TRUE & facet == TRUE) {
+    myplot +
+      ggplot2::geom_smooth(method = lm, colour = "#ffd91e", fill = "#ffd91e", alpha = 0.25) +
+      ggplot2::facet_grid(~fVN, switch = "x")
+  } else if(line == FALSE & facet == TRUE) {
+    myplot +
+      ggplot2::facet_grid(~fVN, switch = "x")
+  } else {
+    myplot
+  }
+}
+
 #' Scatterplot where the colour theme matches ada poster
 #'
 #' @param data Clearned data
