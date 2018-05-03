@@ -225,13 +225,21 @@ acr <- ds %>%
                                     "Albuminuria"),
                 acrStatus2 = factor(acrStatus2,
                                     levels = c("Normoalbuminuria", "Albuminuria"),
-                                    ordered = TRUE)) %>% 
-  dplyr::select(acrStatus, acrStatus2, UDBP, udbpCr) %>%
+                                    ordered = TRUE),
+                acrLabels = ifelse(acrStatus == "Normoalbuminuria", "Normoalbuminuria \n(<2 mg/mmol)",
+                                   ifelse(acrStatus == "Microalbuminuria", "Microalbuminuria \n(2-20 mg/mmol)",
+                                          "Macroalbuminuria \n(>20 mg/mmol)")),
+                acrLabels = factor(acrLabels,
+                                   levels = c("Normoalbuminuria \n(<2 mg/mmol)",
+                                              "Microalbuminuria \n(2-20 mg/mmol)",
+                                              "Macroalbuminuria \n(>20 mg/mmol)"),
+                                   ordered = TRUE)) %>% 
+  dplyr::select(acrStatus, acrStatus2, acrLabels, UDBP, udbpCr) %>%
   na.omit()
 
 # Box plot of uVDBP in different albuminuria categories
 acr %>% 
-  box_plot("acrStatus", "log(udbpCr)", 
+  box_plot_slides("acrLabels", "log(udbpCr)", 
             "Albuminuria",
             "log uVDBP:cr (μg/mmol)")
 
@@ -260,7 +268,7 @@ rm(anova)
 # Scatterplot of ACR and uVDBP ----------------------------------
 
 dsBase %>% 
-  scatter_plot("log(ACR)", "log(udbpCr)",
+  scatter_plot_transparent("log(ACR)", "log(udbpCr)",
                "log albumin:cr ratio (mg/mmol)",
                "log uVDBP:cr (μg/mmol)")
 
@@ -288,14 +296,21 @@ dsBase %>%
 ```{r eGFR boxplot}
 
 # Clean data
-eGFR <- ds %>% 
-  filter(fVN == "Baseline") %>% 
-  select(eGFRStatus, udbpCr, UDBP) %>%
+eGFR <- dsBase %>% 
+  dplyr::mutate(eGFRLabels = ifelse(eGFRStatus == "Normal", "Normal \n(>90 mL/min/1.73m²)",
+                                   ifelse(eGFRStatus == "Mild", "Mild \n(60-89 mL/min/1.73m²)",
+                                          "Moderate \n(<60 mL/min/1.73m²)")),
+                eGFRLabels = factor(eGFRLabels,
+                                   levels = c("Normal \n(>90 mL/min/1.73m²)",
+                                              "Mild \n(60-89 mL/min/1.73m²)",
+                                              "Moderate \n(<60 mL/min/1.73m²)"),
+                                   ordered = TRUE)) %>%
+  select(eGFRStatus, eGFRLabels, udbpCr, UDBP) %>%
   na.omit()
 
 # Box plot of uVDBP in different eGFR categories
 eGFR %>% 
-  box_plot("eGFRStatus", "log(udbpCr)", 
+  box_plot_slides("eGFRLabels", "log(udbpCr)", 
             "Kidney Status",
             "log uVDBP:cr (μg/mmol)")
 
@@ -318,9 +333,8 @@ rm(anova)
 
 # Scatterplot of eGFR and uVDBP ----------------------------------
 
-ds %>% 
-  filter(fVN == "Baseline") %>% 
-  scatter_plot("log(eGFR)", "log(udbpCr)",
+dsBase %>% 
+  scatter_plot_transparent("log(eGFR)", "log(udbpCr)",
                "log eGFR (ml/min/1.73m^2)",
                "log uVDBP:cr (μg/mmol)")
 

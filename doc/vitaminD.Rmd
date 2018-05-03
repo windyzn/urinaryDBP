@@ -145,14 +145,21 @@ ds %>%
 ```{r vitd_boxplot}
 
 # Clean data
-vitd <- ds %>% 
-  filter(fVN == "Baseline") %>% 
-  select(vitdStatus, udbpCr, UDBP) %>%
+vitd <- dsBase %>% 
+  dplyr::mutate(vitdLabels = ifelse(vitdStatus == "Sufficient", "Sufficient \n(≥75 nmol/L)",
+                                   ifelse(vitdStatus == "Insufficient", "Insufficient \n(50 - 75 nmol/L)",
+                                          "Deficient \n(<50 nmol/L)")),
+                vitdLabels = factor(vitdLabels,
+                                   levels = c("Sufficient \n(≥75 nmol/L)",
+                                              "Insufficient \n(50 - 75 nmol/L)",
+                                              "Deficient \n(<50 nmol/L)"),
+                                   ordered = TRUE)) %>%
+  select(vitdStatus, vitdLabels, udbpCr, UDBP) %>%
   na.omit()
 
 # Box plot of uVDBP in different albuminuria categories
 vitd %>% 
-  box_plot("vitdStatus", "log(udbpCr)", 
+  box_plot_slides("vitdLabels", "log(udbpCr)", 
             "Vitamin D Status",
             "log uVDBP:cr (μg/mmol)")
 
@@ -185,7 +192,7 @@ rm(anova)
 
 dsBase %>% 
   # dplyr::filter(acrStatus != "Normoalbuminuria") %>% 
-  scatter_plot("log(udbpCr)", "log(VitaminD)", 
+  scatter_plot_transparent("log(udbpCr)", "log(VitaminD)", 
                 "log uVDBP:cr (μg/mmol)",
                "log serum 25(OH)D (nmol/L)")
 
@@ -291,8 +298,8 @@ gee_vitd_baseline <- ds %>%
   mason_geeplot(y = "lVitD",
             x = "udbpCrBase",
             covars = c("YearsFromBaseline", "ageBase", "Sex", 
-                       "Ethnicity", "BMI", "MET", "dmStatus", "Season")) %>% 
-            # intvar = "Season") %>% 
+                       "Ethnicity", "BMI", "MET", "dmStatus", "Season"),
+            intvar = "BMI") %>%
   mason::polish_renaming(rename_gee_vitd)
 
 # GEE table ----------------------------------------------------------
@@ -327,8 +334,8 @@ gee_vitd <- ds %>%
   mason_geeplot(y = "lVitD",
             x = "udbpCr",
             covars = c("YearsFromBaseline", "ageBase", "Sex", "Ethnicity", "BMI",
-                       "MET", "dmStatus", "Season")) %>% 
-            # intvar = "Season") %>% 
+                       "MET", "dmStatus", "Season"), 
+            intvar = "BMI") %>%
   mason::polish_renaming(rename_gee_vitd)
 
 # GEE table ----------------------------------------------------------
