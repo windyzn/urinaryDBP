@@ -239,7 +239,7 @@ acr <- ds %>%
 
 # Box plot of uVDBP in different albuminuria categories
 acr %>% 
-  box_plot_slides("acrLabels", "log(udbpCr)", 
+  box_plot("acrStatus2", "log(udbpCr)", 
             "Albuminuria",
             "log uVDBP:cr (μg/mmol)")
 
@@ -294,6 +294,14 @@ dsBase %>%
 #### eGFR
 
 ```{r eGFR boxplot}
+
+# Hyperfiltration (eGFR >124.46 at baseline, >121.80 at 3-year, >120.14 at 6-year)
+ds %>% 
+  dplyr::filter(fVN == "6Year") %>% 
+  # dplyr::summarise(mean = mean(eGFR),
+  #                  sd = sd(eGFR))
+  dplyr::filter(eGFR > 120.14) %>% 
+  summarise(n = n())
 
 # Clean data
 eGFR <- dsBase %>% 
