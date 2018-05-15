@@ -102,8 +102,8 @@ tab_nums("subchar_vitd", "Subject characteristics across visit numbers")
 
 # for sensitivity analysis
 m <- ds %>% 
-  # dplyr::mutate(followUp = )
-  dplyr::filter(fVN != "6Year")
+  dplyr::filter(!is.na(VitaminD)) %>% 
+  dplyr::filter(!VN == "6")
 
 subchar_vitd_base <- tableone::CreateTableOne(
   vars = c("Age",
@@ -123,7 +123,7 @@ subchar_vitd_base <- tableone::CreateTableOne(
            "MeanArtPressure",
            "dmStatus"),
   strata = c("VN"),
-  data = ds,
+  data = m,
   factorVars = c("Sex", "Ethnicity", "dmStatus")
 ) %>% 
   print(nonnormal = c("UDBP",
