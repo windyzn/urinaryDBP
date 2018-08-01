@@ -718,6 +718,7 @@ gee_kidney_baseline <- ds %>%
                        "dmStatus")) %>%
   mason::polish_renaming(rename_gee_kidney)
 
+
 # GEE table ----------------------------------------------------------
 
 gee_kidney_baseline %>% 
@@ -730,6 +731,32 @@ plot_gee_results_kidney_base(gee_kidney_baseline,
                  yvars = c("ACR (mg/mmol)", 
                            "eGFR (ml/min/1.73m^2)"))
 ```
+
+```{r gee_baseline_eGFR}
+
+# Predictor is UDBP at all time points ------------------------------
+
+gee_eGFR_baseline <- ds %>% 
+  prep_mason_data_kidney() %>% 
+  mason_geeplot(y = c("leGFR"),
+            x = "udbpCrBase",
+            covars = c("YearsFromBaseline", "ageBase", "Ethnicity", 
+                       "DM")) %>%
+  mason::polish_renaming(rename_gee_kidney)
+
+# GEE table ----------------------------------------------------------
+
+gee_eGFR_baseline %>% 
+  gee_results_table() %>% 
+  pander::pander()
+
+# Plot ---------------------------------------------------------------
+
+plot_gee_results_kidney_base(gee_kidney_baseline,
+                 yvars = c("ACR (mg/mmol)", 
+                           "eGFR (ml/min/1.73m^2)"))
+```
+
 
 GEE where predictor is UDBP over time
 
@@ -757,6 +784,51 @@ plot_gee_results_kidney(gee_kidney,
                            "eGFR (ml/min/1.73m^2)"))
 ```
 
+```{r gee_eGFR}
+
+covars <- c("YearsFromBaseline", "ageBase", "Ethnicity", 
+                       "DM", "fMedsBP")
+
+gee_terms <- c(
+  "<-Xterm",
+  "Follow-up Duration (years)",
+  "Baseline Age (years)",
+  "EthnicityEuropean",
+  "Diabetes",
+  "fMedsBPYes"
+  )
+
+gee_labels <- c(
+  "uVDBP:cr (ug/mL)",
+  "Follow-up Duration (Years)",
+  "Baseline Age (Years)",
+  "Ethnicity (European)",
+  "Diabetes",
+  "Blood Pressure Medication"
+  )
+
+# Predictor is UDBP at all time points ------------------------------
+
+gee_eGFR <- ds %>% 
+  prep_mason_data_kidney() %>% 
+  mason_geeplot(y = c("leGFR"),
+            x = "udbpCr",
+            covars = covars) %>%
+  mason::polish_renaming(rename_gee_kidney)
+
+# GEE table ----------------------------------------------------------
+
+gee_eGFR %>% 
+  gee_results_table() %>% 
+  pander::pander()
+
+# Plot ---------------------------------------------------------------
+
+plot_gee_results_eGFR(gee_eGFR,
+                 yvars = "eGFR (ml/min/1.73m^2)",
+                 terms = gee_terms,
+                 labels = gee_labels)
+```
 
 <!-- ### Interaction with Time -->
 

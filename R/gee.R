@@ -308,6 +308,24 @@ plot_gee_results_kidney <- function(results, yvars,
     gee_plot(xlab = xlab)
 }
 
+plot_gee_results_eGFR <- function(results, yvars,
+                                    xlab = "Percent difference with 95% CI in the outcomes for each SD increase in uVDBP and covariates",
+                                    terms = covars,
+                                    labels = labels) {
+  results %>%
+    dplyr::mutate(Xterms = term) %>%
+    dplyr::filter(!term == "(Intercept)") %>%
+    dplyr::mutate(Yterms = factor(Yterms,
+                                  levels = yvars,
+                                  ordered = TRUE),
+                  Xterms = factor(Xterms,
+                                  levels = rev(terms),
+                                  labels = rev(labels),
+                                  ordered = TRUE)) %>%
+    arrange(Xterms) %>%
+    gee_plot(xlab = xlab)
+}
+
 
 #' Plot vitamin D GEE results in a forest plot-style
 #'
