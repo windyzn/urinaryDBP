@@ -15,9 +15,9 @@ fetch_data <- function() {
   ds.prep <- PROMISE.data::PROMISE %>%
 
   # Merge data sets
-    PROMISE.data::combine_datasets(meds, bloodwork, ogtt, misc) %>%
+    PROMISE.data::combine_datasets(ds.prep, meds, bloodwork, ogtt, misc) %>%
 
-  # Data wrangling commands
+  # Data wrangling
     dplyr::mutate(
       UDBP = ifelse(UDBP == 0.01, NA, UDBP),
       UrineCreatinine = ifelse(SID == 2028, 9, UrineCreatinine),
@@ -95,8 +95,6 @@ fetch_data <- function() {
     dplyr::filter(eGFR < 200) %>%
     dplyr::filter(eGFR_mdrd < 300) %>%
     dplyr::filter(Creatinine < 200) %>%
-    # dplyr::filter(!(fVN == "Baseline" & OralContraceptive == 1)) %>%
-    # dplyr::filter(is.na(OralContraceptive)) %>%
     dplyr::select(
       SID,
       VN,
